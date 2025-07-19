@@ -11,6 +11,7 @@ export default function SignupPage() {
     confirmPassword: "",
     studentId: "",
     phoneNumber: "",
+    affiliation: "", // New field
     position: "any" as "handler" | "cutter" | "any",
     experience: "beginner" as
       | "beginner"
@@ -63,6 +64,7 @@ export default function SignupPage() {
           confirmPassword: "",
           studentId: "",
           phoneNumber: "",
+          affiliation: "",
           position: "any",
           experience: "beginner",
         });
@@ -155,26 +157,24 @@ export default function SignupPage() {
                 htmlFor="studentId"
                 className="block text-sm font-medium text-gray-700"
               >
-                Student ID
+                Student ID <span className="text-gray-400">(optional)</span>
               </label>
               <input
                 id="studentId"
                 name="studentId"
                 type="text"
-                required
                 value={formData.studentId}
                 onChange={handleChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="12345678"
               />
             </div>
-
             <div>
               <label
                 htmlFor="phoneNumber"
                 className="block text-sm font-medium text-gray-700"
               >
-                Phone Number
+                Phone Number <span className="text-gray-400">(optional)</span>
               </label>
               <input
                 id="phoneNumber"
@@ -184,6 +184,23 @@ export default function SignupPage() {
                 onChange={handleChange}
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder="+61 400 123 456"
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="affiliation"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Affiliation <span className="text-gray-400">(optional)</span>
+              </label>
+              <input
+                id="affiliation"
+                name="affiliation"
+                type="text"
+                value={formData.affiliation}
+                onChange={handleChange}
+                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                placeholder="e.g. Melbourne Uni, External, Coach"
               />
             </div>
 
