@@ -3,11 +3,11 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IAlumni extends Document {
   name: string;
   email: string;
-  studentId?: string; // Made optional
+  studentId?: string; // Optional
   graduationYear: number;
-  currentLocation: string;
-  currentJob: string;
-  company: string;
+  currentLocation?: string; // Made optional
+  currentJob?: string; // Made optional
+  company?: string; // Made optional
   achievements: string[];
   contactPreference: "email" | "phone" | "linkedin";
   phoneNumber?: string;
@@ -57,17 +57,17 @@ const alumniSchema = new Schema<IAlumni>(
     },
     currentLocation: {
       type: String,
-      required: [true, "Current location is required"],
+      required: false, // Made optional
       trim: true,
     },
     currentJob: {
       type: String,
-      required: [true, "Current job is required"],
+      required: false, // Made optional
       trim: true,
     },
     company: {
       type: String,
-      required: [true, "Company is required"],
+      required: false, // Made optional
       trim: true,
     },
     achievements: [

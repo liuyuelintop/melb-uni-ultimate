@@ -10,9 +10,9 @@ interface Alumni {
   email: string;
   studentId?: string; // Optional
   graduationYear: number;
-  currentLocation: string;
-  currentJob: string;
-  company: string;
+  currentLocation?: string; // Made optional
+  currentJob?: string; // Made optional
+  company?: string; // Made optional
   achievements: string[];
   contactPreference: "email" | "phone" | "linkedin";
   phoneNumber?: string;
@@ -90,14 +90,7 @@ export default function AlumniPage() {
 
   const addAlumni = async () => {
     // Validation
-    const requiredFields = [
-      "name",
-      "email",
-      "graduationYear",
-      "currentLocation",
-      "currentJob",
-      "company",
-    ];
+    const requiredFields = ["name", "email", "graduationYear"];
     const missingFields = requiredFields.filter(
       (field) => !newAlumni[field as keyof typeof newAlumni]
     );
@@ -257,14 +250,16 @@ export default function AlumniPage() {
       alum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alum.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alum.studentId?.includes(searchTerm) ||
-      alum.currentJob.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alum.company.toLowerCase().includes(searchTerm.toLowerCase());
+      alum.currentJob?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alum.company?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGraduationYear =
       filterGraduationYear === "all" ||
       alum.graduationYear.toString() === filterGraduationYear;
     const matchesLocation =
       filterLocation === "all" ||
-      alum.currentLocation.toLowerCase().includes(filterLocation.toLowerCase());
+      alum.currentLocation
+        ?.toLowerCase()
+        .includes(filterLocation.toLowerCase());
 
     return matchesSearch && matchesGraduationYear && matchesLocation;
   });
@@ -420,11 +415,11 @@ export default function AlumniPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Current Location *
+                Current Location
               </label>
               <input
                 type="text"
-                placeholder="Melbourne, Australia"
+                placeholder="Melbourne, Australia (optional)"
                 value={newAlumni.currentLocation}
                 onChange={(e) =>
                   setNewAlumni({
@@ -437,11 +432,11 @@ export default function AlumniPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Current Job *
+                Current Job
               </label>
               <input
                 type="text"
-                placeholder="Software Engineer"
+                placeholder="Software Engineer (optional)"
                 value={newAlumni.currentJob}
                 onChange={(e) =>
                   setNewAlumni({ ...newAlumni, currentJob: e.target.value })
@@ -451,11 +446,11 @@ export default function AlumniPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Company *
+                Company
               </label>
               <input
                 type="text"
-                placeholder="Google"
+                placeholder="Google (optional)"
                 value={newAlumni.company}
                 onChange={(e) =>
                   setNewAlumni({ ...newAlumni, company: e.target.value })
@@ -645,22 +640,32 @@ export default function AlumniPage() {
             </div>
 
             <div className="space-y-2 mb-4">
-              <div>
-                <span className="text-sm font-medium text-gray-700">Job:</span>
-                <p className="text-sm text-gray-900">{alum.currentJob}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-700">
-                  Company:
-                </span>
-                <p className="text-sm text-gray-900">{alum.company}</p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-700">
-                  Location:
-                </span>
-                <p className="text-sm text-gray-900">{alum.currentLocation}</p>
-              </div>
+              {alum.currentJob && (
+                <div>
+                  <span className="text-sm font-medium text-gray-700">
+                    Job:
+                  </span>
+                  <p className="text-sm text-gray-900">{alum.currentJob}</p>
+                </div>
+              )}
+              {alum.company && (
+                <div>
+                  <span className="text-sm font-medium text-gray-700">
+                    Company:
+                  </span>
+                  <p className="text-sm text-gray-900">{alum.company}</p>
+                </div>
+              )}
+              {alum.currentLocation && (
+                <div>
+                  <span className="text-sm font-medium text-gray-700">
+                    Location:
+                  </span>
+                  <p className="text-sm text-gray-900">
+                    {alum.currentLocation}
+                  </p>
+                </div>
+              )}
             </div>
 
             {alum.achievements.length > 0 && (
@@ -680,7 +685,18 @@ export default function AlumniPage() {
 
             <div className="flex justify-between items-center">
               <div className="text-sm text-gray-500">
-                Contact: {alum.contactPreference}
+                {session?.user?.role === "admin" ||
+                session?.user?.email === alum.email ? (
+                  <>
+                    Contact: {alum.contactPreference}
+                    {alum.phoneNumber && <>, {alum.phoneNumber}</>}
+                    {alum.email && <>, {alum.email}</>}
+                  </>
+                ) : (
+                  <span className="text-gray-400 italic">
+                    Contact info private
+                  </span>
+                )}
               </div>
               {session?.user?.role === "admin" && (
                 <div className="flex space-x-2">

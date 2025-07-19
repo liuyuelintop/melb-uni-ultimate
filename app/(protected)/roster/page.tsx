@@ -588,10 +588,21 @@ export default function RosterPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{player.email}</div>
-                    {player.phoneNumber && (
-                      <div className="text-sm text-gray-500">
-                        {player.phoneNumber}
+                    {session?.user?.role === "admin" ||
+                    session?.user?.email === player.email ? (
+                      <>
+                        <div className="text-sm text-gray-900">
+                          {player.email}
+                        </div>
+                        {player.phoneNumber && (
+                          <div className="text-sm text-gray-500">
+                            {player.phoneNumber}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-sm text-gray-400 italic">
+                        Private
                       </div>
                     )}
                   </td>
