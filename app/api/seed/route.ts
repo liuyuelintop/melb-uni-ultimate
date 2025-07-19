@@ -293,13 +293,14 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession();
 
-    // Only allow seeding in development or by admin
-    if (
-      process.env.NODE_ENV === "production" &&
-      session?.user?.role !== "admin"
-    ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // Temporarily allow seeding in production for initial setup
+    // TODO: Re-enable admin check after initial setup
+    // if (
+    //   process.env.NODE_ENV === "production" &&
+    //   session?.user?.role !== "admin"
+    // ) {
+    //   return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // }
 
     await dbConnect();
 
