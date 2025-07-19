@@ -55,7 +55,7 @@ export async function PUT(
       }
     }
 
-    if (studentId && studentId !== alumni.studentId) {
+    if (studentId && studentId !== alumni.studentId && studentId !== "") {
       const existingStudentId = await Alumni.findOne({
         studentId,
         _id: { $ne: id },

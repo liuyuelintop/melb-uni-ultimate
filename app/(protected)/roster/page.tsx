@@ -8,7 +8,7 @@ interface Player {
   _id: string;
   name: string;
   email: string;
-  studentId: string;
+  studentId?: string; // Optional
   position: "handler" | "cutter" | "any";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber: number;
@@ -18,6 +18,7 @@ interface Player {
   joinDate: string;
   createdAt: string;
   updatedAt: string;
+  affiliation?: string; // New optional field
 }
 
 interface Notification {
@@ -48,6 +49,7 @@ export default function RosterPage() {
     jerseyNumber: "",
     phoneNumber: "",
     graduationYear: "",
+    affiliation: "", // New field
   });
 
   // Fetch players on component mount
@@ -86,13 +88,7 @@ export default function RosterPage() {
 
   const addPlayer = async () => {
     // Validation
-    const requiredFields = [
-      "name",
-      "email",
-      "studentId",
-      "jerseyNumber",
-      "graduationYear",
-    ];
+    const requiredFields = ["name", "email", "jerseyNumber", "graduationYear"];
     const missingFields = requiredFields.filter(
       (field) => !newPlayer[field as keyof typeof newPlayer]
     );
@@ -137,6 +133,7 @@ export default function RosterPage() {
           jerseyNumber: jerseyNum,
           phoneNumber: newPlayer.phoneNumber,
           graduationYear: gradYear,
+          affiliation: newPlayer.affiliation,
         }),
       });
 
@@ -154,6 +151,7 @@ export default function RosterPage() {
           jerseyNumber: "",
           phoneNumber: "",
           graduationYear: "",
+          affiliation: "",
         });
         setShowAddForm(false);
       } else {
@@ -221,7 +219,7 @@ export default function RosterPage() {
     const matchesSearch =
       player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       player.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      player.studentId.includes(searchTerm);
+      player.studentId?.includes(searchTerm);
     const matchesPosition =
       filterPosition === "all" || player.position === filterPosition;
     const matchesExperience =
@@ -377,7 +375,7 @@ export default function RosterPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Student ID *
+                Student ID
               </label>
               <input
                 type="text"
@@ -385,6 +383,20 @@ export default function RosterPage() {
                 value={newPlayer.studentId}
                 onChange={(e) =>
                   setNewPlayer({ ...newPlayer, studentId: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Affiliation
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Melbourne Uni, External, Coach"
+                value={newPlayer.affiliation}
+                onChange={(e) =>
+                  setNewPlayer({ ...newPlayer, affiliation: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

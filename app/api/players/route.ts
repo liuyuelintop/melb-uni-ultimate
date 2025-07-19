@@ -61,11 +61,11 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!name || !email || !studentId || !jerseyNumber || !graduationYear) {
+    if (!name || !email || !jerseyNumber || !graduationYear) {
       return NextResponse.json(
         {
           error:
-            "Missing required fields: name, email, studentId, jerseyNumber, graduationYear",
+            "Missing required fields: name, email, jerseyNumber, graduationYear",
         },
         { status: 400 }
       );
@@ -73,14 +73,11 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Check if player already exists
-    const existingPlayer = await Player.findOne({
-      $or: [{ email }, { studentId }],
-    });
-
+    // Check if player already exists (by email only)
+    const existingPlayer = await Player.findOne({ email });
     if (existingPlayer) {
       return NextResponse.json(
-        { error: "Player with this email or student ID already exists" },
+        { error: "Player with this email already exists" },
         { status: 409 }
       );
     }

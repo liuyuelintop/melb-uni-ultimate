@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IAlumni extends Document {
   name: string;
   email: string;
-  studentId: string;
+  studentId?: string; // Made optional
   graduationYear: number;
   currentLocation: string;
   currentJob: string;
@@ -18,6 +18,7 @@ export interface IAlumni extends Document {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  affiliation?: string; // New optional field
 }
 
 const alumniSchema = new Schema<IAlumni>(
@@ -40,8 +41,12 @@ const alumniSchema = new Schema<IAlumni>(
     },
     studentId: {
       type: String,
-      required: [true, "Student ID is required"],
-      unique: true,
+      required: false, // Made optional
+      trim: true,
+    },
+    affiliation: {
+      type: String,
+      required: false,
       trim: true,
     },
     graduationYear: {

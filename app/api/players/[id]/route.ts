@@ -52,7 +52,7 @@ export async function PUT(
       }
     }
 
-    if (studentId && studentId !== player.studentId) {
+    if (studentId && studentId !== player.studentId && studentId !== "") {
       const existingStudentId = await Player.findOne({
         studentId,
         _id: { $ne: id },

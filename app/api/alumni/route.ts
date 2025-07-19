@@ -70,7 +70,6 @@ export async function POST(request: NextRequest) {
     if (
       !name ||
       !email ||
-      !studentId ||
       !graduationYear ||
       !currentLocation ||
       !currentJob ||
@@ -79,7 +78,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            "Missing required fields: name, email, studentId, graduationYear, currentLocation, currentJob, company",
+            "Missing required fields: name, email, graduationYear, currentLocation, currentJob, company",
         },
         { status: 400 }
       );
@@ -87,14 +86,11 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Check if alumni already exists
-    const existingAlumni = await Alumni.findOne({
-      $or: [{ email }, { studentId }],
-    });
-
+    // Check if alumni already exists (by email only)
+    const existingAlumni = await Alumni.findOne({ email });
     if (existingAlumni) {
       return NextResponse.json(
-        { error: "Alumni with this email or student ID already exists" },
+        { error: "Alumni with this email already exists" },
         { status: 409 }
       );
     }

@@ -8,7 +8,7 @@ interface Alumni {
   _id: string;
   name: string;
   email: string;
-  studentId: string;
+  studentId?: string; // Optional
   graduationYear: number;
   currentLocation: string;
   currentJob: string;
@@ -21,6 +21,7 @@ interface Alumni {
   joinDate: string;
   createdAt: string;
   updatedAt: string;
+  affiliation?: string; // New optional field
 }
 
 interface Notification {
@@ -50,6 +51,7 @@ export default function AlumniPage() {
     contactPreference: "email" as "email" | "phone" | "linkedin",
     phoneNumber: "",
     linkedinUrl: "",
+    affiliation: "", // New field
   });
 
   // Fetch alumni on component mount
@@ -91,7 +93,6 @@ export default function AlumniPage() {
     const requiredFields = [
       "name",
       "email",
-      "studentId",
       "graduationYear",
       "currentLocation",
       "currentJob",
@@ -143,6 +144,7 @@ export default function AlumniPage() {
           contactPreference: newAlumni.contactPreference,
           phoneNumber: newAlumni.phoneNumber,
           linkedinUrl: newAlumni.linkedinUrl,
+          affiliation: newAlumni.affiliation,
         }),
       });
 
@@ -163,6 +165,7 @@ export default function AlumniPage() {
           contactPreference: "email",
           phoneNumber: "",
           linkedinUrl: "",
+          affiliation: "",
         });
         setShowAddForm(false);
       } else {
@@ -253,7 +256,7 @@ export default function AlumniPage() {
     const matchesSearch =
       alum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alum.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alum.studentId.includes(searchTerm) ||
+      alum.studentId?.includes(searchTerm) ||
       alum.currentJob.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alum.company.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesGraduationYear =
@@ -387,7 +390,7 @@ export default function AlumniPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Student ID *
+                Student ID
               </label>
               <input
                 type="text"
@@ -506,6 +509,20 @@ export default function AlumniPage() {
                 value={newAlumni.linkedinUrl}
                 onChange={(e) =>
                   setNewAlumni({ ...newAlumni, linkedinUrl: e.target.value })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Affiliation
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. Melbourne Uni, External, Coach"
+                value={newAlumni.affiliation}
+                onChange={(e) =>
+                  setNewAlumni({ ...newAlumni, affiliation: e.target.value })
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

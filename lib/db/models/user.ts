@@ -4,7 +4,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
-  studentId: string;
+  studentId?: string; // Made optional
   phoneNumber?: string;
   position: "handler" | "cutter" | "any";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
@@ -15,6 +15,7 @@ export interface IUser extends Document {
   resetPasswordExpires?: Date;
   createdAt: Date;
   updatedAt: Date;
+  playerId?: string; // New optional field for linking to Player
 }
 
 const userSchema = new Schema<IUser>(
@@ -43,9 +44,13 @@ const userSchema = new Schema<IUser>(
     },
     studentId: {
       type: String,
-      required: [true, "Student ID is required"],
-      unique: true,
+      required: false, // Made optional
       trim: true,
+      index: true,
+    },
+    playerId: {
+      type: String, // Could also be mongoose.Schema.Types.ObjectId
+      required: false,
       index: true,
     },
     phoneNumber: {

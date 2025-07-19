@@ -13,7 +13,7 @@ const samplePlayers = [
   {
     name: "Sarah Chen",
     email: "sarah.chen@student.unimelb.edu.au",
-    studentId: "12345678",
+    // studentId intentionally omitted
     position: "handler" as const,
     experience: "advanced" as const,
     jerseyNumber: 7,
@@ -81,7 +81,7 @@ const sampleAlumni = [
   {
     name: "David Johnson",
     email: "david.johnson@alumni.unimelb.edu.au",
-    studentId: "87654321",
+    // studentId intentionally omitted
     graduationYear: 2020,
     currentLocation: "Melbourne, Australia",
     currentJob: "Software Engineer",
@@ -281,7 +281,7 @@ const sampleAdminUser = {
   name: "Admin User",
   email: "admin@muultimate.com",
   password: "admin123",
-  studentId: "99999999",
+  // studentId intentionally omitted
   phoneNumber: "+61 400 000 000",
   position: "any" as const,
   experience: "expert" as const,

@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IPlayer extends Document {
   name: string;
   email: string;
-  studentId: string;
+  studentId?: string; // Made optional
   position: "handler" | "cutter" | "any";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber: number;
@@ -15,6 +15,7 @@ export interface IPlayer extends Document {
   updatedBy: string;
   createdAt: Date;
   updatedAt: Date;
+  affiliation?: string; // New optional field
 }
 
 const playerSchema = new Schema<IPlayer>(
@@ -37,8 +38,12 @@ const playerSchema = new Schema<IPlayer>(
     },
     studentId: {
       type: String,
-      required: [true, "Student ID is required"],
-      unique: true,
+      required: false, // Made optional
+      trim: true,
+    },
+    affiliation: {
+      type: String,
+      required: false,
       trim: true,
     },
     position: {

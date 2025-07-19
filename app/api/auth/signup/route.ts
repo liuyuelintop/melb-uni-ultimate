@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     } = await request.json();
 
     // Validate required fields
-    if (!name || !email || !password || !studentId) {
+    if (!name || !email || !password) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -42,14 +42,11 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Check if user already exists
-    const existingUser = await User.findOne({
-      $or: [{ email }, { studentId }],
-    });
-
+    // Check if user already exists (by email only)
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: "User with this email or student ID already exists" },
+        { error: "User with this email already exists" },
         { status: 409 }
       );
     }
