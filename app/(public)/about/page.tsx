@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { InstagramIcon, FacebookIcon } from "lucide-react";
+import { FaInstagram, FaFacebook } from "react-icons/fa";
 
 export default function AboutPage() {
   return (
@@ -60,6 +60,50 @@ export default function AboutPage() {
                   Supporting personal and athletic development
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Club Highlights Section */}
+      <div className="mt-16 mb-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+          Club Highlights
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Image
+              src="/uninats-2024.webp"
+              alt="Nationals team celebrating win"
+              width={400}
+              height={250}
+              className="w-full h-56 object-cover"
+            />
+            <div className="p-4 text-center text-gray-700 text-sm">
+              2024 UniSport Nationals Gold Coast Champions
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Image
+              src="/umuc-2025.webp"
+              alt="UMUC team photo"
+              width={400}
+              height={250}
+              className="w-full h-56 object-cover"
+            />
+            <div className="p-4 text-center text-gray-700 text-sm">
+              2025 University Mixed Ultimate Championship
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <Image
+              src="/bigblue-2025.webp"
+              alt="Melbourne Uni team photo after winning Big Blue 2025 under lights"
+              width={400}
+              height={250}
+              className="w-full h-56 object-cover"
+            />
+            <div className="p-4 text-center text-gray-700 text-sm">
+              2025 Big Blue Champions
             </div>
           </div>
         </div>
@@ -173,86 +217,6 @@ export default function AboutPage() {
             <h3 className="font-semibold text-gray-900">Secretary</h3>
             <p className="text-gray-600">Linda Chen</p>
           </div>
-        </div>
-      </div>
-
-      {/* Club Highlights Section */}
-      <div className="mt-16 mb-12">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
-          Club Highlights
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Image
-              src="/images/bigblue-2025.jpg"
-              alt="2025 Big Blue Champions team photo"
-              width={400}
-              height={250}
-              className="w-full h-56 object-cover"
-            />
-            <div className="p-4 text-center text-gray-700 text-sm">
-              2025 Big Blue Champions
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Image
-              src="/images/nationals-team.jpg"
-              alt="Nationals team celebrating win"
-              width={400}
-              height={250}
-              className="w-full h-56 object-cover"
-            />
-            <div className="p-4 text-center text-gray-700 text-sm">
-              UniSport Nationals Gold Coast
-            </div>
-          </div>
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <Image
-              src="/images/training-session.jpg"
-              alt="Training session action shot"
-              width={400}
-              height={250}
-              className="w-full h-56 object-cover"
-            />
-            <div className="p-4 text-center text-gray-700 text-sm">
-              Weekly Training Session
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Get Involved / Contact CTA */}
-      <div className="text-center text-gray-600 mt-12">
-        <p className="mb-4 text-lg">
-          Interested in joining or learning more? <br />
-          Reach out to{" "}
-          <a
-            href="mailto:ultimate@unimelb.edu.au"
-            className="text-blue-600 hover:underline"
-          >
-            ✉️ ultimate@unimelb.edu.au
-          </a>{" "}
-          or message us on
-        </p>
-        <div className="flex justify-center items-center gap-4 text-2xl">
-          <a
-            href="https://www.instagram.com/unimelb_ultimate/"
-            aria-label="Instagram"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-pink-500 hover:text-pink-700"
-          >
-            <InstagramIcon />
-          </a>
-          <a
-            href="https://www.facebook.com/melbuniultimate"
-            aria-label="Facebook"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-800"
-          >
-            <FacebookIcon />
-          </a>
         </div>
       </div>
     </div>

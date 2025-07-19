@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FaInstagram, FaFacebook } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -11,7 +12,7 @@ export default function Footer() {
             </h3>
             <p className="text-gray-300">
               Promoting the sport of Ultimate Frisbee at the University of
-              Melbourne since 1995.
+              Melbourne since 2000.
             </p>
           </div>
 
@@ -42,18 +43,33 @@ export default function Footer() {
           </div>
 
           <div>
-            <h4 className="text-md font-semibold mb-4">Contact Info</h4>
+            <h4 className="text-md font-semibold mb-4">Connect With Us</h4>
             <div className="space-y-2 text-gray-300">
-              <p>📍 University Sports Complex</p>
-              <p>📧 ultimate@unimelb.edu.au</p>
-              <p>📱 +61 3 8344 4000</p>
+              <div className="flex items-center space-x-4">
+                <a
+                  href="https://www.instagram.com/unimelb_ultimate/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-pink-500"
+                >
+                  <FaInstagram className="text-2xl" />
+                </a>
+                <a
+                  href="https://www.facebook.com/melbuniultimate"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-blue-500"
+                >
+                  <FaFacebook className="text-2xl" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-300">
           <p>
-            &copy; 2024 Melbourne University Ultimate Frisbee Club. All rights
+            &copy; 2025 Melbourne University Ultimate Frisbee Club. All rights
             reserved.
           </p>
         </div>
