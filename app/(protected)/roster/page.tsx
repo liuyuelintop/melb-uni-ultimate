@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface Player {
   _id: string;
@@ -26,7 +27,7 @@ interface Notification {
 }
 
 export default function RosterPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,8 +52,43 @@ export default function RosterPage() {
 
   // Fetch players on component mount
   useEffect(() => {
-    fetchPlayers();
-  }, []);
+    if (session) {
+      fetchPlayers();
+    }
+  }, [session]);
+
+  // Check authentication
+  if (status === "loading") {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You must be logged in to view the team roster.
+          </p>
+          <Link
+            href="/login"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const fetchPlayers = async () => {
     try {

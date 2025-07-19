@@ -83,19 +83,23 @@ export default function HomePage() {
           </Link>
 
           <Link
-            href="/roster"
+            href="/login"
             className="block p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-center"
           >
             <h3 className="font-semibold mb-2">Team Roster</h3>
-            <p className="text-sm text-gray-600">Meet our current players</p>
+            <p className="text-sm text-gray-600">
+              Login to view current players
+            </p>
           </Link>
 
           <Link
-            href="/alumni"
+            href="/login"
             className="block p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-center"
           >
             <h3 className="font-semibold mb-2">Alumni Network</h3>
-            <p className="text-sm text-gray-600">Connect with former members</p>
+            <p className="text-sm text-gray-600">
+              Login to connect with alumni
+            </p>
           </Link>
         </div>
       </div>

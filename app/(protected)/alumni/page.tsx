@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 
 interface Alumni {
   _id: string;
@@ -29,7 +30,7 @@ interface Notification {
 }
 
 export default function AlumniPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [alumni, setAlumni] = useState<Alumni[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,8 +54,43 @@ export default function AlumniPage() {
 
   // Fetch alumni on component mount
   useEffect(() => {
-    fetchAlumni();
-  }, []);
+    if (session) {
+      fetchAlumni();
+    }
+  }, [session]);
+
+  // Check authentication
+  if (status === "loading") {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You must be logged in to view the alumni network.
+          </p>
+          <Link
+            href="/login"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const fetchAlumni = async () => {
     try {

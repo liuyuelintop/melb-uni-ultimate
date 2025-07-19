@@ -36,7 +36,7 @@ interface Notification {
 }
 
 export default function AdminPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -86,8 +86,64 @@ export default function AdminPage() {
 
   // Fetch data on component mount
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (session && session.user?.role === "admin") {
+      fetchData();
+    }
+  }, [session]);
+
+  // Check authentication and admin role
+  if (status === "loading") {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!session) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You must be logged in to access the admin panel.
+          </p>
+          <Link
+            href="/login"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (session.user?.role !== "admin") {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You must have admin privileges to access this page.
+          </p>
+          <Link
+            href="/"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Go Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const fetchData = async () => {
     try {
