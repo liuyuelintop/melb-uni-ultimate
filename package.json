@@ -1,5 +1,5 @@
 {
-  "name": "melb-uni-ultimate-mvp",
+  "name": "melb-uni-ultimate",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/mongodb-adapter": "^3.10.0",
     "@types/mongoose": "^5.11.97",
+    "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.525.0",
+    "mongodb": "^6.17.0",
     "mongoose": "^8.16.4",
     "next": "15.4.2",
     "next-auth": "^4.24.11",
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

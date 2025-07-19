@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+!.env.template
 
 # vercel
 .vercel
@@ -39,3 +41,67 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# deployment files (keep templates, ignore production configs)
+.env.production
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# deployment scripts (keep templates, ignore local configs)
+# Note: Keeping deploy-vercel.sh and deploy.sh as they are useful templates
+
+# database dumps and exports
+*.dump
+frisbee.dump
+*.sql
+*.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# macOS
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# logs
+*.log
+logs/
+
+# temporary files
+*.tmp
+*.temp
+.cache/
+
+# build artifacts
+dist/
+build/
+out/
+
+# coverage reports
+coverage/
+.nyc_output/
+
+# package manager files (keep package-lock.json for consistency)
+yarn.lock
+pnpm-lock.yaml
