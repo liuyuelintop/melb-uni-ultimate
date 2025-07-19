@@ -49,6 +49,7 @@ next-env.d.ts
 .env.test.local
 .env.production.local
 docs/env.production
+env.prod
 
 # deployment scripts (keep templates, ignore local configs)
 # Note: Keeping deploy-vercel.sh and deploy.sh as they are useful templates
