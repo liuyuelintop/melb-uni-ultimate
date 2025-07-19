@@ -59,39 +59,6 @@ export default function AlumniPage() {
     }
   }, [session]);
 
-  // Check authentication
-  if (status === "loading") {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!session) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Access Denied
-          </h1>
-          <p className="text-gray-600 mb-6">
-            You must be logged in to view the alumni network.
-          </p>
-          <Link
-            href="/login"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Login
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   const fetchAlumni = async () => {
     try {
       const response = await fetch("/api/alumni");
@@ -345,12 +312,14 @@ export default function AlumniPage() {
 
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Alumni Network</h1>
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-        >
-          {showAddForm ? "Cancel" : "Add Alumni"}
-        </button>
+        {session?.user?.role === "admin" && (
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+          >
+            {showAddForm ? "Cancel" : "Add Alumni"}
+          </button>
+        )}
       </div>
 
       {/* Stats */}
@@ -384,7 +353,7 @@ export default function AlumniPage() {
       </div>
 
       {/* Add Alumni Form */}
-      {showAddForm && (
+      {showAddForm && session?.user?.role === "admin" && (
         <div className="bg-white rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Add New Alumni</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
