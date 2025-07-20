@@ -5,6 +5,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   studentId?: string; // Made optional
+  gender: "male" | "female" | "other"; // New required field
   phoneNumber?: string;
   position: "handler" | "cutter" | "any";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
@@ -47,6 +48,11 @@ const userSchema = new Schema<IUser>(
       required: false, // Made optional
       trim: true,
       index: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: [true, "Gender is required"],
     },
     playerId: {
       type: String, // Could also be mongoose.Schema.Types.ObjectId

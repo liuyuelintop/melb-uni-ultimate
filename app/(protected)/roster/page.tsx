@@ -9,6 +9,7 @@ interface Player {
   name: string;
   email: string;
   studentId?: string; // Optional
+  gender: "male" | "female" | "other"; // New required field
   position: "handler" | "cutter" | "any";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber: number;
@@ -40,6 +41,7 @@ export default function RosterPage() {
     name: "",
     email: "",
     studentId: "",
+    gender: "other" as "male" | "female" | "other",
     position: "any" as "handler" | "cutter" | "any",
     experience: "beginner" as
       | "beginner"
@@ -128,6 +130,7 @@ export default function RosterPage() {
           name: newPlayer.name,
           email: newPlayer.email,
           studentId: newPlayer.studentId,
+          gender: newPlayer.gender,
           position: newPlayer.position,
           experience: newPlayer.experience,
           jerseyNumber: jerseyNum,
@@ -146,6 +149,7 @@ export default function RosterPage() {
           name: "",
           email: "",
           studentId: "",
+          gender: "other",
           position: "any",
           experience: "beginner",
           jerseyNumber: "",
@@ -389,6 +393,25 @@ export default function RosterPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Gender *
+              </label>
+              <select
+                value={newPlayer.gender}
+                onChange={(e) =>
+                  setNewPlayer({
+                    ...newPlayer,
+                    gender: e.target.value as "male" | "female" | "other",
+                  })
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Affiliation
               </label>
               <input
@@ -552,6 +575,9 @@ export default function RosterPage() {
                   Player
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Gender
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -585,6 +611,12 @@ export default function RosterPage() {
                           {player.studentId}
                         </div>
                       </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">
+                      {player.gender.charAt(0).toUpperCase() +
+                        player.gender.slice(1)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

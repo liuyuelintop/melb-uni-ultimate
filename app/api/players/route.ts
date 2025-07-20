@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       studentId,
+      gender,
       position,
       experience,
       jerseyNumber,
@@ -61,11 +62,11 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!name || !email || !jerseyNumber || !graduationYear) {
+    if (!name || !email || !gender || !jerseyNumber || !graduationYear) {
       return NextResponse.json(
         {
           error:
-            "Missing required fields: name, email, jerseyNumber, graduationYear",
+            "Missing required fields: name, email, gender, jerseyNumber, graduationYear",
         },
         { status: 400 }
       );
@@ -95,6 +96,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       studentId,
+      gender,
       position: position || "any",
       experience: experience || "beginner",
       jerseyNumber,

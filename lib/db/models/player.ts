@@ -4,6 +4,7 @@ export interface IPlayer extends Document {
   name: string;
   email: string;
   studentId?: string; // Made optional
+  gender: "male" | "female" | "other"; // New required field
   position: "handler" | "cutter" | "any";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber: number;
@@ -40,6 +41,11 @@ const playerSchema = new Schema<IPlayer>(
       type: String,
       required: false, // Made optional
       trim: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: [true, "Gender is required"],
     },
     affiliation: {
       type: String,
