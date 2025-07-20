@@ -42,6 +42,8 @@ export default function AdminPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [totalPlayers, setTotalPlayers] = useState(0);
+  const [totalAlumni, setTotalAlumni] = useState(0);
 
   const [newAnnouncement, setNewAnnouncement] = useState({
     title: "",
@@ -161,6 +163,20 @@ export default function AdminPage() {
       if (eventsResponse.ok) {
         const eventsData = await eventsResponse.json();
         setEvents(eventsData);
+      }
+
+      // Fetch players count
+      const playersResponse = await fetch("/api/players?isActive=true");
+      if (playersResponse.ok) {
+        const playersData = await playersResponse.json();
+        setTotalPlayers(playersData.length);
+      }
+
+      // Fetch alumni count
+      const alumniResponse = await fetch("/api/alumni?isActive=true");
+      if (alumniResponse.ok) {
+        const alumniData = await alumniResponse.json();
+        setTotalAlumni(alumniData.length);
       }
     } catch (error) {
       addNotification("error", "Failed to fetch data");
@@ -463,10 +479,10 @@ export default function AdminPage() {
   };
 
   const stats = {
-    totalPlayers: 45,
+    totalPlayers: totalPlayers,
     upcomingEvents: events.filter((e) => e.status === "upcoming").length,
     publishedAnnouncements: announcements.filter((a) => a.isPublished).length,
-    alumni: 156,
+    alumni: totalAlumni,
   };
 
   if (loading) {
