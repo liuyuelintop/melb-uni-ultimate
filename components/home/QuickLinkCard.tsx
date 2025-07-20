@@ -1,7 +1,5 @@
 import React from "react";
 import Link from "next/link";
-import { Card, CardContent } from "@/components/ui";
-import { cn } from "@/lib/utils";
 
 interface QuickLinkCardProps {
   title: string;
@@ -17,13 +15,12 @@ const QuickLinkCard: React.FC<QuickLinkCardProps> = ({
   className,
 }) => {
   return (
-    <Link href={href} className="block">
-      <Card className={cn("hover:shadow-md transition-shadow", className)}>
-        <CardContent className="p-4 text-center">
-          <h3 className="font-semibold mb-2">{title}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
-        </CardContent>
-      </Card>
+    <Link
+      href={href}
+      className={`block p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow text-center ${className}`}
+    >
+      <h3 className="font-semibold mb-2">{title}</h3>
+      <p className="text-sm text-gray-600">{description}</p>
     </Link>
   );
 };

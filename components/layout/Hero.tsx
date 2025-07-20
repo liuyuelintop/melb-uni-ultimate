@@ -3,8 +3,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui";
 
 interface HeroProps {
-  title: string;
-  subtitle?: string;
+  title: string | React.ReactNode;
   description?: string;
   actions?: {
     label: string;
@@ -16,16 +15,12 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({
   title,
-  subtitle,
   description,
   actions = [],
   className,
 }) => {
   return (
-    <div className={cn("text-center py-12 md:py-16", className)}>
-      {subtitle && (
-        <p className="text-lg text-blue-600 font-semibold mb-4">{subtitle}</p>
-      )}
+    <div className={cn("text-center mb-12", className)}>
       <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
         {title}
       </h1>

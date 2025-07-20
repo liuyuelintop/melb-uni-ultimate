@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Container, Section } from "@/components/ui";
+import { Container } from "@/components/ui";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ValueCard } from "@/components/about/ValueCard";
 import { AchievementCard } from "@/components/about/AchievementCard";
@@ -72,49 +72,46 @@ export default function AboutPage() {
 
   return (
     <Container>
-      <Section>
+      {/* Hero Section */}
+      <div className="py-8">
         <PageHeader
           title="About Our Club"
           description="The Melbourne University Ultimate Frisbee Club has been promoting the spirit of the game and building a vibrant community since 2000."
         />
-      </Section>
+      </div>
 
-      <Section>
-        <div className="grid md:grid-cols-2 gap-12 mb-16">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              Our Mission
-            </h2>
-            <p className="text-lg text-gray-600 mb-4">
-              To promote the sport of Ultimate Frisbee at the University of
-              Melbourne, fostering a welcoming community that values
-              sportsmanship, inclusivity, and personal growth.
-            </p>
-            <p className="text-lg text-gray-600">
-              We believe in the Spirit of the Game - a philosophy that places
-              the responsibility for fair play on every player, emphasizing
-              mutual respect and self-officiating.
-            </p>
-          </div>
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              Our Values
-            </h2>
-            <div className="space-y-4">
-              {values.map((value, index) => (
-                <ValueCard
-                  key={index}
-                  icon={value.icon}
-                  title={value.title}
-                  description={value.description}
-                />
-              ))}
-            </div>
+      {/* Mission & Values */}
+      <div className="grid md:grid-cols-2 gap-12 mb-16">
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Mission</h2>
+          <p className="text-lg text-gray-600 mb-4">
+            To promote the sport of Ultimate Frisbee at the University of
+            Melbourne, fostering a welcoming community that values
+            sportsmanship, inclusivity, and personal growth.
+          </p>
+          <p className="text-lg text-gray-600">
+            We believe in the Spirit of the Game - a philosophy that places the
+            responsibility for fair play on every player, emphasizing mutual
+            respect and self-officiating.
+          </p>
+        </div>
+        <div>
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Values</h2>
+          <div className="space-y-4">
+            {values.map((value, index) => (
+              <ValueCard
+                key={index}
+                icon={value.icon}
+                title={value.title}
+                description={value.description}
+              />
+            ))}
           </div>
         </div>
-      </Section>
+      </div>
 
-      <Section>
+      {/* Club Highlights Section */}
+      <div className="mt-16 mb-12">
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           Club Highlights
         </h2>
@@ -137,9 +134,10 @@ export default function AboutPage() {
             </div>
           ))}
         </div>
-      </Section>
+      </div>
 
-      <Section background="light">
+      {/* History */}
+      <div className="bg-gray-50 rounded-lg p-8 mb-16">
         <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">
           Our History
         </h2>
@@ -175,9 +173,10 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </Section>
+      </div>
 
-      <Section>
+      {/* Achievements */}
+      <div className="mb-16">
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           Recent Achievements
         </h2>
@@ -191,9 +190,10 @@ export default function AboutPage() {
             />
           ))}
         </div>
-      </Section>
+      </div>
 
-      <Section>
+      {/* Leadership */}
+      <div className="bg-white rounded-lg shadow-md p-8">
         <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
           Club Leadership
         </h2>
@@ -207,7 +207,7 @@ export default function AboutPage() {
             />
           ))}
         </div>
-      </Section>
+      </div>
     </Container>
   );
 }

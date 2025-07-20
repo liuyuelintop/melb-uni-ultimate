@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Card, CardContent, Badge } from "@/components/ui";
+import { Badge } from "@/components/ui";
 
 interface Event {
   _id: string;
@@ -66,52 +66,50 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
   };
 
   return (
-    <Card className={className}>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <Badge variant={getTypeVariant(event.type)}>
-            {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
-          </Badge>
-          <Badge variant={getStatusVariant(event.status)}>
-            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
-          </Badge>
+    <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
+      <div className="flex items-center justify-between mb-4">
+        <Badge variant={getTypeVariant(event.type)}>
+          {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
+        </Badge>
+        <Badge variant={getStatusVariant(event.status)}>
+          {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+        </Badge>
+      </div>
+
+      <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
+
+      {event.description && (
+        <p className="text-gray-600 mb-4 line-clamp-3">
+          {event.description.length > 120
+            ? `${event.description.substring(0, 120)}...`
+            : event.description}
+        </p>
+      )}
+
+      <div className="space-y-2 text-sm text-gray-500 mb-4">
+        <div>📅 {formatDate(event.startDate)}</div>
+        <div>📍 {event.location}</div>
+        <div>
+          👥 {event.currentParticipants}/{event.maxParticipants || "∞"}{" "}
+          participants
         </div>
-
-        <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
-
-        {event.description && (
-          <p className="text-gray-600 mb-4 line-clamp-3">
-            {event.description.length > 120
-              ? `${event.description.substring(0, 120)}...`
-              : event.description}
-          </p>
-        )}
-
-        <div className="space-y-2 text-sm text-gray-500 mb-4">
-          <div>📅 {formatDate(event.startDate)}</div>
-          <div>📍 {event.location}</div>
+        {event.registrationDeadline && (
           <div>
-            👥 {event.currentParticipants}/{event.maxParticipants || "∞"}{" "}
-            participants
+            ⏰ Registration deadline: {formatDate(event.registrationDeadline)}
           </div>
-          {event.registrationDeadline && (
-            <div>
-              ⏰ Registration deadline: {formatDate(event.registrationDeadline)}
-            </div>
-          )}
-        </div>
+        )}
+      </div>
 
-        <div className="flex justify-end">
-          <Link
-            href={`/events/${event._id}`}
-            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
-          >
-            View Details
-            <ArrowRight className="w-4 h-4 ml-1" />
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+      <div className="flex justify-end">
+        <Link
+          href={`/events/${event._id}`}
+          className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium transition-colors"
+        >
+          View Details
+          <ArrowRight className="w-4 h-4 ml-1" />
+        </Link>
+      </div>
+    </div>
   );
 };
 

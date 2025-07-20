@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   Container,
-  Section,
   LoadingSpinner,
   ErrorMessage,
   EmptyState,
@@ -41,10 +40,10 @@ export default function EventsPage() {
   if (loading) {
     return (
       <Container>
-        <Section>
+        <div className="py-8">
           <PageHeader title="Events Calendar" />
           <LoadingSpinner text="Loading events..." />
-        </Section>
+        </div>
       </Container>
     );
   }
@@ -52,17 +51,17 @@ export default function EventsPage() {
   if (error) {
     return (
       <Container>
-        <Section>
+        <div className="py-8">
           <PageHeader title="Events Calendar" />
           <ErrorMessage message={error} />
-        </Section>
+        </div>
       </Container>
     );
   }
 
   return (
     <Container>
-      <Section>
+      <div className="py-8">
         <PageHeader title="Events Calendar" />
 
         {events.length === 0 ? (
@@ -77,7 +76,7 @@ export default function EventsPage() {
             ))}
           </div>
         )}
-      </Section>
+      </div>
     </Container>
   );
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui";
 
 interface AchievementCardProps {
   icon: string;
@@ -15,13 +14,11 @@ const AchievementCard: React.FC<AchievementCardProps> = ({
   className,
 }) => {
   return (
-    <Card className={className}>
-      <CardContent className="p-6 text-center">
-        <div className="text-3xl mb-4">{icon}</div>
-        <h3 className="text-xl font-semibold mb-2">{title}</h3>
-        <p className="text-gray-600">{description}</p>
-      </CardContent>
-    </Card>
+    <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
+      <div className="text-3xl mb-4">{icon}</div>
+      <h3 className="text-xl font-semibold mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </div>
   );
 };
 

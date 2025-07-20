@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import {
   Container,
-  Section,
   LoadingSpinner,
   ErrorMessage,
   EmptyState,
@@ -44,10 +43,10 @@ export default function AnnouncementsPage() {
   if (loading) {
     return (
       <Container>
-        <Section>
+        <div className="py-8">
           <PageHeader title="Club Announcements" />
           <LoadingSpinner text="Loading announcements..." />
-        </Section>
+        </div>
       </Container>
     );
   }
@@ -55,17 +54,17 @@ export default function AnnouncementsPage() {
   if (error) {
     return (
       <Container>
-        <Section>
+        <div className="py-8">
           <PageHeader title="Club Announcements" />
           <ErrorMessage message={error} />
-        </Section>
+        </div>
       </Container>
     );
   }
 
   return (
     <Container>
-      <Section>
+      <div className="py-8">
         <PageHeader title="Club Announcements" />
 
         {announcements.length === 0 ? (
@@ -83,7 +82,7 @@ export default function AnnouncementsPage() {
             ))}
           </div>
         )}
-      </Section>
+      </div>
     </Container>
   );
 }
