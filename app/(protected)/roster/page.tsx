@@ -615,8 +615,10 @@ export default function RosterPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">
-                      {player.gender.charAt(0).toUpperCase() +
-                        player.gender.slice(1)}
+                      {player.gender
+                        ? player.gender.charAt(0).toUpperCase() +
+                          player.gender.slice(1)
+                        : "Not specified"}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
