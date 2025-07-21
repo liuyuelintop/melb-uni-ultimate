@@ -1,5 +1,27 @@
 import { useState, useEffect } from "react";
 import Modal from "@/components/ui/Modal";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/Button";
+import { Label } from "@/components/ui/label";
+import { User, Target, Phone, Save, X } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 
 interface Player {
   _id: string;
@@ -157,11 +179,19 @@ export default function RosterManager() {
   const openEditModal = (player: Player) => {
     setEditPlayer(player);
     setEditForm({
-      ...player,
+      name: player.name || "",
+      email: player.email || "",
+      studentId: player.studentId || "",
+      gender: player.gender || "other",
+      position: player.position || "any",
+      experience: player.experience || "beginner",
       jerseyNumber: player.jerseyNumber ? player.jerseyNumber.toString() : "",
+      phoneNumber: player.phoneNumber || "",
       graduationYear: player.graduationYear
         ? player.graduationYear.toString()
         : "",
+      affiliation: player.affiliation || "",
+      isActive: typeof player.isActive === "boolean" ? player.isActive : true,
     } as Partial<Player> & { jerseyNumber: string; graduationYear: string });
     setIsEditModalOpen(true);
   };
@@ -188,6 +218,7 @@ export default function RosterManager() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...editForm,
+          isActive: editForm.isActive,
           jerseyNumber: parseInt(editForm.jerseyNumber),
           graduationYear: parseInt(editForm.graduationYear),
         }),
@@ -434,219 +465,259 @@ export default function RosterManager() {
         </div>
       )}
 
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={closeEditModal}
-        title="Edit Player"
+      <Dialog
+        open={isEditModalOpen}
+        onOpenChange={(open) => !open && closeEditModal()}
       >
-        {editForm && (
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="edit-player-name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Full Name
-              </label>
-              <input
-                id="edit-player-name"
-                type="text"
-                name="name"
-                value={editForm.name}
-                onChange={handleEditChange}
-                placeholder="Full Name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Email
-              </label>
-              <input
-                id="edit-player-email"
-                type="email"
-                name="email"
-                value={editForm.email}
-                onChange={handleEditChange}
-                placeholder="Email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-studentId"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Student ID
-              </label>
-              <input
-                id="edit-player-studentId"
-                type="text"
-                name="studentId"
-                value={editForm.studentId || ""}
-                onChange={handleEditChange}
-                placeholder="Student ID"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-gender"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Gender
-              </label>
-              <select
-                id="edit-player-gender"
-                name="gender"
-                value={editForm.gender}
-                onChange={handleEditChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              >
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-position"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Position
-              </label>
-              <select
-                id="edit-player-position"
-                name="position"
-                value={editForm.position}
-                onChange={handleEditChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              >
-                <option value="handler">Handler</option>
-                <option value="cutter">Cutter</option>
-                <option value="any">Any</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-experience"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Experience
-              </label>
-              <select
-                id="edit-player-experience"
-                name="experience"
-                value={editForm.experience}
-                onChange={handleEditChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              >
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-                <option value="expert">Expert</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-jerseyNumber"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Jersey Number
-              </label>
-              <input
-                id="edit-player-jerseyNumber"
-                type="number"
-                name="jerseyNumber"
-                value={editForm.jerseyNumber}
-                onChange={handleEditChange}
-                placeholder="Jersey Number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                min={1}
-                max={99}
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-graduationYear"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Graduation Year
-              </label>
-              <input
-                id="edit-player-graduationYear"
-                type="number"
-                name="graduationYear"
-                value={editForm.graduationYear}
-                onChange={handleEditChange}
-                placeholder="Graduation Year"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                min={2010}
-                max={2030}
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-phoneNumber"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Phone Number
-              </label>
-              <input
-                id="edit-player-phoneNumber"
-                type="tel"
-                name="phoneNumber"
-                value={editForm.phoneNumber || ""}
-                onChange={handleEditChange}
-                placeholder="Phone Number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-player-affiliation"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Affiliation
-              </label>
-              <input
-                id="edit-player-affiliation"
-                type="text"
-                name="affiliation"
-                value={editForm.affiliation || ""}
-                onChange={handleEditChange}
-                placeholder="Affiliation"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                type="button"
-                onClick={closeEditModal}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Save Changes
-              </button>
-            </div>
-          </form>
-        )}
-      </Modal>
+        <DialogContent
+          className="max-w-2xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl p-0"
+          showCloseButton={true}
+        >
+          <DialogHeader className="p-6 pb-4 border-b border-border/50">
+            <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">
+              Edit Player
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[70vh] p-6 pt-4">
+            {editForm && (
+              <form onSubmit={handleEditSubmit} className="space-y-8">
+                {/* Basic Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <User className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Basic Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label htmlFor="edit-player-name">Full Name</Label>
+                      <Input
+                        id="edit-player-name"
+                        name="name"
+                        value={editForm.name || ""}
+                        onChange={handleEditChange}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-email">Email</Label>
+                      <Input
+                        id="edit-player-email"
+                        type="email"
+                        name="email"
+                        value={editForm.email || ""}
+                        onChange={handleEditChange}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-studentId">Student ID</Label>
+                      <Input
+                        id="edit-player-studentId"
+                        name="studentId"
+                        value={editForm.studentId || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Game Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <Target className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Game Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-gender">Gender</Label>
+                      <Select
+                        name="gender"
+                        value={editForm.gender || "other"}
+                        onValueChange={(value: string) =>
+                          setEditForm((f) =>
+                            f
+                              ? {
+                                  ...f,
+                                  gender: value as "male" | "female" | "other",
+                                }
+                              : f
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select gender" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="male">Male</SelectItem>
+                          <SelectItem value="female">Female</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-position">Position</Label>
+                      <Select
+                        name="position"
+                        value={editForm.position || "any"}
+                        onValueChange={(value: string) =>
+                          setEditForm((f) =>
+                            f
+                              ? {
+                                  ...f,
+                                  position: value as
+                                    | "handler"
+                                    | "cutter"
+                                    | "any",
+                                }
+                              : f
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select position" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="handler">Handler</SelectItem>
+                          <SelectItem value="cutter">Cutter</SelectItem>
+                          <SelectItem value="any">Any</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-experience">Experience</Label>
+                      <Select
+                        name="experience"
+                        value={editForm.experience || "beginner"}
+                        onValueChange={(value: string) =>
+                          setEditForm((f) =>
+                            f
+                              ? {
+                                  ...f,
+                                  experience: value as
+                                    | "beginner"
+                                    | "intermediate"
+                                    | "advanced"
+                                    | "expert",
+                                }
+                              : f
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select experience" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="beginner">Beginner</SelectItem>
+                          <SelectItem value="intermediate">
+                            Intermediate
+                          </SelectItem>
+                          <SelectItem value="advanced">Advanced</SelectItem>
+                          <SelectItem value="expert">Expert</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-jerseyNumber">
+                        Jersey Number
+                      </Label>
+                      <Input
+                        id="edit-player-jerseyNumber"
+                        type="number"
+                        name="jerseyNumber"
+                        value={editForm.jerseyNumber || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label htmlFor="edit-player-graduationYear">
+                        Graduation Year
+                      </Label>
+                      <Input
+                        id="edit-player-graduationYear"
+                        type="number"
+                        name="graduationYear"
+                        value={editForm.graduationYear || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Contact Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <Phone className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Contact Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-phoneNumber">
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="edit-player-phoneNumber"
+                        type="tel"
+                        name="phoneNumber"
+                        value={editForm.phoneNumber || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-player-affiliation">
+                        Affiliation
+                      </Label>
+                      <Input
+                        id="edit-player-affiliation"
+                        name="affiliation"
+                        value={editForm.affiliation || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5 md:col-span-2 flex items-center gap-3 pt-2">
+                      <Label htmlFor="edit-player-isActive">
+                        Active Status
+                      </Label>
+                      <Switch
+                        id="edit-player-isActive"
+                        checked={editForm.isActive ?? true}
+                        onCheckedChange={(checked: boolean) =>
+                          setEditForm((f) =>
+                            f ? { ...f, isActive: checked } : f
+                          )
+                        }
+                      />
+                      <span className="text-sm text-muted-foreground">
+                        {editForm.isActive ? "Active" : "Inactive"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter className="p-6 pt-4 border-t border-border/50 flex justify-end gap-3">
+                  <DialogClose asChild>
+                    <Button variant="outline" type="button">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button type="submit">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

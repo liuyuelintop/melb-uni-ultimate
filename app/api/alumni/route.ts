@@ -8,6 +8,7 @@ import Alumni from "@/lib/db/models/alumni";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
+    const session = await getServerSession(authOptions);
 
     const { searchParams } = new URL(request.url);
     const graduationYear = searchParams.get("graduationYear");
@@ -33,22 +34,24 @@ export async function GET(request: NextRequest) {
       createdAt: -1,
     });
 
-    // Remove unnecessary debug logs
+    let filteredAlumni;
+    if (session?.user?.role === "admin") {
+      filteredAlumni = alumni.map((alum) => alum.toObject());
+    } else {
+      filteredAlumni = alumni.map((alum) => {
+        const alumObj = alum.toObject();
 
-    // Filter sensitive data for non-admin users
-    const filteredAlumni = alumni.map((alum) => {
-      const alumObj = alum.toObject();
+        // Remove sensitive information for non-admin users
+        delete alumObj.email;
+        delete alumObj.phoneNumber;
+        delete alumObj.linkedinUrl;
+        delete alumObj.currentJob;
+        delete alumObj.company;
+        delete alumObj.contactPreference;
 
-      // Remove sensitive information for non-admin users
-      delete alumObj.email;
-      delete alumObj.phoneNumber;
-      delete alumObj.linkedinUrl;
-      delete alumObj.currentJob;
-      delete alumObj.company;
-      delete alumObj.contactPreference;
-
-      return alumObj;
-    });
+        return alumObj;
+      });
+    }
 
     return NextResponse.json(filteredAlumni);
   } catch (error) {
