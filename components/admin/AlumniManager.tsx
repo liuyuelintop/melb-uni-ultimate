@@ -57,6 +57,8 @@ interface Notification {
   id: string;
 }
 
+type AlumniForm = Omit<Alumni, "graduationYear"> & { graduationYear: string };
+
 export default function AlumniManager() {
   const [alumni, setAlumni] = useState<Alumni[]>([]);
   const [loading, setLoading] = useState(true);
@@ -197,10 +199,15 @@ export default function AlumniManager() {
   const openEditModal = (alum: Alumni) => {
     setEditAlumni(alum);
     setEditForm({
+      _id: alum._id,
+      isActive: alum.isActive,
+      joinDate: alum.joinDate,
+      createdAt: alum.createdAt,
+      updatedAt: alum.updatedAt,
       name: alum.name || "",
       email: alum.email || "",
       studentId: alum.studentId || "",
-      graduationYear: alum.graduationYear ? alum.graduationYear.toString() : "",
+      graduationYear: alum.graduationYear || 0,
       currentLocation: alum.currentLocation || "",
       currentJob: alum.currentJob || "",
       company: alum.company || "",
@@ -238,7 +245,7 @@ export default function AlumniManager() {
         body: JSON.stringify({
           ...editForm,
           graduationYear: editForm.graduationYear
-            ? parseInt(editForm.graduationYear)
+            ? parseInt(editForm.graduationYear.toString())
             : undefined,
         }),
       });
@@ -581,7 +588,19 @@ export default function AlumniManager() {
                         type="number"
                         name="graduationYear"
                         value={editForm.graduationYear || ""}
-                        onChange={handleEditChange}
+                        onChange={(e) =>
+                          setEditForm((f) =>
+                            f
+                              ? {
+                                  ...f,
+                                  graduationYear:
+                                    e.target.value === ""
+                                      ? 0
+                                      : Number(e.target.value),
+                                }
+                              : f
+                          )
+                        }
                         min={2010}
                         max={2030}
                         required
