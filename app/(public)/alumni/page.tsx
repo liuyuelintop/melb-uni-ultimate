@@ -217,10 +217,6 @@ export default function PublicAlumniPage() {
                 </ul>
               </div>
             )}
-
-            <div className="text-sm text-gray-400 italic">
-              Contact information available to members only
-            </div>
           </div>
         ))}
       </div>

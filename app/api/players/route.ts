@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db/mongoose";
 import Player from "@/lib/db/models/player";
 
@@ -30,14 +31,22 @@ export async function GET(request: NextRequest) {
     const players = await Player.find(query).sort({ createdAt: -1 });
 
     // Check if user is admin to determine what data to return
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
+    console.log("Players API - Session:", session);
+    console.log("Players API - Session user:", session?.user);
+    console.log("Players API - Session user role:", session?.user?.role);
     const isAdmin = session?.user?.role === "admin";
+    console.log("Players API - Is Admin:", isAdmin);
+
+    // Use session-based admin check only
+    const forceAdmin = isAdmin;
+    console.log("Players API - Force Admin:", forceAdmin);
 
     // Filter sensitive data for non-admin users
     const filteredPlayers = players.map((player) => {
       const playerObj = player.toObject();
 
-      if (!isAdmin) {
+      if (!forceAdmin) {
         // Remove sensitive information for non-admin users
         delete playerObj.email;
         delete playerObj.phoneNumber;

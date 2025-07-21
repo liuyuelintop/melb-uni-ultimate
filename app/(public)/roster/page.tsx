@@ -26,8 +26,6 @@ export default function PublicRosterPage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterPosition, setFilterPosition] = useState("all");
-  const [filterExperience, setFilterExperience] = useState("all");
 
   // Fetch players on component mount
   useEffect(() => {
@@ -54,20 +52,13 @@ export default function PublicRosterPage() {
     const matchesSearch =
       player.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       player.studentId?.includes(searchTerm);
-    const matchesPosition =
-      filterPosition === "all" || player.position === filterPosition;
-    const matchesExperience =
-      filterExperience === "all" || player.experience === filterExperience;
 
-    return matchesSearch && matchesPosition && matchesExperience;
+    return matchesSearch;
   });
 
   const stats = {
     totalPlayers: players.length,
     activePlayers: players.filter((p) => p.isActive).length,
-    handlers: players.filter((p) => p.position === "handler").length,
-    cutters: players.filter((p) => p.position === "cutter").length,
-    anyPosition: players.filter((p) => p.position === "any").length,
   };
 
   if (loading) {
@@ -99,7 +90,7 @@ export default function PublicRosterPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 gap-4 mb-8">
         <div className="bg-white rounded-lg shadow-md p-4 text-center">
           <h3 className="text-lg font-semibold text-gray-900">Total</h3>
           <p className="text-2xl font-bold text-blue-600">
@@ -112,25 +103,11 @@ export default function PublicRosterPage() {
             {stats.activePlayers}
           </p>
         </div>
-        <div className="bg-white rounded-lg shadow-md p-4 text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Handlers</h3>
-          <p className="text-2xl font-bold text-purple-600">{stats.handlers}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-4 text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Cutters</h3>
-          <p className="text-2xl font-bold text-orange-600">{stats.cutters}</p>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-4 text-center">
-          <h3 className="text-lg font-semibold text-gray-900">Any</h3>
-          <p className="text-2xl font-bold text-yellow-600">
-            {stats.anyPosition}
-          </p>
-        </div>
       </div>
 
       {/* Filters */}
       <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4">
           <input
             type="text"
             placeholder="Search by name or student ID..."
@@ -138,27 +115,6 @@ export default function PublicRosterPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <select
-            value={filterPosition}
-            onChange={(e) => setFilterPosition(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Positions</option>
-            <option value="handler">Handler</option>
-            <option value="cutter">Cutter</option>
-            <option value="any">Any</option>
-          </select>
-          <select
-            value={filterExperience}
-            onChange={(e) => setFilterExperience(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="all">All Experience Levels</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-            <option value="expert">Expert</option>
-          </select>
         </div>
       </div>
 
@@ -173,9 +129,6 @@ export default function PublicRosterPage() {
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Gender
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Position
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
@@ -210,16 +163,6 @@ export default function PublicRosterPage() {
                         ? player.gender.charAt(0).toUpperCase() +
                           player.gender.slice(1)
                         : "Not specified"}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      {player.position.charAt(0).toUpperCase() +
-                        player.position.slice(1)}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {player.experience.charAt(0).toUpperCase() +
-                        player.experience.slice(1)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

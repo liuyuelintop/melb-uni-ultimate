@@ -54,12 +54,16 @@ export default function RosterPage() {
     affiliation: "", // New field
   });
 
-  // Fetch players on component mount
-  useEffect(() => {
-    if (session) {
-      fetchPlayers();
-    }
-  }, [session]);
+  const addNotification = (
+    type: "success" | "error" | "info",
+    message: string
+  ) => {
+    const id = Date.now().toString();
+    setNotifications((prev) => [...prev, { type, message, id }]);
+    setTimeout(() => {
+      setNotifications((prev) => prev.filter((n) => n.id !== id));
+    }, 5000);
+  };
 
   const fetchPlayers = async () => {
     try {
@@ -77,16 +81,12 @@ export default function RosterPage() {
     }
   };
 
-  const addNotification = (
-    type: "success" | "error" | "info",
-    message: string
-  ) => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { type, message, id }]);
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 5000);
-  };
+  // Fetch players on component mount
+  useEffect(() => {
+    if (session) {
+      fetchPlayers();
+    }
+  }, [session]);
 
   const addPlayer = async () => {
     // Validation
@@ -262,6 +262,18 @@ export default function RosterPage() {
     );
   }
 
+  // Show loading state while session is being fetched
+  if (status === "loading" || status === "unauthenticated") {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Loading...</h1>
+          <p className="text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Show authentication required message
   if (!session) {
     return (
@@ -293,6 +305,36 @@ export default function RosterPage() {
     );
   }
 
+  // Check if user has admin role
+  if (session?.user?.role !== "admin") {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Access Denied
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You must be an admin to access this page.
+          </p>
+          <div className="space-x-4">
+            <Link
+              href="/roster"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View Public Roster
+            </Link>
+            <Link
+              href="/"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Go Home
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Notifications */}
@@ -314,15 +356,17 @@ export default function RosterPage() {
       </div>
 
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Team Roster</h1>
-        {session?.user?.role === "admin" && (
-          <button
-            onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
-          >
-            {showAddForm ? "Cancel" : "Add Player"}
-          </button>
-        )}
+        <h1 className="text-3xl font-bold">Admin Roster</h1>
+        <div className="flex space-x-4">
+          {session?.user?.role === "admin" && (
+            <button
+              onClick={() => setShowAddForm(!showAddForm)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            >
+              {showAddForm ? "Cancel" : "Add Player"}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Stats */}
@@ -633,21 +677,10 @@ export default function RosterPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    {session?.user?.role === "admin" ||
-                    session?.user?.email === player.email ? (
-                      <>
-                        <div className="text-sm text-gray-900">
-                          {player.email}
-                        </div>
-                        {player.phoneNumber && (
-                          <div className="text-sm text-gray-500">
-                            {player.phoneNumber}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <div className="text-sm text-gray-400 italic">
-                        Private
+                    <div className="text-sm text-gray-900">{player.email}</div>
+                    {player.phoneNumber && (
+                      <div className="text-sm text-gray-500">
+                        {player.phoneNumber}
                       </div>
                     )}
                   </td>

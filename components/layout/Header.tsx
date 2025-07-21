@@ -52,8 +52,8 @@ export default function Header() {
               </Link>
             ))}
 
-            {/* Protected routes - shown when authenticated */}
-            {session &&
+            {/* Admin routes - shown only to admin users */}
+            {session?.user?.role === "admin" &&
               adminNavigation.map((item) => (
                 <Link
                   key={item.name}
