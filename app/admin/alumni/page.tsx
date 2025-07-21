@@ -61,6 +61,37 @@ export default function AlumniPage() {
     }
   }, [session]);
 
+  // Show authentication required message
+  if (!session) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Admin Alumni Network
+          </h1>
+          <p className="text-gray-600 mb-6">
+            You must be logged in as an admin to view the full alumni network
+            with contact information.
+          </p>
+          <div className="space-x-4">
+            <Link
+              href="/alumni"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View Public Alumni
+            </Link>
+            <Link
+              href="/login"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const fetchAlumni = async () => {
     try {
       const response = await fetch("/api/alumni");

@@ -29,7 +29,24 @@ export async function GET(request: NextRequest) {
 
     const players = await Player.find(query).sort({ createdAt: -1 });
 
-    return NextResponse.json(players);
+    // Check if user is admin to determine what data to return
+    const session = await getServerSession();
+    const isAdmin = session?.user?.role === "admin";
+
+    // Filter sensitive data for non-admin users
+    const filteredPlayers = players.map((player) => {
+      const playerObj = player.toObject();
+
+      if (!isAdmin) {
+        // Remove sensitive information for non-admin users
+        delete playerObj.email;
+        delete playerObj.phoneNumber;
+      }
+
+      return playerObj;
+    });
+
+    return NextResponse.json(filteredPlayers);
   } catch (error) {
     console.error("Error fetching players:", error);
     return NextResponse.json(

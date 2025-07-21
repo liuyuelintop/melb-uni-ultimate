@@ -32,7 +32,28 @@ export async function GET(request: NextRequest) {
       createdAt: -1,
     });
 
-    return NextResponse.json(alumni);
+    // Check if user is admin to determine what data to return
+    const session = await getServerSession();
+    const isAdmin = session?.user?.role === "admin";
+
+    // Filter sensitive data for non-admin users
+    const filteredAlumni = alumni.map((alum) => {
+      const alumObj = alum.toObject();
+
+      if (!isAdmin) {
+        // Remove sensitive information for non-admin users
+        delete alumObj.email;
+        delete alumObj.phoneNumber;
+        delete alumObj.linkedinUrl;
+        delete alumObj.currentJob;
+        delete alumObj.company;
+        delete alumObj.contactPreference;
+      }
+
+      return alumObj;
+    });
+
+    return NextResponse.json(filteredAlumni);
   } catch (error) {
     console.error("Error fetching alumni:", error);
     return NextResponse.json(

@@ -267,16 +267,27 @@ export default function RosterPage() {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Team Roster</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Admin Roster
+          </h1>
           <p className="text-gray-600 mb-6">
-            You must be logged in to view the team roster.
+            You must be logged in as an admin to view the full team roster with
+            contact information.
           </p>
-          <Link
-            href="/login"
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Login
-          </Link>
+          <div className="space-x-4">
+            <Link
+              href="/roster"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              View Public Roster
+            </Link>
+            <Link
+              href="/login"
+              className="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              Login
+            </Link>
+          </div>
         </div>
       </div>
     );

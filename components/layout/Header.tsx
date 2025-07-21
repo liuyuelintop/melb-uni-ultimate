@@ -12,13 +12,15 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "Announcements", href: "/announcements" },
     { name: "Events", href: "/events" },
+    { name: "Roster", href: "/roster" },
+    { name: "Alumni", href: "/alumni" },
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ];
 
-  const protectedNavigation = [
-    { name: "Roster", href: "/roster" },
-    { name: "Alumni", href: "/alumni" },
+  const adminNavigation = [
+    { name: "Admin Roster", href: "/admin/roster" },
+    { name: "Admin Alumni", href: "/admin/alumni" },
   ];
 
   const handleSignOut = () => {
@@ -52,7 +54,7 @@ export default function Header() {
 
             {/* Protected routes - shown when authenticated */}
             {session &&
-              protectedNavigation.map((item) => (
+              adminNavigation.map((item) => (
                 <Link
                   key={item.name}
                   href={item.href}
