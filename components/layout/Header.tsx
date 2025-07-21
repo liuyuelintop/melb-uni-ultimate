@@ -12,13 +12,10 @@ export default function Header() {
     { name: "Home", href: "/" },
     { name: "Announcements", href: "/announcements" },
     { name: "Events", href: "/events" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
-  ];
-
-  const protectedNavigation = [
     { name: "Roster", href: "/roster" },
     { name: "Alumni", href: "/alumni" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   const handleSignOut = () => {
@@ -49,22 +46,6 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
-
-            {/* Protected routes - shown when authenticated */}
-            {session &&
-              protectedNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === item.href
-                      ? "text-blue-600"
-                      : "text-gray-500 hover:text-gray-900"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
           </nav>
 
           <div className="flex items-center space-x-4">

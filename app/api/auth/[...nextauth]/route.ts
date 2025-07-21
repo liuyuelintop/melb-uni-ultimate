@@ -5,6 +5,7 @@ import clientPromise from "@/lib/db/mongodb";
 import dbConnect from "@/lib/db/mongoose";
 import User from "@/lib/db/models/user";
 import bcrypt from "bcryptjs";
+import { JWT } from "next-auth/jwt";
 
 // Extend the User type to include our custom fields
 declare module "next-auth" {
@@ -37,7 +38,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-const handler = NextAuth({
+export const authOptions = {
   adapter: MongoDBAdapter(clientPromise),
   providers: [
     CredentialsProvider({
@@ -90,10 +91,10 @@ const handler = NextAuth({
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: JWT; user: any }) {
       if (user) {
         token.role = user.role;
         token.studentId = user.studentId;
@@ -107,7 +108,7 @@ const handler = NextAuth({
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: JWT }) {
       if (token) {
         // Ensure all user fields are properly set
         session.user = {
@@ -139,6 +140,8 @@ const handler = NextAuth({
     error: "/unauthorized",
   },
   secret: process.env.NEXTAUTH_SECRET,
-});
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

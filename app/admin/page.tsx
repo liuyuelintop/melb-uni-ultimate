@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 
 interface Announcement {
   _id: string;
@@ -495,6 +496,18 @@ export default function AdminPage() {
     );
   }
 
+  // Lazy load admin management components
+  const AdminRoster = dynamic(() => import("./roster/AdminRoster"), {
+    ssr: false,
+  });
+  const AdminAlumni = dynamic(() => import("./alumni/AdminAlumni"), {
+    ssr: false,
+  });
+  const AdminTournaments = dynamic(
+    () => import("./tournaments/AdminTournaments"),
+    { ssr: false }
+  );
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -558,6 +571,36 @@ export default function AdminPage() {
             >
               Events
             </button>
+            <button
+              onClick={() => setActiveTab("roster")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "roster"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Roster
+            </button>
+            <button
+              onClick={() => setActiveTab("alumni")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "alumni"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Alumni
+            </button>
+            <button
+              onClick={() => setActiveTab("tournaments")}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "tournaments"
+                  ? "border-blue-500 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              Tournaments
+            </button>
           </nav>
         </div>
 
@@ -605,33 +648,6 @@ export default function AdminPage() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setActiveTab("announcements")}
-                    className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
-                  >
-                    Create Announcement
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("events")}
-                    className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
-                  >
-                    Add New Event
-                  </button>
-                  <Link
-                    href="/roster"
-                    className="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 block text-center"
-                  >
-                    Manage Players
-                  </Link>
-                  <button className="w-full bg-orange-600 text-white py-2 px-4 rounded-md hover:bg-orange-700">
-                    View Reports
-                  </button>
-                </div>
-              </div>
-
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
                 <div className="space-y-4">
@@ -1223,6 +1239,13 @@ export default function AdminPage() {
             </div>
           </div>
         )}
+
+        {/* Roster Tab */}
+        {activeTab === "roster" && <AdminRoster />}
+        {/* Alumni Tab */}
+        {activeTab === "alumni" && <AdminAlumni />}
+        {/* Tournaments Tab */}
+        {activeTab === "tournaments" && <AdminTournaments />}
       </div>
     </div>
   );

@@ -10,8 +10,8 @@ export default function UnauthorizedPage() {
             Access Denied
           </h1>
           <p className="text-lg text-gray-600 mb-8">
-            You don&apos;t have permission to access this page. Please sign in
-            with appropriate credentials.
+            You don&apos;t have admin privileges to access this page. Only
+            administrators can view admin resources.
           </p>
         </div>
 

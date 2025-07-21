@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db/mongoose";
 import Alumni from "@/lib/db/models/alumni";
 
@@ -7,6 +8,7 @@ import Alumni from "@/lib/db/models/alumni";
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
+    const session = await getServerSession(authOptions);
 
     const { searchParams } = new URL(request.url);
     const graduationYear = searchParams.get("graduationYear");
@@ -32,7 +34,26 @@ export async function GET(request: NextRequest) {
       createdAt: -1,
     });
 
-    return NextResponse.json(alumni);
+    let filteredAlumni;
+    if (session?.user?.role === "admin") {
+      filteredAlumni = alumni.map((alum) => alum.toObject());
+    } else {
+      filteredAlumni = alumni.map((alum) => {
+        const alumObj = alum.toObject();
+
+        // Remove sensitive information for non-admin users
+        delete alumObj.email;
+        delete alumObj.phoneNumber;
+        delete alumObj.linkedinUrl;
+        delete alumObj.currentJob;
+        delete alumObj.company;
+        delete alumObj.contactPreference;
+
+        return alumObj;
+      });
+    }
+
+    return NextResponse.json(filteredAlumni);
   } catch (error) {
     console.error("Error fetching alumni:", error);
     return NextResponse.json(

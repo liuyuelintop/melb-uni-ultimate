@@ -10,15 +10,16 @@ export async function POST(request: NextRequest) {
       email,
       password,
       studentId,
+      gender,
       phoneNumber,
       position,
       experience,
     } = await request.json();
 
     // Validate required fields
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !gender) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields: name, email, password, gender" },
         { status: 400 }
       );
     }
@@ -60,6 +61,7 @@ export async function POST(request: NextRequest) {
       email,
       password: hashedPassword,
       studentId,
+      gender,
       phoneNumber,
       position,
       experience,
@@ -80,9 +82,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error("Signup error:", error);
+    console.error("Error creating user:", error);
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Failed to create user" },
       { status: 500 }
     );
   }

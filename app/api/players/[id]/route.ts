@@ -22,6 +22,7 @@ export async function PUT(
       name,
       email,
       studentId,
+      gender,
       position,
       experience,
       jerseyNumber,

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FaInstagram, FaFacebook } from "react-icons/fa";
+import { SOCIAL_LINKS } from "@/data/footer.js";
 
 export default function Footer() {
   return (
@@ -13,6 +14,15 @@ export default function Footer() {
             <p className="text-gray-300">
               Promoting the sport of Ultimate Frisbee at the University of
               Melbourne since 2000.
+            </p>
+            <p className="text-gray-300 mt-4">
+              <span className="font-semibold">Contact:</span>{" "}
+              <a
+                href="mailto:unimelbultimate@gmail.com"
+                className="underline hover:text-blue-300"
+              >
+                unimelbultimate@gmail.com
+              </a>
             </p>
           </div>
 
@@ -47,7 +57,7 @@ export default function Footer() {
             <div className="space-y-2 text-gray-300">
               <div className="flex items-center space-x-4">
                 <a
-                  href="https://www.instagram.com/unimelb_ultimate/"
+                  href={SOCIAL_LINKS.instagram}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-pink-500"
@@ -55,7 +65,7 @@ export default function Footer() {
                   <FaInstagram className="text-2xl" />
                 </a>
                 <a
-                  href="https://www.facebook.com/melbuniultimate"
+                  href={SOCIAL_LINKS.facebook}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-blue-500"

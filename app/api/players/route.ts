@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
+import { authOptions } from "../auth/[...nextauth]/route";
 import dbConnect from "@/lib/db/mongoose";
 import Player from "@/lib/db/models/player";
 
@@ -29,7 +30,32 @@ export async function GET(request: NextRequest) {
 
     const players = await Player.find(query).sort({ createdAt: -1 });
 
-    return NextResponse.json(players);
+    // Check if user is admin to determine what data to return
+    const session = await getServerSession(authOptions);
+    console.log("Players API - Session:", session);
+    console.log("Players API - Session user:", session?.user);
+    console.log("Players API - Session user role:", session?.user?.role);
+    const isAdmin = session?.user?.role === "admin";
+    console.log("Players API - Is Admin:", isAdmin);
+
+    // Use session-based admin check only
+    const forceAdmin = isAdmin;
+    console.log("Players API - Force Admin:", forceAdmin);
+
+    // Filter sensitive data for non-admin users
+    const filteredPlayers = players.map((player) => {
+      const playerObj = player.toObject();
+
+      if (!forceAdmin) {
+        // Remove sensitive information for non-admin users
+        delete playerObj.email;
+        delete playerObj.phoneNumber;
+      }
+
+      return playerObj;
+    });
+
+    return NextResponse.json(filteredPlayers);
   } catch (error) {
     console.error("Error fetching players:", error);
     return NextResponse.json(
@@ -53,6 +79,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       studentId,
+      gender,
       position,
       experience,
       jerseyNumber,
@@ -61,11 +88,11 @@ export async function POST(request: NextRequest) {
     } = body;
 
     // Validate required fields
-    if (!name || !email || !jerseyNumber || !graduationYear) {
+    if (!name || !email || !gender || !jerseyNumber || !graduationYear) {
       return NextResponse.json(
         {
           error:
-            "Missing required fields: name, email, jerseyNumber, graduationYear",
+            "Missing required fields: name, email, gender, jerseyNumber, graduationYear",
         },
         { status: 400 }
       );
@@ -95,6 +122,7 @@ export async function POST(request: NextRequest) {
       name,
       email,
       studentId,
+      gender,
       position: position || "any",
       experience: experience || "beginner",
       jerseyNumber,
