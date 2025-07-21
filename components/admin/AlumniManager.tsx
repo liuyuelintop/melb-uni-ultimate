@@ -1,5 +1,35 @@
 import { useState, useEffect } from "react";
 import Modal from "@/components/ui/Modal";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectItem,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/Button";
+import { Label } from "@/components/ui/label";
+import {
+  User,
+  GraduationCap,
+  Briefcase,
+  Trophy,
+  Phone,
+  Save,
+  X,
+} from "lucide-react";
 
 interface Alumni {
   _id: string;
@@ -166,7 +196,20 @@ export default function AlumniManager() {
 
   const openEditModal = (alum: Alumni) => {
     setEditAlumni(alum);
-    setEditForm({ ...alum });
+    setEditForm({
+      name: alum.name || "",
+      email: alum.email || "",
+      studentId: alum.studentId || "",
+      graduationYear: alum.graduationYear ? alum.graduationYear.toString() : "",
+      currentLocation: alum.currentLocation || "",
+      currentJob: alum.currentJob || "",
+      company: alum.company || "",
+      achievements: Array.isArray(alum.achievements) ? alum.achievements : [""],
+      contactPreference: alum.contactPreference || "email",
+      phoneNumber: alum.phoneNumber || "",
+      linkedinUrl: alum.linkedinUrl || "",
+      affiliation: alum.affiliation || "",
+    });
     setIsEditModalOpen(true);
   };
 
@@ -192,7 +235,12 @@ export default function AlumniManager() {
       const response = await fetch(`/api/alumni/${editAlumni._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editForm),
+        body: JSON.stringify({
+          ...editForm,
+          graduationYear: editForm.graduationYear
+            ? parseInt(editForm.graduationYear)
+            : undefined,
+        }),
       });
       const data = await response.json();
       if (response.ok) {
@@ -454,251 +502,272 @@ export default function AlumniManager() {
         </div>
       )}
 
-      <Modal
-        isOpen={isEditModalOpen}
-        onClose={closeEditModal}
-        title="Edit Alumni"
+      <Dialog
+        open={isEditModalOpen}
+        onOpenChange={(open) => !open && closeEditModal()}
       >
-        {editForm && (
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="edit-alumni-name"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Full Name
-              </label>
-              <input
-                id="edit-alumni-name"
-                type="text"
-                name="name"
-                value={editForm.name || ""}
-                onChange={handleEditChange}
-                placeholder="Full Name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-email"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Email
-              </label>
-              <input
-                id="edit-alumni-email"
-                type="email"
-                name="email"
-                value={editForm.email || ""}
-                onChange={handleEditChange}
-                placeholder="Email"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-studentId"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Student ID
-              </label>
-              <input
-                id="edit-alumni-studentId"
-                type="text"
-                name="studentId"
-                value={editForm.studentId || ""}
-                onChange={handleEditChange}
-                placeholder="Student ID"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-graduationYear"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Graduation Year
-              </label>
-              <input
-                id="edit-alumni-graduationYear"
-                type="number"
-                name="graduationYear"
-                value={editForm.graduationYear || ""}
-                onChange={handleEditChange}
-                placeholder="Graduation Year"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                min={2010}
-                max={2030}
-                required
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-currentLocation"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Current Location
-              </label>
-              <input
-                id="edit-alumni-currentLocation"
-                type="text"
-                name="currentLocation"
-                value={editForm.currentLocation || ""}
-                onChange={handleEditChange}
-                placeholder="Current Location"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-currentJob"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Current Job
-              </label>
-              <input
-                id="edit-alumni-currentJob"
-                type="text"
-                name="currentJob"
-                value={editForm.currentJob || ""}
-                onChange={handleEditChange}
-                placeholder="Current Job"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-company"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Company
-              </label>
-              <input
-                id="edit-alumni-company"
-                type="text"
-                name="company"
-                value={editForm.company || ""}
-                onChange={handleEditChange}
-                placeholder="Company"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-achievements"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Achievements (one per line)
-              </label>
-              <textarea
-                id="edit-alumni-achievements"
-                name="achievements"
-                value={
-                  Array.isArray(editForm.achievements)
-                    ? editForm.achievements.join("\n")
-                    : ""
-                }
-                onChange={(e) =>
-                  setEditForm({
-                    ...editForm,
-                    achievements: e.target.value.split("\n"),
-                  })
-                }
-                placeholder="Achievements (one per line)"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                rows={3}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-contactPreference"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Contact Preference
-              </label>
-              <select
-                id="edit-alumni-contactPreference"
-                name="contactPreference"
-                value={editForm.contactPreference || "email"}
-                onChange={handleEditChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="email">Email</option>
-                <option value="phone">Phone</option>
-                <option value="linkedin">LinkedIn</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-phoneNumber"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Phone Number
-              </label>
-              <input
-                id="edit-alumni-phoneNumber"
-                type="tel"
-                name="phoneNumber"
-                value={editForm.phoneNumber || ""}
-                onChange={handleEditChange}
-                placeholder="Phone Number"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-linkedinUrl"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                LinkedIn URL
-              </label>
-              <input
-                id="edit-alumni-linkedinUrl"
-                type="url"
-                name="linkedinUrl"
-                value={editForm.linkedinUrl || ""}
-                onChange={handleEditChange}
-                placeholder="LinkedIn URL"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-alumni-affiliation"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Affiliation
-              </label>
-              <input
-                id="edit-alumni-affiliation"
-                type="text"
-                name="affiliation"
-                value={editForm.affiliation || ""}
-                onChange={handleEditChange}
-                placeholder="Affiliation"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                type="button"
-                onClick={closeEditModal}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Save Changes
-              </button>
-            </div>
-          </form>
-        )}
-      </Modal>
+        <DialogContent
+          className="max-w-4xl bg-background/95 backdrop-blur-xl border border-border/50 shadow-2xl p-0"
+          showCloseButton={true}
+        >
+          <DialogHeader className="p-6 pb-4 border-b border-border/50">
+            <DialogTitle className="text-2xl font-bold tracking-tight text-foreground">
+              Edit Alumni
+            </DialogTitle>
+          </DialogHeader>
+          <ScrollArea className="max-h-[70vh] p-6 pt-4">
+            {editForm && (
+              <form onSubmit={handleEditSubmit} className="space-y-8">
+                {/* Personal Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <User className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Personal Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-name">Full Name</Label>
+                      <Input
+                        id="edit-alumni-name"
+                        name="name"
+                        value={editForm.name || ""}
+                        onChange={handleEditChange}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-studentId">Student ID</Label>
+                      <Input
+                        id="edit-alumni-studentId"
+                        name="studentId"
+                        value={editForm.studentId || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label htmlFor="edit-alumni-email">Email Address</Label>
+                      <Input
+                        id="edit-alumni-email"
+                        type="email"
+                        name="email"
+                        value={editForm.email || ""}
+                        onChange={handleEditChange}
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Academic Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <GraduationCap className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Academic Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-graduationYear">
+                        Graduation Year
+                      </Label>
+                      <Input
+                        id="edit-alumni-graduationYear"
+                        type="number"
+                        name="graduationYear"
+                        value={editForm.graduationYear || ""}
+                        onChange={handleEditChange}
+                        min={2010}
+                        max={2030}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-currentLocation">
+                        Current Location
+                      </Label>
+                      <Input
+                        id="edit-alumni-currentLocation"
+                        name="currentLocation"
+                        value={editForm.currentLocation || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Professional Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <Briefcase className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Professional Information
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-currentJob">
+                        Current Job
+                      </Label>
+                      <Input
+                        id="edit-alumni-currentJob"
+                        name="currentJob"
+                        value={editForm.currentJob || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-company">Company</Label>
+                      <Input
+                        id="edit-alumni-company"
+                        name="company"
+                        value={editForm.company || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-phoneNumber">
+                        Phone Number
+                      </Label>
+                      <Input
+                        id="edit-alumni-phoneNumber"
+                        type="tel"
+                        name="phoneNumber"
+                        value={editForm.phoneNumber || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-linkedinUrl">
+                        LinkedIn Profile
+                      </Label>
+                      <Input
+                        id="edit-alumni-linkedinUrl"
+                        type="url"
+                        name="linkedinUrl"
+                        value={editForm.linkedinUrl || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label htmlFor="edit-alumni-affiliation">
+                        Affiliation
+                      </Label>
+                      <Input
+                        id="edit-alumni-affiliation"
+                        name="affiliation"
+                        value={editForm.affiliation || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Achievements Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <Trophy className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Achievements
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5 md:col-span-2">
+                      <Label htmlFor="edit-alumni-achievements">
+                        Achievements
+                      </Label>
+                      <Textarea
+                        id="edit-alumni-achievements"
+                        name="achievements"
+                        value={
+                          Array.isArray(editForm.achievements)
+                            ? editForm.achievements.join("\n")
+                            : editForm.achievements || ""
+                        }
+                        onChange={(e) =>
+                          setEditForm((f) =>
+                            f
+                              ? {
+                                  ...f,
+                                  achievements: e.target.value.split("\n"),
+                                }
+                              : f
+                          )
+                        }
+                        rows={4}
+                        className="min-h-[120px]"
+                        placeholder="Enter achievements, one per line..."
+                      />
+                    </div>
+                  </div>
+                </div>
+                {/* Contact Preferences Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                      <Phone className="w-3.5 h-3.5 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground">
+                      Contact Preferences
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="edit-alumni-contactPreference">
+                        Preferred Contact Method
+                      </Label>
+                      <Select
+                        name="contactPreference"
+                        value={editForm.contactPreference || "email"}
+                        onValueChange={(value) =>
+                          setEditForm((f) =>
+                            f
+                              ? {
+                                  ...f,
+                                  contactPreference: value as
+                                    | "email"
+                                    | "phone"
+                                    | "linkedin",
+                                }
+                              : f
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select contact method" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="email">Email</SelectItem>
+                          <SelectItem value="phone">Phone</SelectItem>
+                          <SelectItem value="linkedin">LinkedIn</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+                <DialogFooter className="p-6 pt-4 border-t border-border/50 flex justify-end gap-3">
+                  <DialogClose asChild>
+                    <Button variant="outline" type="button">
+                      Cancel
+                    </Button>
+                  </DialogClose>
+                  <Button type="submit">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                </DialogFooter>
+              </form>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
