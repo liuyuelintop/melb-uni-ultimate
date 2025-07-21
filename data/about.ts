@@ -92,8 +92,12 @@ export const aboutAchievements: Achievement[] = [
 export const aboutLeaders: Leader[] = [
   { initials: "CP", title: "Club President", name: "Lee Sheng" },
   { initials: "VP", title: "Vice President", name: "Joel Wong" },
-  { initials: "TC", title: "Treasurer", name: "Linda Chen" },
-  { initials: "SC", title: "Secretary", name: "Linda Chen" },
+  { initials: "TR", title: "Treasurer", name: "Sunyang Ji" },
+  { initials: "SC", title: "Secretary", name: "Arthur Lin" },
+  { initials: "SM", title: "Social Media Manager", name: "Miranda Wang" },
+  { initials: "EM", title: "Events Manager", name: "Nichelle" },
+  { initials: "EM", title: "Events Manager", name: "Soaham" },
+  { initials: "GM", title: "General Member", name: "Kat Buckser" },
 ];
 
 export const aboutHighlights: Highlight[] = [

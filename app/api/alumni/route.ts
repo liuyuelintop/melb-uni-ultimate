@@ -33,31 +33,19 @@ export async function GET(request: NextRequest) {
       createdAt: -1,
     });
 
-    // Check if user is admin to determine what data to return
-    const session = await getServerSession(authOptions);
-    console.log("Alumni API - Session:", session);
-    console.log("Alumni API - Session user:", session?.user);
-    console.log("Alumni API - Session user role:", session?.user?.role);
-    const isAdmin = session?.user?.role === "admin";
-    console.log("Alumni API - Is Admin:", isAdmin);
-
-    // Use session-based admin check only
-    const forceAdmin = isAdmin;
-    console.log("Alumni API - Force Admin:", forceAdmin);
+    // Remove unnecessary debug logs
 
     // Filter sensitive data for non-admin users
     const filteredAlumni = alumni.map((alum) => {
       const alumObj = alum.toObject();
 
-      if (!forceAdmin) {
-        // Remove sensitive information for non-admin users
-        delete alumObj.email;
-        delete alumObj.phoneNumber;
-        delete alumObj.linkedinUrl;
-        delete alumObj.currentJob;
-        delete alumObj.company;
-        delete alumObj.contactPreference;
-      }
+      // Remove sensitive information for non-admin users
+      delete alumObj.email;
+      delete alumObj.phoneNumber;
+      delete alumObj.linkedinUrl;
+      delete alumObj.currentJob;
+      delete alumObj.company;
+      delete alumObj.contactPreference;
 
       return alumObj;
     });

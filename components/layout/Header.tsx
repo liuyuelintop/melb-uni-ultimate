@@ -18,11 +18,6 @@ export default function Header() {
     { name: "Contact", href: "/contact" },
   ];
 
-  const adminNavigation = [
-    { name: "Admin Roster", href: "/admin/roster" },
-    { name: "Admin Alumni", href: "/admin/alumni" },
-  ];
-
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" });
   };
@@ -51,22 +46,6 @@ export default function Header() {
                 {item.name}
               </Link>
             ))}
-
-            {/* Admin routes - shown only to admin users */}
-            {session?.user?.role === "admin" &&
-              adminNavigation.map((item) => (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`text-sm font-medium transition-colors ${
-                    pathname === item.href
-                      ? "text-blue-600"
-                      : "text-gray-500 hover:text-gray-900"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              ))}
           </nav>
 
           <div className="flex items-center space-x-4">
