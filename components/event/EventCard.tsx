@@ -24,35 +24,20 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
-  const getTypeVariant = (type: string) => {
-    switch (type) {
-      case "practice":
-        return "primary";
-      case "tournament":
-        return "secondary";
-      case "social":
-        return "success";
-      case "training":
-        return "warning";
-      default:
-        return "default";
-    }
-  };
-
-  const getStatusVariant = (status: string) => {
-    switch (status) {
-      case "upcoming":
-        return "success";
-      case "ongoing":
-        return "primary";
-      case "completed":
-        return "default";
-      case "cancelled":
-        return "danger";
-      default:
-        return "default";
-    }
-  };
+  function getTypeColor(type: string) {
+    if (type === "practice") return "blue";
+    if (type === "tournament") return "yellow";
+    if (type === "social") return "green";
+    if (type === "training") return "red";
+    return "gray";
+  }
+  function getStatusColor(status: string) {
+    if (status === "upcoming") return "green";
+    if (status === "ongoing") return "blue";
+    if (status === "completed") return "gray";
+    if (status === "cancelled") return "red";
+    return "gray";
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -68,10 +53,10 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <div className="flex items-center justify-between mb-4">
-        <Badge variant={getTypeVariant(event.type)}>
+        <Badge color={getTypeColor(event.type)}>
           {event.type.charAt(0).toUpperCase() + event.type.slice(1)}
         </Badge>
-        <Badge variant={getStatusVariant(event.status)}>
+        <Badge color={getStatusColor(event.status)}>
           {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
         </Badge>
       </div>
