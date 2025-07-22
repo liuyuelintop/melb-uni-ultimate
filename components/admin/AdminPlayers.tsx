@@ -5,9 +5,7 @@ import PlayerFilters from "@/components/player-manager/PlayerFilters";
 import PlayerTable from "@/components/player-manager/PlayerTable";
 import PlayerEditModal from "@/components/player-manager/PlayerEditModal";
 import PlayerCreateModal from "@/components/player-manager/PlayerCreateModal";
-import PlayerFormModal, {
-  PlayerForm,
-} from "@/components/player-manager/PlayerFormModal";
+import { PlayerForm } from "@/components/player-manager/PlayerFormModal";
 
 interface Player {
   _id: string;
@@ -208,7 +206,6 @@ export default function PlayerManager() {
 
   const handleAddSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual add logic (API call, validation, etc.)
     setIsAddModalOpen(false);
     setNewPlayer({
       name: "",

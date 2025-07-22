@@ -1,102 +1,140 @@
-import React, { useState, useMemo } from "react";
-import { Announcement, Notification } from "../../types/admin";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { useState } from "react";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import NotificationComponent from "../ui/Notification";
+import AnnouncementFormModal from "./AnnouncementFormModal";
 import AnnouncementTable from "./AnnouncementTable";
 import AnnouncementFilters from "./AnnouncementFilters";
-import AnnouncementFormModal from "./AnnouncementFormModal";
-import NotificationComponent from "../ui/Notification";
-import type { AnnouncementFormProps } from "./AnnouncementForm";
+import { Notification } from "@/types/admin";
+import { Announcement } from "@/types/admin";
 
-interface AnnouncementManagerProps {
-  announcements: Announcement[];
-  onAdd: (form: AnnouncementFormProps["form"]) => Promise<void>;
-  onEdit: (id: string, form: AnnouncementFormProps["form"]) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
-  onTogglePublish: (id: string) => Promise<void>;
-  notifications: Notification[];
-  onNotificationClose: (id: string) => void;
-}
-
-const defaultForm = {
-  title: "",
-  content: "",
-  priority: "medium" as "low" | "medium" | "high",
-  isPublished: false,
-};
-
-const AnnouncementManager: React.FC<AnnouncementManagerProps> = ({
-  announcements,
-  onAdd,
-  onEdit,
-  onDelete,
-  onTogglePublish,
-  notifications,
-  onNotificationClose,
-}) => {
-  // Modal state
+export default function AnnouncementManager() {
+  const {
+    announcements,
+    loading,
+    addAnnouncement,
+    deleteAnnouncement,
+    updateAnnouncement,
+    togglePublish,
+  } = useAnnouncements();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
+  const [newForm, setNewForm] = useState({
+    title: "",
+    content: "",
+    priority: "medium" as "low" | "medium" | "high",
+    isPublished: false,
+  });
   const [editOpen, setEditOpen] = useState(false);
-  const [editForm, setEditForm] = useState(defaultForm);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    content: "",
+    priority: "medium" as "low" | "medium" | "high",
+    isPublished: false,
+  });
   const [editId, setEditId] = useState<string | null>(null);
-  const [newForm, setNewForm] = useState(defaultForm);
 
-  // Filters
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterPriority, setFilterPriority] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
-
-  // Filtered announcements
-  const filtered = useMemo(
-    () =>
-      announcements.filter((a) => {
-        const matchesSearch =
-          a.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          a.author.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesPriority =
-          filterPriority === "all" || a.priority === filterPriority;
-        const matchesStatus =
-          filterStatus === "all" ||
-          (filterStatus === "published" && a.isPublished) ||
-          (filterStatus === "draft" && !a.isPublished);
-        return matchesSearch && matchesPriority && matchesStatus;
-      }),
-    [announcements, searchTerm, filterPriority, filterStatus]
-  );
-
-  // Handlers
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onAdd(newForm);
-    setNewForm(defaultForm);
-    setCreateOpen(false);
+  const handleAddSubmit = async (formData: typeof newForm) => {
+    const result = await addAnnouncement(formData);
+    if (result.success) {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "success",
+          message: "Announcement created!",
+          id: Date.now().toString(),
+        },
+      ]);
+      setCreateOpen(false);
+      setNewForm({
+        title: "",
+        content: "",
+        priority: "medium",
+        isPublished: false,
+      });
+    } else {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "error",
+          message: result.error || "Unknown error",
+          id: Date.now().toString(),
+        },
+      ]);
+    }
   };
-  const handleEdit = (a: Announcement) => {
+
+  const handleEdit = (announcement: Announcement) => {
     setEditForm({
-      title: a.title,
-      content: a.content,
-      priority: a.priority,
-      isPublished: a.isPublished, // ensure this is loaded
+      title: announcement.title,
+      content: announcement.content,
+      priority: announcement.priority,
+      isPublished: announcement.isPublished,
     });
-    setEditId(a._id);
+    setEditId(announcement._id);
     setEditOpen(true);
   };
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editId) {
-      await onEdit(editId, editForm);
+    if (!editId) return;
+    const result = await updateAnnouncement(editId, editForm);
+    if (result.success) {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "success",
+          message: "Announcement updated!",
+          id: Date.now().toString(),
+        },
+      ]);
       setEditOpen(false);
       setEditId(null);
+    } else {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "error",
+          message: result.error || "Unknown error",
+          id: Date.now().toString(),
+        },
+      ]);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (
-      window.confirm(
+      !window.confirm(
         "Are you sure you want to delete this announcement? This action cannot be undone."
       )
-    ) {
-      await onDelete(id);
+    )
+      return;
+    const result = await deleteAnnouncement(id);
+    if (result.success) {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "success",
+          message: "Announcement deleted!",
+          id: Date.now().toString(),
+        },
+      ]);
+    } else {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "error",
+          message: result.error || "Unknown error",
+          id: Date.now().toString(),
+        },
+      ]);
     }
   };
+
+  const handleNotificationClose = (id: string) =>
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-8">
@@ -107,7 +145,7 @@ const AnnouncementManager: React.FC<AnnouncementManagerProps> = ({
               key={notification.id}
               type={notification.type}
               message={notification.message}
-              onClose={() => onNotificationClose(notification.id)}
+              onClose={() => handleNotificationClose(notification.id)}
             />
           ))}
         </div>
@@ -115,22 +153,22 @@ const AnnouncementManager: React.FC<AnnouncementManagerProps> = ({
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-2xl font-bold">Announcements</h2>
         <button
-          className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
           onClick={() => setCreateOpen(true)}
         >
-          + New Announcement
+          New Announcement
         </button>
       </div>
       <AnnouncementFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filterPriority={filterPriority}
-        setFilterPriority={setFilterPriority}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
+        searchTerm={""}
+        setSearchTerm={() => {}}
+        filterPriority={"all"}
+        setFilterPriority={() => {}}
+        filterStatus={"all"}
+        setFilterStatus={() => {}}
       />
       <AnnouncementTable
-        announcements={filtered}
+        announcements={announcements}
         onEdit={handleEdit}
         onDelete={handleDelete}
       />
@@ -139,7 +177,10 @@ const AnnouncementManager: React.FC<AnnouncementManagerProps> = ({
         onOpenChange={setCreateOpen}
         form={newForm}
         setForm={setNewForm}
-        handleSubmit={handleCreate}
+        handleSubmit={(e) => {
+          e.preventDefault();
+          handleAddSubmit(newForm);
+        }}
         modalTitle="Create Announcement"
         submitText="Create"
       />
@@ -154,6 +195,4 @@ const AnnouncementManager: React.FC<AnnouncementManagerProps> = ({
       />
     </div>
   );
-};
-
-export default AnnouncementManager;
+}
