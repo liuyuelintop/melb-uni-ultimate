@@ -18,28 +18,22 @@ interface AnnouncementCardProps {
   className?: string;
 }
 
+function getPriorityColor(priority: string) {
+  if (priority === "low") return "green";
+  if (priority === "medium") return "yellow";
+  if (priority === "high") return "red";
+  return "gray";
+}
+
 const AnnouncementCard: React.FC<AnnouncementCardProps> = ({
   announcement,
   className,
 }) => {
-  const getPriorityVariant = (priority: string) => {
-    switch (priority) {
-      case "high":
-        return "danger";
-      case "medium":
-        return "warning";
-      case "low":
-        return "success";
-      default:
-        return "default";
-    }
-  };
-
   return (
     <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
       <div className="flex justify-between items-start mb-4">
         <h2 className="text-xl font-semibold">{announcement.title}</h2>
-        <Badge variant={getPriorityVariant(announcement.priority)}>
+        <Badge color={getPriorityColor(announcement.priority)}>
           {announcement.priority.charAt(0).toUpperCase() +
             announcement.priority.slice(1)}{" "}
           Priority
