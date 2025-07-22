@@ -109,15 +109,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if jersey number is already taken
-    const existingJersey = await Player.findOne({ jerseyNumber });
-    if (existingJersey) {
-      return NextResponse.json(
-        { error: "Jersey number is already taken" },
-        { status: 409 }
-      );
-    }
-
     const player = new Player({
       name,
       email,

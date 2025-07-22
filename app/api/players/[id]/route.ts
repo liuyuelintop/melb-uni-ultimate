@@ -66,19 +66,6 @@ export async function PUT(
       }
     }
 
-    if (jerseyNumber && jerseyNumber !== player.jerseyNumber) {
-      const existingJersey = await Player.findOne({
-        jerseyNumber,
-        _id: { $ne: id },
-      });
-      if (existingJersey) {
-        return NextResponse.json(
-          { error: "Jersey number is already taken by another player" },
-          { status: 409 }
-        );
-      }
-    }
-
     // Update player
     const updatedPlayer = await Player.findByIdAndUpdate(
       id,

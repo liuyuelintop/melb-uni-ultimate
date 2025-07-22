@@ -65,7 +65,7 @@ const playerSchema = new Schema<IPlayer>(
     jerseyNumber: {
       type: Number,
       required: [true, "Jersey number is required"],
-      min: [1, "Jersey number must be at least 1"],
+      min: [0, "Jersey number must be at least 0"],
       max: [99, "Jersey number must be at most 99"],
     },
     phoneNumber: {
