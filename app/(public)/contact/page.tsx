@@ -1,5 +1,6 @@
 "use client";
 
+import { Link2Icon } from "lucide-react";
 import { FaInstagram, FaFacebook } from "react-icons/fa";
 
 export default function ContactPage() {
@@ -32,6 +33,15 @@ export default function ContactPage() {
           >
             <FaFacebook className="text-2xl" />
             <span>Facebook</span>
+          </a>
+          <a
+            href="https://linktr.ee/unimelb_ultimate?fbclid=PAZXh0bgNhZW0CMTEAAafnvGoHvEnzyVL5g3DcfJVL7PoNqMyqTIg2iD-ExKOzR_oOfaT6OFwMVdkxAA_aem_KhUx3bR8qc_7AMTvD9pO8Q"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center space-x-2 text-green-600 hover:text-green-700 text-lg font-medium"
+          >
+            <Link2Icon className="text-2xl" />
+            <span>Linktree</span>
           </a>
         </div>
       </div>

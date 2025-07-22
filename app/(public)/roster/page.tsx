@@ -19,6 +19,7 @@ interface Player {
   gender: string;
   position: string;
   experience: string;
+  jerseyNumber: number;
 }
 
 interface RosterEntry {
@@ -336,7 +337,7 @@ export default function PublicRosterPage() {
                               {entry.playerId?.name}
                             </div>
                             <div className="text-sm text-gray-500">
-                              Player #{index + 1}
+                              Player #{entry.playerId?.jerseyNumber}
                             </div>
                           </div>
                         </div>

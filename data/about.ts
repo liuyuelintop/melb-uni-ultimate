@@ -95,17 +95,16 @@ export const aboutLeaders: Leader[] = [
   { initials: "TR", title: "Treasurer", name: "Sunyang Ji" },
   { initials: "SC", title: "Secretary", name: "Arthur Lin" },
   { initials: "SM", title: "Social Media Manager", name: "Miranda Wang" },
-  { initials: "EM", title: "Events Manager", name: "Nichelle" },
-  { initials: "EM", title: "Events Manager", name: "Soaham" },
+  {
+    initials: "EM",
+    title: "Events Manager",
+    name: "Nichelle serenity archery",
+  },
+  { initials: "EM", title: "Events Manager", name: "Soaham chauhan" },
   { initials: "GM", title: "General Member", name: "Kat Buckser" },
 ];
 
 export const aboutHighlights: Highlight[] = [
-  {
-    image: "/uninats-2024.webp",
-    alt: "Nationals team celebrating win",
-    caption: "2024 UniSport Nationals Gold Coast Champions",
-  },
   {
     image: "/umuc-2025.webp",
     alt: "UMUC team photo",
@@ -115,6 +114,11 @@ export const aboutHighlights: Highlight[] = [
     image: "/bigblue-2025.webp",
     alt: "Melbourne Uni team photo after winning Big Blue 2025 under lights",
     caption: "2025 Big Blue Champions",
+  },
+  {
+    image: "/uninats-2024.webp",
+    alt: "Nationals team celebrating win",
+    caption: "2024 UniSport Nationals Gold Coast Champions",
   },
 ];
 
