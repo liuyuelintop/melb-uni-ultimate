@@ -1,11 +1,13 @@
-import NextAuth, { DefaultSession } from "next-auth";
+import type { Session, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import clientPromise from "@/lib/db/mongodb";
 import dbConnect from "@/lib/db/mongoose";
-import User from "@/lib/db/models/user";
+import UserModel from "@/lib/db/models/user";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
+import { DefaultSession } from "next-auth";
+import NextAuth from "next-auth";
 
 // Extend the User type to include our custom fields
 declare module "next-auth" {
@@ -55,15 +57,15 @@ export const authOptions = {
         try {
           await dbConnect();
 
-          const user = await User.findOne({ email: credentials.email });
+          const dbUser = await UserModel.findOne({ email: credentials.email });
 
-          if (!user) {
+          if (!dbUser) {
             return null;
           }
 
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
-            user.password
+            dbUser.password
           );
 
           if (!isPasswordValid) {
@@ -71,14 +73,14 @@ export const authOptions = {
           }
 
           const userData = {
-            id: user._id.toString(),
-            email: user.email,
-            name: user.name,
-            role: user.role,
-            studentId: user.studentId,
-            position: user.position,
-            experience: user.experience,
-            isVerified: user.isVerified,
+            id: dbUser._id.toString(),
+            email: dbUser.email,
+            name: dbUser.name,
+            role: dbUser.role,
+            studentId: dbUser.studentId,
+            position: dbUser.position,
+            experience: dbUser.experience,
+            isVerified: dbUser.isVerified,
           };
 
           console.log("Authorize function - Returning user data:", userData);
@@ -94,21 +96,20 @@ export const authOptions = {
     strategy: "jwt" as const,
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user: any }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.role = user.role;
         token.studentId = user.studentId;
         token.position = user.position;
         token.experience = user.experience;
         token.isVerified = user.isVerified;
-
         // Debug logging
         console.log("JWT callback - User:", user);
         console.log("JWT callback - Token after update:", token);
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (token) {
         // Ensure all user fields are properly set
         session.user = {
@@ -120,7 +121,6 @@ export const authOptions = {
           experience: token.experience as string,
           isVerified: token.isVerified as boolean,
         };
-
         // Debug logging
         console.log("Session callback - Token:", {
           sub: token.sub,

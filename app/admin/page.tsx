@@ -497,14 +497,18 @@ export default function AdminPage() {
   }
 
   // Lazy load admin management components
-  const AdminRoster = dynamic(() => import("./roster/AdminRoster"), {
+  const AdminPlayers = dynamic(
+    () => import("@/components/admin/AdminPlayers"),
+    {
+      ssr: false,
+    }
+  );
+  const AdminAlumni = dynamic(() => import("@/components/admin/AdminAlumni"), {
     ssr: false,
   });
-  const AdminAlumni = dynamic(() => import("./alumni/AdminAlumni"), {
-    ssr: false,
-  });
+
   const AdminTournaments = dynamic(
-    () => import("./tournaments/AdminTournaments"),
+    () => import("@/components/admin/AdminTournaments"),
     { ssr: false }
   );
 
@@ -579,7 +583,7 @@ export default function AdminPage() {
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
             >
-              Roster
+              Players
             </button>
             <button
               onClick={() => setActiveTab("alumni")}
@@ -746,7 +750,7 @@ export default function AdminPage() {
                 </div>
                 <button
                   onClick={addAnnouncement}
-                  className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                  className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
                 >
                   Create Announcement
                 </button>
@@ -1023,7 +1027,7 @@ export default function AdminPage() {
               />
               <button
                 onClick={addEvent}
-                className="mt-4 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700"
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
               >
                 Create Event
               </button>
@@ -1241,7 +1245,7 @@ export default function AdminPage() {
         )}
 
         {/* Roster Tab */}
-        {activeTab === "roster" && <AdminRoster />}
+        {activeTab === "roster" && <AdminPlayers />}
         {/* Alumni Tab */}
         {activeTab === "alumni" && <AdminAlumni />}
         {/* Tournaments Tab */}

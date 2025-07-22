@@ -32,7 +32,19 @@ const Hero: React.FC<HeroProps> = ({
       {actions.length > 0 && (
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           {actions.map((action, index) => (
-            <Button key={index} variant={action.variant || "primary"} size="lg">
+            <Button
+              key={index}
+              variant={
+                action.variant === "primary"
+                  ? "default"
+                  : action.variant === "secondary"
+                  ? "secondary"
+                  : action.variant === "outline"
+                  ? "outline"
+                  : "default"
+              }
+              size="lg"
+            >
               <a href={action.href}>{action.label}</a>
             </Button>
           ))}
