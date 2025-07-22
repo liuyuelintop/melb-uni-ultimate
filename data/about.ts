@@ -71,6 +71,11 @@ export const aboutValues: Value[] = [
 
 export const aboutAchievements: Achievement[] = [
   {
+    icon: "🏆",
+    title: "2025 Big Blue Champions",
+    description: "Back-to-back winners with a dominant win over Monash",
+  },
+  {
     icon: "🥇",
     title: "2024 UniSport Nationals",
     description:
@@ -78,14 +83,9 @@ export const aboutAchievements: Achievement[] = [
   },
   {
     icon: "🏆",
-    title: "2025 Big Blue Champions",
+    title: "2024 Big Blue Champions",
     description:
       "Claimed victory against Monash in the annual Big Blue showdown",
-  },
-  {
-    icon: "🌟",
-    title: "Spirit Award",
-    description: "Multiple Spirit of the Game awards at tournaments",
   },
 ];
 
