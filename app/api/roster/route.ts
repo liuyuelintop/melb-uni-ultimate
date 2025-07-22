@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
   }
   const roster = await RosterEntry.find({ tournamentId })
     .populate("playerId")
-    .populate("tournamentId");
+    .populate("tournamentId")
+    .populate("teamId");
   return NextResponse.json(roster);
 }
 

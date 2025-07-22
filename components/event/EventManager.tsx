@@ -1,107 +1,172 @@
-import React, { useState, useMemo } from "react";
-import { Event, Notification } from "../../types/admin";
+import { useEvents } from "@/hooks/useEvents";
+import { useState } from "react";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import NotificationComponent from "../ui/Notification";
+import EventFormModal from "./EventFormModal";
 import EventTable from "./EventTable";
 import EventFilters from "./EventFilters";
-import EventFormModal from "./EventFormModal";
-import NotificationComponent from "../ui/Notification";
-import type { EventFormProps } from "./EventForm";
+import { Notification } from "@/types/admin";
+import { Event } from "@/types/admin";
 
-interface EventManagerProps {
-  events: Event[];
-  onAdd: (form: EventFormProps["form"]) => Promise<void>;
-  onEdit: (id: string, form: EventFormProps["form"]) => Promise<void>;
-  onDelete: (id: string) => Promise<void>;
-  notifications: Notification[];
-  onNotificationClose: (id: string) => void;
-}
-
-const defaultForm: EventFormProps["form"] = {
-  title: "",
-  description: "",
-  type: "practice",
-  startDate: "",
-  endDate: "",
-  location: "",
-  maxParticipants: "",
-  registrationDeadline: "",
-  isPublic: true,
-};
-
-const EventManager: React.FC<EventManagerProps> = ({
-  events,
-  onAdd,
-  onEdit,
-  onDelete,
-  notifications,
-  onNotificationClose,
-}) => {
-  // Modal state
+export default function EventManager() {
+  const { events, loading, addEvent, deleteEvent, updateEvent } = useEvents();
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
+  const [newForm, setNewForm] = useState({
+    title: "",
+    description: "",
+    type: "practice" as "practice" | "tournament" | "social" | "training",
+    startDate: "",
+    endDate: "",
+    location: "",
+    maxParticipants: "",
+    registrationDeadline: "",
+    isPublic: true,
+  });
   const [editOpen, setEditOpen] = useState(false);
-  const [editForm, setEditForm] = useState(defaultForm);
+  const [editForm, setEditForm] = useState({
+    title: "",
+    description: "",
+    type: "practice" as "practice" | "tournament" | "social" | "training",
+    startDate: "",
+    endDate: "",
+    location: "",
+    maxParticipants: "",
+    registrationDeadline: "",
+    isPublic: true,
+  });
   const [editId, setEditId] = useState<string | null>(null);
-  const [newForm, setNewForm] = useState(defaultForm);
 
-  // Filters
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterType, setFilterType] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
-
-  // Filtered events
-  const filtered = useMemo(
-    () =>
-      events.filter((e) => {
-        const matchesSearch =
-          e.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          e.location.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesType = filterType === "all" || e.type === filterType;
-        const matchesStatus =
-          filterStatus === "all" || e.status === filterStatus;
-        return matchesSearch && matchesType && matchesStatus;
-      }),
-    [events, searchTerm, filterType, filterStatus]
-  );
-
-  // Handlers
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onAdd(newForm);
-    setNewForm(defaultForm);
-    setCreateOpen(false);
-  };
-  const handleEdit = (e: Event) => {
-    setEditForm({
-      title: e.title,
-      description: e.description,
-      type: e.type,
-      startDate: e.startDate,
-      endDate: e.endDate,
-      location: e.location,
-      maxParticipants: e.maxParticipants?.toString() || "",
-      registrationDeadline: e.registrationDeadline || "",
-      isPublic: e.isPublic,
+  const handleAddSubmit = async (formData: typeof newForm) => {
+    const result = await addEvent({
+      ...formData,
+      status: "upcoming",
+      currentParticipants: 0,
+      maxParticipants: formData.maxParticipants
+        ? parseInt(formData.maxParticipants)
+        : undefined,
     });
-    setEditId(e._id);
+    if (result.success) {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "success",
+          message: "Event created!",
+          id: Date.now().toString(),
+        },
+      ]);
+      setCreateOpen(false);
+      setNewForm({
+        title: "",
+        description: "",
+        type: "practice",
+        startDate: "",
+        endDate: "",
+        location: "",
+        maxParticipants: "",
+        registrationDeadline: "",
+        isPublic: true,
+      });
+    } else {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "error",
+          message: result.error || "Unknown error",
+          id: Date.now().toString(),
+        },
+      ]);
+    }
+  };
+
+  const handleEdit = (event: Event) => {
+    setEditForm({
+      title: event.title,
+      description: event.description,
+      type: event.type,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      location: event.location,
+      maxParticipants: event.maxParticipants
+        ? String(event.maxParticipants)
+        : "",
+      registrationDeadline: event.registrationDeadline || "",
+      isPublic: event.isPublic,
+    });
+    setEditId(event._id);
     setEditOpen(true);
   };
+
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (editId) {
-      await onEdit(editId, editForm);
+    if (!editId) return;
+    const original = events.find((ev) => ev._id === editId);
+    if (!original) return;
+    const result = await updateEvent(editId, {
+      ...editForm,
+      status: original.status,
+      currentParticipants: original.currentParticipants,
+      maxParticipants: editForm.maxParticipants
+        ? parseInt(editForm.maxParticipants)
+        : undefined,
+      registrationDeadline: editForm.registrationDeadline || undefined,
+    });
+    if (result.success) {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "success",
+          message: "Event updated!",
+          id: Date.now().toString(),
+        },
+      ]);
       setEditOpen(false);
       setEditId(null);
+    } else {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "error",
+          message: result.error || "Unknown error",
+          id: Date.now().toString(),
+        },
+      ]);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (
-      window.confirm(
+      !window.confirm(
         "Are you sure you want to delete this event? This action cannot be undone."
       )
-    ) {
-      await onDelete(id);
+    )
+      return;
+    const result = await deleteEvent(id);
+    if (result.success) {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "success",
+          message: "Event deleted!",
+          id: Date.now().toString(),
+        },
+      ]);
+    } else {
+      setNotifications((prev) => [
+        ...prev,
+        {
+          type: "error",
+          message: result.error || "Unknown error",
+          id: Date.now().toString(),
+        },
+      ]);
     }
   };
+
+  const handleNotificationClose = (id: string) =>
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+
+  if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-8">
@@ -112,7 +177,7 @@ const EventManager: React.FC<EventManagerProps> = ({
               key={notification.id}
               type={notification.type}
               message={notification.message}
-              onClose={() => onNotificationClose(notification.id)}
+              onClose={() => handleNotificationClose(notification.id)}
             />
           ))}
         </div>
@@ -120,31 +185,30 @@ const EventManager: React.FC<EventManagerProps> = ({
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-2xl font-bold">Events</h2>
         <button
-          className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
           onClick={() => setCreateOpen(true)}
         >
-          + New Event
+          New Event
         </button>
       </div>
       <EventFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        filterType={filterType}
-        setFilterType={setFilterType}
-        filterStatus={filterStatus}
-        setFilterStatus={setFilterStatus}
+        searchTerm={""}
+        setSearchTerm={() => {}}
+        filterType={"all"}
+        setFilterType={() => {}}
+        filterStatus={"all"}
+        setFilterStatus={() => {}}
       />
-      <EventTable
-        events={filtered}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      <EventTable events={events} onEdit={handleEdit} onDelete={handleDelete} />
       <EventFormModal
         open={createOpen}
         onOpenChange={setCreateOpen}
         form={newForm}
         setForm={setNewForm}
-        handleSubmit={handleCreate}
+        handleSubmit={(e) => {
+          e.preventDefault();
+          handleAddSubmit(newForm);
+        }}
         modalTitle="Create Event"
         submitText="Create"
       />
@@ -159,6 +223,4 @@ const EventManager: React.FC<EventManagerProps> = ({
       />
     </div>
   );
-};
-
-export default EventManager;
+}

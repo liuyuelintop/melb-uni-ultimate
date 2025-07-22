@@ -9,7 +9,7 @@ const tabs = [
   { key: "dashboard", label: "Dashboard" },
   { key: "announcements", label: "Announcements" },
   { key: "events", label: "Events" },
-  { key: "roster", label: "Players" },
+  { key: "players", label: "Players" },
   { key: "alumni", label: "Alumni" },
   { key: "tournaments", label: "Tournaments" },
 ];
