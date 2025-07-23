@@ -37,7 +37,7 @@ const AlumniFilters: React.FC<AlumniFiltersProps> = ({
       >
         <option value="all">All Graduation Years</option>
         {uniqueGraduationYears.map((year) => (
-          <option key={year} value={year.toString()}>
+          <option key={year} value={year?.toString()}>
             {year}
           </option>
         ))}
