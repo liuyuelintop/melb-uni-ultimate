@@ -1,5 +1,8 @@
 # 🥏 Melbourne University Ultimate Frisbee Club
 
+[![GitHub Stars](https://img.shields.io/github/stars/liuyuelintop/melb-uni-ultimate?style=social)](https://github.com/liuyuelintop/melb-uni-ultimate/stargazers)
+[![Forks](https://img.shields.io/github/forks/liuyuelintop/melb-uni-ultimate?style=social)](https://github.com/liuyuelintop/melb-uni-ultimate/network/members)
+[![Contributors](https://img.shields.io/github/contributors/liuyuelintop/melb-uni-ultimate)](https://github.com/liuyuelintop/melb-uni-ultimate/graphs/contributors)
 [![Next.js](https://img.shields.io/badge/Next.js-15-blue?logo=nextdotjs)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
@@ -7,11 +10,18 @@
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)](https://vercel.com/)
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **A modern, full-featured web platform for ultimate frisbee clubs, built for the Melbourne University Ultimate community and open to all!**
+> **A modern, open-source web platform for ultimate frisbee clubs. Built for the Melbourne University Ultimate community—ready for your team!**
 
 ---
 
-## 🌟 Why Star This Project?
+## 🌍 Live Demo
+
+**Try it now:** [https://melb-uni-ultimate.vercel.app](https://melb-uni-ultimate.vercel.app)  
+_(Or deploy your own in minutes!)_
+
+---
+
+## ✨ Why Star This Project?
 
 - **Beautiful, modern UI** with Tailwind, shadcn/ui, and Lucide icons
 - **All-in-one club management**: events, announcements, roster, alumni, tournaments, and more
@@ -19,6 +29,22 @@
 - **Open source, MIT licensed** – ready for your club or team!
 - **Easy deploy to Vercel** (or your own server)
 - **Active development & welcoming to contributors**
+- **Trusted by the Melbourne University Ultimate community**
+
+---
+
+## 🎬 Demo
+
+| Home Page                          | Admin Dashboard                      | Events Calendar                        |
+| ---------------------------------- | ------------------------------------ | -------------------------------------- |
+| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) |
+
+---
+
+## 🏆 Who's Using This?
+
+- **Melbourne University Ultimate Frisbee Club**
+- _Your club here! [Open a PR to add yours!]_
 
 ---
 
@@ -42,7 +68,9 @@
 - **Role-based access**: NextAuth.js with admin/member/public roles
 - **Modern UI/UX**: Responsive, accessible, and mobile-friendly
 
-### 🛠️ Tech Stack
+---
+
+## 🛠️ Tech Stack
 
 - **Next.js 15** (App Router, SSR, API routes)
 - **TypeScript** (strict types everywhere)
@@ -52,16 +80,6 @@
 - **Lucide React** (iconography)
 - **Jest** (unit tests)
 - **ESLint, Prettier, Husky** (code quality)
-
----
-
-## 📸 Screenshots
-
-> _Add your own screenshots here!_
-
-| Home Page                          | Admin Dashboard                      | Events Calendar                        |
-| ---------------------------------- | ------------------------------------ | -------------------------------------- |
-| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) |
 
 ---
 
@@ -122,6 +140,12 @@ npm start
 
 ---
 
+## 🤔 Why Ultimate Frisbee?
+
+Ultimate Frisbee is a fast-growing, inclusive sport that builds teamwork, spirit, and fitness. This project aims to empower clubs and communities worldwide with modern tools—join us and help grow the sport!
+
+---
+
 ## 🧑‍💻 Contributing
 
 We welcome contributions! To get started:
@@ -140,6 +164,26 @@ We welcome contributions! To get started:
 - [Contact page](http://localhost:3000/contact) for club questions
 - [GitHub Issues](https://github.com/your-username/melb-uni-ultimate/issues) for bugs/feature requests
 - [Vercel Discussion](https://vercel.com/support) for deployment help
+
+---
+
+## 🙋 FAQ
+
+**Q: Can I use this for my own club?**  
+A: Yes! It’s open source and easy to customize.
+
+**Q: Is it free?**  
+A: 100% MIT licensed.
+
+**Q: How do I get admin access?**  
+A: See [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
+
+---
+
+## 🙏 Sponsors & Backers
+
+_Sponsor this project and help us grow Ultimate!_  
+[Become a sponsor](https://github.com/sponsors/your-username)
 
 ---
 
