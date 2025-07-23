@@ -7,8 +7,7 @@ export interface IEvent extends Document {
   endDate: Date;
   location: string;
   type: "practice" | "tournament" | "social" | "training";
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
-  maxParticipants?: number;
+  status: "upcoming" | "ongoing" | "completed";
   currentParticipants: number;
   registrationDeadline?: Date;
   isPublic: boolean;
@@ -50,12 +49,8 @@ const EventSchema: Schema = new Schema(
     },
     status: {
       type: String,
-      enum: ["upcoming", "ongoing", "completed", "cancelled"],
+      enum: ["upcoming", "ongoing", "completed"],
       default: "upcoming",
-    },
-    maxParticipants: {
-      type: Number,
-      min: 1,
     },
     currentParticipants: {
       type: Number,

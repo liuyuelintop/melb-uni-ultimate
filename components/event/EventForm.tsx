@@ -20,7 +20,6 @@ export interface EventFormProps {
     startDate: string;
     endDate: string;
     location: string;
-    maxParticipants: string;
     registrationDeadline: string;
     isPublic: boolean;
   };
@@ -104,16 +103,6 @@ const EventForm: React.FC<EventFormProps> = ({
       </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="space-y-2">
-        <Label htmlFor="event-max">Max Participants (optional)</Label>
-        <Input
-          id="event-max"
-          type="number"
-          placeholder="Max participants"
-          value={form.maxParticipants}
-          onChange={(e) => onChange("maxParticipants", e.target.value)}
-        />
-      </div>
       <div className="space-y-2">
         <Label htmlFor="event-deadline">Registration Deadline (optional)</Label>
         <Input

@@ -19,7 +19,6 @@ export default function EventManager() {
     startDate: "",
     endDate: "",
     location: "",
-    maxParticipants: "",
     registrationDeadline: "",
     isPublic: true,
   });
@@ -31,7 +30,6 @@ export default function EventManager() {
     startDate: "",
     endDate: "",
     location: "",
-    maxParticipants: "",
     registrationDeadline: "",
     isPublic: true,
   });
@@ -40,11 +38,7 @@ export default function EventManager() {
   const handleAddSubmit = async (formData: typeof newForm) => {
     const result = await addEvent({
       ...formData,
-      status: "upcoming",
       currentParticipants: 0,
-      maxParticipants: formData.maxParticipants
-        ? parseInt(formData.maxParticipants)
-        : undefined,
     });
     if (result.success) {
       setNotifications((prev) => [
@@ -63,7 +57,6 @@ export default function EventManager() {
         startDate: "",
         endDate: "",
         location: "",
-        maxParticipants: "",
         registrationDeadline: "",
         isPublic: true,
       });
@@ -87,9 +80,6 @@ export default function EventManager() {
       startDate: event.startDate,
       endDate: event.endDate,
       location: event.location,
-      maxParticipants: event.maxParticipants
-        ? String(event.maxParticipants)
-        : "",
       registrationDeadline: event.registrationDeadline || "",
       isPublic: event.isPublic,
     });
@@ -104,11 +94,7 @@ export default function EventManager() {
     if (!original) return;
     const result = await updateEvent(editId, {
       ...editForm,
-      status: original.status,
       currentParticipants: original.currentParticipants,
-      maxParticipants: editForm.maxParticipants
-        ? parseInt(editForm.maxParticipants)
-        : undefined,
       registrationDeadline: editForm.registrationDeadline || undefined,
     });
     if (result.success) {

@@ -33,217 +33,216 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b">
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14 sm:h-16">
+    <header className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16 lg:h-18">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link
-              href="/"
-              className="text-lg sm:text-xl font-bold text-blue-600"
-            >
-              MU Ultimate
+            <Link href="/" className="flex items-center space-x-2 group">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-200">
+                <span className="text-white font-bold text-sm">MU</span>
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                Ultimate
+              </span>
             </Link>
           </div>
 
           {/* Mobile menu button */}
           <button
             onClick={toggleMenu}
-            className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+            className="md:hidden relative inline-flex items-center justify-center p-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
             aria-expanded="false"
             aria-label="Main menu"
           >
-            <svg
-              className={`${isOpen ? "hidden" : "block"} h-6 w-6`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
-            <svg
-              className={`${isOpen ? "block" : "hidden"} h-6 w-6`}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <div className="w-6 h-6 flex flex-col justify-center items-center">
+              <span
+                className={`block w-5 h-0.5 bg-current transform transition-all duration-300 ${
+                  isOpen ? "rotate-45 translate-y-1.5" : "-translate-y-1"
+                }`}
+              ></span>
+              <span
+                className={`block w-5 h-0.5 bg-current transition-all duration-300 ${
+                  isOpen ? "opacity-0" : "opacity-100"
+                }`}
+              ></span>
+              <span
+                className={`block w-5 h-0.5 bg-current transform transition-all duration-300 ${
+                  isOpen ? "-rotate-45 -translate-y-1.5" : "translate-y-1"
+                }`}
+              ></span>
+            </div>
           </button>
 
           {/* Desktop navigation */}
-          <nav className="hidden md:flex md:space-x-6 lg:space-x-8">
+          <nav className="hidden md:flex md:items-center md:space-x-1 lg:space-x-2">
             {navigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`text-sm font-medium transition-colors ${
+                className={`relative px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                   pathname === item.href
-                    ? "text-blue-600 border-b-2 border-blue-600 pb-1"
-                    : "text-gray-500 hover:text-gray-900"
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
                 }`}
               >
                 {item.name}
+                {pathname === item.href && (
+                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-600 rounded-full"></div>
+                )}
               </Link>
             ))}
           </nav>
 
           {/* Desktop auth section */}
-          <div className="hidden md:flex md:items-center md:space-x-3 lg:space-x-4">
+          <div className="hidden md:flex md:items-center md:space-x-3">
             {status === "loading" ? (
-              <div className="text-sm text-gray-500">Loading...</div>
-            ) : session ? (
-              <>
-                <div className="flex items-center space-x-2 lg:space-x-3">
-                  <span className="text-sm text-gray-700 truncate max-w-24 lg:max-w-none">
-                    {session.user?.name}
-                  </span>
-                  <Link
-                    href="/profile"
-                    className="text-sm font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap"
-                  >
-                    Profile
-                  </Link>
-                </div>
-                {session.user?.role === "admin" && (
-                  <Link
-                    href="/admin"
-                    className="text-sm font-medium text-gray-500 hover:text-gray-900"
-                  >
-                    Admin
-                  </Link>
-                )}
-                <button
-                  onClick={handleSignOut}
-                  className="text-sm font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className="text-sm font-medium text-gray-500 hover:text-gray-900"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/signup"
-                  className="text-sm font-medium text-blue-600 hover:text-blue-700 whitespace-nowrap"
-                >
-                  Sign Up
-                </Link>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile dropdown menu */}
-      <div className={`md:hidden ${isOpen ? "block" : "hidden"}`}>
-        <div className="px-4 py-3 bg-white border-t shadow-lg">
-          {/* Main navigation - compact grid */}
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            {navigation.slice(0, 6).map((item) => (
-              <Link
-                key={item.name}
-                href={item.href}
-                onClick={closeMenu}
-                className={`px-3 py-2 text-sm font-medium rounded-md text-center transition-colors ${
-                  pathname === item.href
-                    ? "text-blue-600 bg-blue-50"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
-
-          {/* Contact link if we have more than 6 items */}
-          {navigation.length > 6 && (
-            <Link
-              href="/contact"
-              onClick={closeMenu}
-              className={`block px-3 py-2 text-sm font-medium rounded-md text-center mb-3 transition-colors ${
-                pathname === "/contact"
-                  ? "text-blue-600 bg-blue-50"
-                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              }`}
-            >
-              Contact
-            </Link>
-          )}
-
-          {/* Auth section - compact */}
-          <div className="border-t border-gray-200 pt-3">
-            {status === "loading" ? (
-              <div className="text-center text-sm text-gray-500">
-                Loading...
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-500">Loading...</span>
               </div>
             ) : session ? (
-              <div className="flex flex-col space-y-2">
-                <div className="text-center">
-                  <span className="text-sm text-gray-700">
-                    Hi, {session.user?.name?.split(" ")[0]}
+              <div className="flex items-center space-x-3">
+                <div className="hidden lg:flex items-center space-x-2 px-3 py-1.5 bg-gray-50 rounded-full">
+                  <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                    <span className="text-white text-xs font-medium">
+                      {session.user?.name?.charAt(0)}
+                    </span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 max-w-24 truncate">
+                    {session.user?.name}
                   </span>
                 </div>
-                <div className="flex space-x-2">
+                <div className="flex items-center space-x-2">
                   <Link
                     href="/profile"
-                    onClick={closeMenu}
-                    className="flex-1 px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md text-center"
+                    className="px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all duration-200"
                   >
                     Profile
                   </Link>
                   {session.user?.role === "admin" && (
                     <Link
                       href="/admin"
-                      onClick={closeMenu}
-                      className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md text-center"
+                      className="px-3 py-2 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-all duration-200"
                     >
                       Admin
                     </Link>
                   )}
                   <button
-                    onClick={() => {
-                      handleSignOut();
-                      closeMenu();
-                    }}
-                    className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md"
+                    onClick={handleSignOut}
+                    className="px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-all duration-200"
                   >
                     Logout
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="flex space-x-2">
+              <div className="flex items-center space-x-2">
+                <Link
+                  href="/login"
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile dropdown menu */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ${
+          isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+        }`}
+      >
+        <div className="px-4 py-4 bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg">
+          {/* Main navigation */}
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={closeMenu}
+                className={`px-4 py-3 text-sm font-medium rounded-xl text-center transition-all duration-200 ${
+                  pathname === item.href
+                    ? "text-blue-600 bg-blue-50 shadow-sm"
+                    : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Auth section */}
+          <div className="border-t border-gray-100 pt-4">
+            {status === "loading" ? (
+              <div className="flex justify-center items-center space-x-2 py-4">
+                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-500">Loading...</span>
+              </div>
+            ) : session ? (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/profile"
+                    onClick={closeMenu}
+                    className="px-4 py-3 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl text-center transition-all duration-200"
+                  >
+                    Profile
+                  </Link>
+                  {session.user?.role === "admin" ? (
+                    <Link
+                      href="/admin"
+                      onClick={closeMenu}
+                      className="px-4 py-3 text-sm font-medium text-amber-600 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition-all duration-200"
+                    >
+                      Admin
+                    </Link>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        closeMenu();
+                      }}
+                      className="px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-all duration-200"
+                    >
+                      Logout
+                    </button>
+                  )}
+                  {session.user?.role === "admin" && (
+                    <button
+                      onClick={() => {
+                        handleSignOut();
+                        closeMenu();
+                      }}
+                      className="w-full px-4 py-3 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-xl transition-all duration-200"
+                    >
+                      Logout
+                    </button>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
                 <Link
                   href="/login"
                   onClick={closeMenu}
-                  className="flex-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md text-center"
+                  className="px-4 py-3 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-xl text-center transition-all duration-200"
                 >
                   Login
                 </Link>
                 <Link
                   href="/signup"
                   onClick={closeMenu}
-                  className="flex-1 px-3 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md text-center"
+                  className="px-4 py-3 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-xl text-center shadow-sm transition-all duration-200"
                 >
                   Sign Up
                 </Link>

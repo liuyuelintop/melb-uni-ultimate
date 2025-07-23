@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       email,
       studentId,
       gender,
-      position: position || "any",
+      position: position || "cutter",
       experience: experience || "beginner",
       jerseyNumber,
       phoneNumber,

@@ -34,7 +34,7 @@ const PlayerFilters: React.FC<PlayerFiltersProps> = ({
         <option value="all">All Positions</option>
         <option value="handler">Handler</option>
         <option value="cutter">Cutter</option>
-        <option value="any">Any</option>
+        <option value="utility">Utility</option>
       </select>
       <select
         value={filterExperience}

@@ -13,7 +13,7 @@ interface Player {
   email: string;
   studentId?: string;
   gender: "male" | "female" | "other";
-  position: "handler" | "cutter" | "any";
+  position: "handler" | "cutter" | "utility";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber: number;
   phoneNumber?: string;
@@ -92,7 +92,7 @@ export default function PlayerManager() {
     activePlayers: players.filter((p) => p.isActive).length,
     handlers: players.filter((p) => p.position === "handler").length,
     cutters: players.filter((p) => p.position === "cutter").length,
-    anyPosition: players.filter((p) => p.position === "any").length,
+    utilityPosition: players.filter((p) => p.position === "utility").length,
   };
 
   const filteredPlayers = players.filter((player) => {
@@ -143,7 +143,7 @@ export default function PlayerManager() {
       position:
         player.position === "handler" ||
         player.position === "cutter" ||
-        player.position === "any"
+        player.position === "utility"
           ? player.position
           : "handler",
       experience: player.experience ?? "beginner",

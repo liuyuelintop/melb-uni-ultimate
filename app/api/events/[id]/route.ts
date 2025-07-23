@@ -20,7 +20,15 @@ export async function GET(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ event });
+    // After fetching the event from DB, compute status:
+    const now = new Date();
+    const start = new Date(event.startDate);
+    const end = new Date(event.endDate);
+    let status: "upcoming" | "ongoing" | "completed";
+    if (now < start) status = "upcoming";
+    else if (now >= start && now <= end) status = "ongoing";
+    else status = "completed";
+    return NextResponse.json({ ...event.toObject(), status });
   } catch (error) {
     console.error("Error fetching event:", error);
     return NextResponse.json(
@@ -71,7 +79,6 @@ export async function PATCH(
       location,
       type,
       status,
-      maxParticipants,
       registrationDeadline,
       isPublic,
     } = body;

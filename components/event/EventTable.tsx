@@ -63,7 +63,7 @@ const EventTable: React.FC<EventTableProps> = ({
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">
-                  {e.currentParticipants}/{e.maxParticipants || "∞"}
+                  {e.currentParticipants}
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
@@ -78,7 +78,9 @@ const EventTable: React.FC<EventTableProps> = ({
                       : "red"
                   }
                 >
-                  {e.status.charAt(0).toUpperCase() + e.status.slice(1)}
+                  {e.status
+                    ? e.status.charAt(0).toUpperCase() + e.status.slice(1)
+                    : "Unknown"}
                 </Badge>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

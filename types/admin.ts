@@ -16,9 +16,8 @@ export interface Event {
   startDate: string;
   endDate: string;
   location: string;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
+  status?: "upcoming" | "ongoing" | "completed";
   currentParticipants: number;
-  maxParticipants?: number;
   registrationDeadline?: string;
   isPublic: boolean;
 }

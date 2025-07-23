@@ -21,7 +21,17 @@ export async function GET(request: NextRequest) {
 
     const events = await Event.find(query).sort({ startDate: 1 }).limit(50);
 
-    return NextResponse.json(events);
+    const now = new Date();
+    const eventsWithStatus = events.map((event) => {
+      let status: "upcoming" | "ongoing" | "completed";
+      const start = new Date(event.startDate);
+      const end = new Date(event.endDate);
+      if (now < start) status = "upcoming";
+      else if (now >= start && now <= end) status = "ongoing";
+      else status = "completed";
+      return { ...event.toObject(), status };
+    });
+    return NextResponse.json(eventsWithStatus);
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json(
@@ -49,7 +59,6 @@ export async function POST(request: NextRequest) {
       endDate,
       location,
       type,
-      maxParticipants,
       registrationDeadline,
       isPublic,
     } = body;
@@ -73,7 +82,6 @@ export async function POST(request: NextRequest) {
       type,
       status: "upcoming",
       currentParticipants: 0,
-      maxParticipants: maxParticipants ? parseInt(maxParticipants) : undefined,
       registrationDeadline: registrationDeadline
         ? new Date(registrationDeadline)
         : undefined,

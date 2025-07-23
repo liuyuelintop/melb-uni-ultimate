@@ -21,8 +21,7 @@ interface Event {
   endDate: string;
   location: string;
   type: "practice" | "tournament" | "social" | "training" | "other";
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
-  maxParticipants?: number;
+  status: "upcoming" | "ongoing" | "completed";
   registrationDeadline?: string;
   isPublic: boolean;
   createdAt: string;
@@ -81,8 +80,6 @@ export default function EventDetail() {
         return "bg-green-100 text-green-800 border-green-200";
       case "completed":
         return "bg-gray-100 text-gray-800 border-gray-200";
-      case "cancelled":
-        return "bg-red-100 text-red-800 border-red-200";
       default:
         return "bg-gray-100 text-gray-800 border-gray-200";
     }
@@ -227,13 +224,6 @@ export default function EventDetail() {
           </div>
 
           {/* Registration Info */}
-          {event.maxParticipants && (
-            <div className="flex items-center text-gray-600 mb-4">
-              <Users className="w-4 h-4 mr-2" />
-              <span>Max Participants: {event.maxParticipants}</span>
-            </div>
-          )}
-
           {/* Registration Deadline */}
           {event.registrationDeadline && (
             <div className="flex items-center text-gray-600 mb-4">

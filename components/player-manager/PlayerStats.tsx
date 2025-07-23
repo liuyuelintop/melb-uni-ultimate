@@ -5,7 +5,7 @@ interface PlayerStatsProps {
   activePlayers: number;
   handlers: number;
   cutters: number;
-  anyPosition: number;
+  utilityPosition: number;
 }
 
 const PlayerStats: React.FC<PlayerStatsProps> = ({
@@ -13,7 +13,7 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
   activePlayers,
   handlers,
   cutters,
-  anyPosition,
+  utilityPosition,
 }) => (
   <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
     <div className="bg-white rounded-lg shadow-md p-4 text-center">
@@ -33,8 +33,8 @@ const PlayerStats: React.FC<PlayerStatsProps> = ({
       <p className="text-2xl font-bold text-orange-600">{cutters}</p>
     </div>
     <div className="bg-white rounded-lg shadow-md p-4 text-center">
-      <h3 className="text-lg font-semibold text-gray-900">Any</h3>
-      <p className="text-2xl font-bold text-yellow-600">{anyPosition}</p>
+      <h3 className="text-lg font-semibold text-gray-900">Utility</h3>
+      <p className="text-2xl font-bold text-yellow-600">{utilityPosition}</p>
     </div>
   </div>
 );

@@ -26,7 +26,7 @@ export interface PlayerForm {
   email: string;
   studentId?: string;
   gender: "male" | "female" | "other";
-  position: "handler" | "cutter" | "any";
+  position: "handler" | "cutter" | "utility";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber?: string;
   phoneNumber?: string;
@@ -163,11 +163,11 @@ const PlayerFormModal: React.FC<PlayerFormModalProps> = ({
                   <Label htmlFor="player-position">Position</Label>
                   <Select
                     name="position"
-                    value={form.position || "any"}
+                    value={form.position || "utility"}
                     onValueChange={(value) =>
                       setForm((p: PlayerForm) => ({
                         ...p,
-                        position: value as "handler" | "cutter" | "any",
+                        position: value as "handler" | "cutter" | "utility",
                       }))
                     }
                   >
@@ -177,7 +177,7 @@ const PlayerFormModal: React.FC<PlayerFormModalProps> = ({
                     <SelectContent>
                       <SelectItem value="handler">Handler</SelectItem>
                       <SelectItem value="cutter">Cutter</SelectItem>
-                      <SelectItem value="any">Any</SelectItem>
+                      <SelectItem value="utility">Utility</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
