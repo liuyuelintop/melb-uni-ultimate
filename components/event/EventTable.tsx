@@ -78,7 +78,9 @@ const EventTable: React.FC<EventTableProps> = ({
                       : "red"
                   }
                 >
-                  {e.status.charAt(0).toUpperCase() + e.status.slice(1)}
+                  {e.status
+                    ? e.status.charAt(0).toUpperCase() + e.status.slice(1)
+                    : "Unknown"}
                 </Badge>
               </td>
               <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

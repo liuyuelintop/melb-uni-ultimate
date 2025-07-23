@@ -37,7 +37,9 @@ const EventListItem: React.FC<EventListItemProps> = ({
                 : "red"
             }
           >
-            {event.status.charAt(0).toUpperCase() + event.status.slice(1)}
+            {event.status
+              ? event.status.charAt(0).toUpperCase() + event.status.slice(1)
+              : "Unknown"}
           </Badge>
         </div>
         {event.description && (
@@ -47,10 +49,7 @@ const EventListItem: React.FC<EventListItemProps> = ({
           <span>Type: {event.type}</span>
           <span>Date: {new Date(event.startDate).toLocaleDateString()}</span>
           <span>Location: {event.location}</span>
-          <span>
-            Participants: {event.currentParticipants}/
-            {event.maxParticipants || "∞"}
-          </span>
+          <span>Participants: {event.currentParticipants}</span>
         </div>
       </div>
       <div className="flex flex-col gap-2 ml-4 min-w-[90px]">
