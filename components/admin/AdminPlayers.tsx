@@ -204,23 +204,46 @@ export default function PlayerManager() {
     }
   };
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsAddModalOpen(false);
-    setNewPlayer({
-      name: "",
-      email: "",
-      studentId: "",
-      gender: "male",
-      position: "handler",
-      experience: "beginner",
-      jerseyNumber: "",
-      phoneNumber: "",
-      graduationYear: "",
-      affiliation: "",
-      isActive: true,
-    });
-    addNotification("success", "Player added (placeholder)");
+    try {
+      const response = await fetch("/api/players", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newPlayer,
+          jerseyNumber: newPlayer.jerseyNumber
+            ? parseInt(newPlayer.jerseyNumber)
+            : undefined,
+          graduationYear: newPlayer.graduationYear
+            ? parseInt(newPlayer.graduationYear)
+            : undefined,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setPlayers((prev) => [data, ...prev]);
+        addNotification("success", "Player added successfully");
+        setIsAddModalOpen(false);
+        setNewPlayer({
+          name: "",
+          email: "",
+          studentId: "",
+          gender: "male",
+          position: "handler",
+          experience: "beginner",
+          jerseyNumber: "",
+          phoneNumber: "",
+          graduationYear: "",
+          affiliation: "",
+          isActive: true,
+        });
+      } else {
+        addNotification("error", data.error || "Failed to add player");
+      }
+    } catch (error) {
+      addNotification("error", "Network error while adding player");
+    }
   };
 
   if (loading) {

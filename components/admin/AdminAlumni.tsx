@@ -109,8 +109,8 @@ export default function AdminAlumni() {
 
   const filteredAlumni = alumni.filter((alum) => {
     const matchesSearch =
-      alum.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      alum.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alum.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      alum.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alum.studentId?.includes(searchTerm) ||
       alum.currentJob?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       alum.company?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -218,26 +218,45 @@ export default function AdminAlumni() {
     }
   };
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual add logic (API call, validation, etc.)
-    setIsAddModalOpen(false);
-    setNewAlumni({
-      name: "",
-      email: "",
-      studentId: "",
-      graduationYear: "",
-      currentLocation: "",
-      currentJob: "",
-      company: "",
-      achievements: [""],
-      contactPreference: "email",
-      phoneNumber: "",
-      linkedinUrl: "",
-      affiliation: "",
-      isActive: true,
-    });
-    addNotification("success", "Alumni added (placeholder)");
+    try {
+      const response = await fetch("/api/alumni", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ...newAlumni,
+          graduationYear: newAlumni.graduationYear
+            ? parseInt(newAlumni.graduationYear.toString())
+            : undefined,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setAlumni((prev) => [data, ...prev]);
+        addNotification("success", "Alumni added successfully");
+        setIsAddModalOpen(false);
+        setNewAlumni({
+          name: "",
+          email: "",
+          studentId: "",
+          graduationYear: "",
+          currentLocation: "",
+          currentJob: "",
+          company: "",
+          achievements: [""],
+          contactPreference: "email",
+          phoneNumber: "",
+          linkedinUrl: "",
+          affiliation: "",
+          isActive: true,
+        });
+      } else {
+        addNotification("error", data.error || "Failed to add alumni");
+      }
+    } catch (error) {
+      addNotification("error", "Network error while adding alumni");
+    }
   };
 
   if (loading) {
