@@ -28,11 +28,7 @@ export function useEvents() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        maxParticipants:
-          typeof form.maxParticipants === "string" && form.maxParticipants
-            ? parseInt(form.maxParticipants)
-            : undefined,
-        registrationDeadline: form.registrationDeadline || undefined,
+        // status is now computed by API, not set manually
       }),
     });
     if (response.ok) {
@@ -61,11 +57,7 @@ export function useEvents() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ...form,
-        maxParticipants:
-          typeof form.maxParticipants === "string" && form.maxParticipants
-            ? parseInt(form.maxParticipants)
-            : undefined,
-        registrationDeadline: form.registrationDeadline || undefined,
+        // status is now computed by API, not set manually
       }),
     });
     if (response.ok) {

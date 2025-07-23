@@ -7,7 +7,7 @@ export interface IUser extends Document {
   studentId?: string; // Made optional
   gender: "male" | "female" | "other"; // New required field
   phoneNumber?: string;
-  position: "handler" | "cutter" | "any";
+  position: "handler" | "cutter" | "utility";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   role: "user" | "admin";
   isVerified: boolean;
@@ -65,8 +65,8 @@ const userSchema = new Schema<IUser>(
     },
     position: {
       type: String,
-      enum: ["handler", "cutter", "any"],
-      default: "any",
+      enum: ["handler", "cutter", "utility"],
+      default: "utility",
     },
     experience: {
       type: String,

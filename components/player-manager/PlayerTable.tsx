@@ -6,7 +6,7 @@ interface Player {
   email: string;
   studentId?: string;
   gender: "male" | "female" | "other";
-  position: "handler" | "cutter" | "any";
+  position: "handler" | "cutter" | "utility";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber: number;
   phoneNumber?: string;

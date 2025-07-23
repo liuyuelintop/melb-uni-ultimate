@@ -30,7 +30,6 @@ export interface AdminConfig {
       startDate: string;
       endDate: string;
       location: string;
-      maxParticipants: string;
       registrationDeadline: string;
       isPublic: boolean;
     };
@@ -74,7 +73,6 @@ export const adminConfig: AdminConfig = {
       startDate: "",
       endDate: "",
       location: "",
-      maxParticipants: "",
       registrationDeadline: "",
       isPublic: true,
     },

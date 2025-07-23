@@ -9,16 +9,7 @@ export default function SignupPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    studentId: "",
     gender: "other" as "male" | "female" | "other",
-    phoneNumber: "",
-    affiliation: "", // New field
-    position: "any" as "handler" | "cutter" | "any",
-    experience: "beginner" as
-      | "beginner"
-      | "intermediate"
-      | "advanced"
-      | "expert",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -63,12 +54,7 @@ export default function SignupPage() {
           email: "",
           password: "",
           confirmPassword: "",
-          studentId: "",
           gender: "other",
-          phoneNumber: "",
-          affiliation: "",
-          position: "any",
-          experience: "beginner",
         });
       } else {
         setError(data.error || "Failed to create account");
@@ -156,23 +142,6 @@ export default function SignupPage() {
 
             <div>
               <label
-                htmlFor="studentId"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Student ID <span className="text-gray-400">(optional)</span>
-              </label>
-              <input
-                id="studentId"
-                name="studentId"
-                type="text"
-                value={formData.studentId}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="12345678"
-              />
-            </div>
-            <div>
-              <label
                 htmlFor="gender"
                 className="block text-sm font-medium text-gray-700"
               >
@@ -189,83 +158,6 @@ export default function SignupPage() {
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-            </div>
-            <div>
-              <label
-                htmlFor="phoneNumber"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Phone Number <span className="text-gray-400">(optional)</span>
-              </label>
-              <input
-                id="phoneNumber"
-                name="phoneNumber"
-                type="tel"
-                value={formData.phoneNumber}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="+61 400 123 456"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="affiliation"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Affiliation <span className="text-gray-400">(optional)</span>
-              </label>
-              <input
-                id="affiliation"
-                name="affiliation"
-                type="text"
-                value={formData.affiliation}
-                onChange={handleChange}
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="e.g. Melbourne Uni, External, Coach"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label
-                  htmlFor="position"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Preferred Position
-                </label>
-                <select
-                  id="position"
-                  name="position"
-                  value={formData.position}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                >
-                  <option value="handler">Handler</option>
-                  <option value="cutter">Cutter</option>
-                  <option value="any">Any</option>
-                </select>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="experience"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Experience Level
-                </label>
-                <select
-                  id="experience"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                >
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                  <option value="expert">Expert</option>
-                </select>
-              </div>
             </div>
 
             <div>

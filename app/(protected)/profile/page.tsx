@@ -7,7 +7,7 @@ interface UserProfile {
   name: string;
   email: string;
   studentId: string;
-  position: "handler" | "cutter" | "any";
+  position: "handler" | "cutter" | "utility";
   experience: "beginner" | "intermediate" | "advanced" | "expert";
   jerseyNumber?: string;
   phoneNumber?: string;
@@ -287,14 +287,14 @@ export default function ProfilePage() {
                         position: e.target.value as
                           | "handler"
                           | "cutter"
-                          | "any",
+                          | "utility",
                       })
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="handler">Handler</option>
                     <option value="cutter">Cutter</option>
-                    <option value="any">Any</option>
+                    <option value="utility">Utility</option>
                   </select>
                 ) : (
                   <p className="text-gray-900 capitalize">{profile.position}</p>

@@ -33,7 +33,7 @@ const RosterEntrySchema = new Schema<IRosterEntry>(
     },
     position: {
       type: String,
-      enum: ["handler", "cutter", "any"],
+      enum: ["handler", "cutter", "utility"],
       required: false,
     },
     notes: {

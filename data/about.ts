@@ -98,9 +98,9 @@ export const aboutLeaders: Leader[] = [
   {
     initials: "EM",
     title: "Events Manager",
-    name: "Nichelle serenity archery",
+    name: "Nichelle Serenity Archery",
   },
-  { initials: "EM", title: "Events Manager", name: "Soaham chauhan" },
+  { initials: "EM", title: "Events Manager", name: "Soaham Chauhan" },
   { initials: "GM", title: "General Member", name: "Kat Buckser" },
 ];
 

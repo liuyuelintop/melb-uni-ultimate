@@ -8,15 +8,6 @@ import {
 import { SOCIAL_LINKS } from "@/data/footer.js";
 
 export default function Footer() {
-  const quickLinks = [
-    { href: "/announcements", label: "Announcements" },
-    { href: "/events", label: "Events" },
-    { href: "/roster", label: "Roster" },
-    { href: "/alumni", label: "Alumni" },
-    { href: "/about", label: "About Us" },
-    { href: "/contact", label: "Contact" },
-  ];
-
   const socialLinks = [
     {
       href: SOCIAL_LINKS.instagram,
@@ -36,89 +27,64 @@ export default function Footer() {
 
   return (
     <footer className="bg-gradient-to-b from-gray-900 to-gray-950 text-white">
-      <div className="container mx-auto px-4 py-12">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-8">
-          {/* Club Information - Takes more space on larger screens */}
-          <div className="lg:col-span-2">
-            <div className="mb-6">
-              <h3 className="text-xl font-bold mb-3 text-white">
-                Melbourne University Ultimate Frisbee Club
-              </h3>
-              <p className="text-gray-300 leading-relaxed max-w-md">
-                Promoting the sport of Ultimate Frisbee at the University of
-                Melbourne since 2000. Join our community of passionate athletes
-                and experience the spirit of the game.
-              </p>
-            </div>
+      <div className="px-4 py-8 sm:px-6 lg:px-8 lg:py-10 max-w-7xl mx-auto">
+        {/* Desktop: Two column layout, Mobile: Stacked */}
+        <div className="lg:grid lg:grid-cols-3 lg:gap-8 lg:items-start space-y-6 lg:space-y-0">
+          {/* Club Info - Takes more space on desktop */}
+          <div className="text-center sm:text-left lg:col-span-2">
+            <h3 className="text-lg sm:text-xl font-bold mb-2 lg:mb-3 text-white">
+              MU Ultimate Frisbee Club
+            </h3>
+            <p className="text-gray-300 leading-relaxed text-sm sm:text-base max-w-lg mx-auto sm:mx-0 lg:max-w-none">
+              Join our community of passionate Ultimate players at the
+              University of Melbourne.
+            </p>
 
-            {/* Contact Information */}
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3 text-gray-300">
-                <FaEnvelope className="text-blue-400 flex-shrink-0" />
-                <a
-                  href="mailto:unimelbultimate@gmail.com"
-                  className="hover:text-blue-300 transition-colors duration-200"
-                >
-                  unimelbultimate@gmail.com
-                </a>
-              </div>
-              <div className="flex items-center space-x-3 text-gray-300">
-                <FaMapMarkerAlt className="text-blue-400 flex-shrink-0" />
-                <span>University of Melbourne, Parkville VIC 3010</span>
+            {/* Contact Info - Desktop inline */}
+            <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row sm:items-center lg:items-start xl:items-center sm:space-x-6 lg:space-x-0 xl:space-x-6 space-y-2 sm:space-y-0 lg:space-y-2 xl:space-y-0 mt-4">
+              <a
+                href="mailto:unimelbultimate@gmail.com"
+                className="flex items-center justify-center sm:justify-start lg:justify-start space-x-2 text-gray-300 hover:text-blue-300 transition-colors text-sm"
+              >
+                <FaEnvelope className="text-blue-400 text-xs" />
+                <span>unimelbultimate@gmail.com</span>
+              </a>
+              <div className="flex items-center justify-center sm:justify-start lg:justify-start space-x-2 text-gray-300 text-sm">
+                <FaMapMarkerAlt className="text-blue-400 text-xs" />
+                <span>University of Melbourne</span>
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">
-              Quick Links
-            </h4>
-            <nav>
-              <ul className="space-y-3">
-                {quickLinks.map((link, index) => (
-                  <li key={index}>
-                    <Link
-                      href={link.href}
-                      className="text-gray-300 hover:text-white hover:translate-x-1 transition-all duration-200 inline-block"
+          {/* Social & CTA - Right column on desktop */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Social Media */}
+            <div>
+              <h4 className="text-base font-semibold mb-3 text-white text-center lg:text-left">
+                Connect
+              </h4>
+              <div className="flex justify-center lg:justify-start space-x-3">
+                {socialLinks.map((social, index) => {
+                  const IconComponent = social.icon;
+                  return (
+                    <a
+                      key={index}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`p-2 rounded-full bg-gray-800 ${social.hoverColor} ${social.bgHover} transition-all duration-300 hover:scale-110`}
+                      aria-label={social.label}
                     >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          </div>
-
-          {/* Social Media & Connect */}
-          <div>
-            <h4 className="text-lg font-semibold mb-4 text-white">
-              Connect With Us
-            </h4>
-
-            {/* Social Media Icons */}
-            <div className="flex space-x-4 mb-6">
-              {socialLinks.map((social, index) => {
-                const IconComponent = social.icon;
-                return (
-                  <a
-                    key={index}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`p-3 rounded-full bg-gray-800 ${social.hoverColor} ${social.bgHover} transition-all duration-300 hover:scale-110 hover:shadow-lg group`}
-                    aria-label={social.label}
-                  >
-                    <IconComponent className="text-xl" />
-                  </a>
-                );
-              })}
+                      <IconComponent className="text-lg" />
+                    </a>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Call to Action */}
-            <div className="bg-gradient-to-r from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-4">
-              <p className="text-sm text-gray-300 mb-2">Ready to join us?</p>
+            {/* CTA - Compact */}
+            <div className="bg-gradient-to-r from-blue-500/10 to-blue-600/10 border border-blue-500/20 rounded-lg p-3 text-center lg:text-left">
+              <p className="text-xs text-gray-300 mb-1">Ready to join?</p>
               <Link
                 href="/contact"
                 className="inline-flex items-center text-blue-400 hover:text-blue-300 font-medium text-sm transition-colors duration-200"
@@ -129,25 +95,24 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Footer Bottom */}
-        <div className="border-t border-gray-800 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-gray-400 text-sm">
-              © 2025 Melbourne University Ultimate Frisbee Club. All rights
-              reserved.
+        {/* Footer Bottom - Reduced spacing */}
+        <div className="border-t border-gray-800 pt-4 mt-6 lg:mt-8">
+          <div className="flex flex-col space-y-3 sm:flex-row sm:justify-between sm:items-center sm:space-y-0">
+            <p className="text-gray-400 text-xs sm:text-sm text-center sm:text-left">
+              © 2025 MU Ultimate Frisbee Club. All rights reserved.
             </p>
-            <div className="flex items-center space-x-6 text-sm">
+            <div className="flex justify-center sm:justify-end space-x-4 sm:space-x-6 text-xs sm:text-sm">
               <Link
                 href="/privacy"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
               >
-                Privacy Policy
+                Privacy
               </Link>
               <Link
                 href="/terms"
                 className="text-gray-400 hover:text-white transition-colors duration-200"
               >
-                Terms of Service
+                Terms
               </Link>
             </div>
           </div>

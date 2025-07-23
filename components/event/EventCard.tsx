@@ -11,9 +11,8 @@ interface Event {
   startDate: string;
   endDate: string;
   location: string;
-  status: "upcoming" | "ongoing" | "completed" | "cancelled";
+  status: "upcoming" | "ongoing" | "completed";
   currentParticipants: number;
-  maxParticipants?: number;
   registrationDeadline?: string;
   isPublic: boolean;
 }
@@ -35,7 +34,6 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
     if (status === "upcoming") return "green";
     if (status === "ongoing") return "blue";
     if (status === "completed") return "gray";
-    if (status === "cancelled") return "red";
     return "gray";
   }
 
@@ -74,10 +72,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, className }) => {
       <div className="space-y-2 text-sm text-gray-500 mb-4">
         <div>📅 {formatDate(event.startDate)}</div>
         <div>📍 {event.location}</div>
-        <div>
-          👥 {event.currentParticipants}/{event.maxParticipants || "∞"}{" "}
-          participants
-        </div>
+        <div>👥 {event.currentParticipants} participants</div>
         {event.registrationDeadline && (
           <div>
             ⏰ Registration deadline: {formatDate(event.registrationDeadline)}
