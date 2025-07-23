@@ -28,7 +28,7 @@ export async function GET(
     if (now < start) status = "upcoming";
     else if (now >= start && now <= end) status = "ongoing";
     else status = "completed";
-    return NextResponse.json({ ...event.toObject(), status });
+    return NextResponse.json({ event: { ...event.toObject(), status } });
   } catch (error) {
     console.error("Error fetching event:", error);
     return NextResponse.json(
