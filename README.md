@@ -1,195 +1,157 @@
-# Melbourne University Ultimate Frisbee Club
+# 🥏 Melbourne University Ultimate Frisbee Club
 
-A modern web application for the Melbourne University Ultimate Frisbee Club, built with Next.js 15, TypeScript, and Tailwind CSS. This platform serves as the official website for club management, member communication, and community engagement.
+[![Next.js](https://img.shields.io/badge/Next.js-15-blue?logo=nextdotjs)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-6.0-47A248?logo=mongodb)](https://www.mongodb.com/)
+[![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)](https://vercel.com/)
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-## 🏆 About the Club
+> **A modern, full-featured web platform for ultimate frisbee clubs, built for the Melbourne University Ultimate community and open to all!**
 
-The Melbourne University Ultimate Frisbee Club has been promoting the spirit of the game and building a vibrant community since 1995. We compete in local and national tournaments while fostering a welcoming environment for players of all skill levels.
+---
 
-### Key Features
+## 🌟 Why Star This Project?
 
-- **Competitive Spirit**: Compete in local and national tournaments
-- **Community**: Welcoming environment for all skill levels
-- **Fitness & Fun**: Regular practices and social events
-- **Spirit of the Game**: Emphasis on sportsmanship and self-officiating
+- **Beautiful, modern UI** with Tailwind, shadcn/ui, and Lucide icons
+- **All-in-one club management**: events, announcements, roster, alumni, tournaments, and more
+- **Admin dashboard** for easy content and user management
+- **Open source, MIT licensed** – ready for your club or team!
+- **Easy deploy to Vercel** (or your own server)
+- **Active development & welcoming to contributors**
+
+---
 
 ## 🚀 Features
 
-### Public Pages
+### 🏠 Public Pages
 
-- **Home**: Club overview and quick links
-- **About**: Club history, mission, values, and leadership
-- **Announcements**: Club news and updates
-- **Events**: Practice schedules and tournament information
-- **Contact**: Get in touch with club leadership
+- **Home**: Club intro, quick links, and highlights
+- **About**: Club history, values, and leadership
+- **Announcements**: News, updates, and important info
+- **Events**: Practice, tournament, and social event calendar
+- **Roster**: Public team roster with gender/role badges and filters
+- **Alumni**: Connect with past members
+- **Contact**: Easy contact form for inquiries
 
-### Protected Member Features
+### 🔒 Member & Admin Features
 
-- **Profile Management**: Update personal information
-- **Team Roster**: View current club members
-- **Alumni Network**: Connect with former members
+- **Profile**: Secure member profiles
+- **Admin Dashboard**: Manage announcements, events, players, alumni, and tournaments in one place
+- **CRUD**: Create, edit, and delete content with confirmation dialogs and notifications
+- **Role-based access**: NextAuth.js with admin/member/public roles
+- **Modern UI/UX**: Responsive, accessible, and mobile-friendly
 
-### Admin Features
+### 🛠️ Tech Stack
 
-- **User Management**: Manage member accounts and roles
-- **Content Management**: Create and edit announcements and events
-- **Database Administration**: Access to club data
+- **Next.js 15** (App Router, SSR, API routes)
+- **TypeScript** (strict types everywhere)
+- **Tailwind CSS** + **shadcn/ui** (customizable, beautiful components)
+- **MongoDB** + **Mongoose** (robust data models)
+- **NextAuth.js** (secure authentication)
+- **Lucide React** (iconography)
+- **Jest** (unit tests)
+- **ESLint, Prettier, Husky** (code quality)
 
-## 🛠️ Tech Stack
+---
 
-- **Framework**: [Next.js 15](https://nextjs.org/) with App Router
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **Authentication**: [NextAuth.js](https://next-auth.js.org/)
-- **Database**: [MongoDB](https://www.mongodb.com/) with [Mongoose](https://mongoosejs.com/)
-- **UI Components**: Custom components with [Lucide React](https://lucide.dev/) icons
-- **Deployment**: [Vercel](https://vercel.com/)
+## 📸 Screenshots
 
-## 📋 Prerequisites
+> _Add your own screenshots here!_
 
-- Node.js 18+
-- npm, yarn, pnpm, or bun
-- MongoDB database
-- Environment variables configured
+| Home Page                          | Admin Dashboard                      | Events Calendar                        |
+| ---------------------------------- | ------------------------------------ | -------------------------------------- |
+| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) |
 
-## 🚀 Getting Started
+---
 
-### 1. Clone the Repository
+## ⚡ Quick Start
 
 ```bash
 git clone https://github.com/your-username/melb-uni-ultimate.git
 cd melb-uni-ultimate
-```
-
-### 2. Install Dependencies
-
-```bash
 npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
-```
-
-### 3. Environment Setup
-
-Create a `.env.local` file in the root directory with the following variables:
-
-```env
-# Database
-MONGODB_URI=your_mongodb_connection_string
-
-# NextAuth
-NEXTAUTH_URL=http://localhost:3000
-NEXTAUTH_SECRET=your_nextauth_secret
-
-# Email (optional)
-EMAIL_SERVER_HOST=your_smtp_host
-EMAIL_SERVER_PORT=587
-EMAIL_SERVER_USER=your_email_user
-EMAIL_SERVER_PASSWORD=your_email_password
-EMAIL_FROM=noreply@yourdomain.com
-```
-
-### 4. Run the Development Server
-
-```bash
+cp docs/env.template .env.local # or set up your own env vars
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Visit [http://localhost:3000](http://localhost:3000)
+- Sign up as a new user, or log in as admin (see docs/DEPLOYMENT_READY.md for admin setup)
 
-## 📁 Project Structure
+---
+
+## 🗂️ Project Structure
 
 ```
 melb-uni-ultimate/
-├── app/                    # Next.js App Router
-│   ├── (protected)/       # Protected routes (members only)
-│   ├── (public)/          # Public routes
-│   ├── admin/             # Admin panel
-│   ├── api/               # API routes
-│   └── layout.tsx         # Root layout
-├── components/            # Reusable UI components
-│   ├── admin/            # Admin-specific components
-│   ├── announcement/     # Announcement components
-│   ├── event/            # Event components
-│   ├── layout/           # Layout components
-│   ├── roster/           # Roster components
-│   └── ui/               # Generic UI components
-├── lib/                   # Utility libraries
-│   ├── auth/             # Authentication utilities
-│   ├── db/               # Database models and connection
-│   └── utils.ts          # General utilities
-├── public/               # Static assets
-└── styles/               # Global styles
+├── app/                # Next.js App Router (public, protected, admin, api)
+├── components/         # UI and feature components (atomic design)
+├── lib/                # Auth, DB, and utility libraries
+├── data/               # Static data
+├── public/             # Static assets (images, icons)
+├── styles/             # Tailwind/global styles
+├── docs/               # Deployment, env, and screenshot docs
+└── types/              # Shared TypeScript types
 ```
 
-## 🔧 Available Scripts
+---
 
-- `npm run dev` - Start development server with Turbopack
-- `npm run build` - Build the application for production
-- `npm run start` - Start the production server
-- `npm run lint` - Run ESLint for code quality
-
-## 🗄️ Database Models
-
-The application uses MongoDB with the following main models:
-
-- **User**: Member accounts and authentication
-- **Player**: Player profiles and statistics
-- **Announcement**: Club news and updates
-- **Event**: Practices, tournaments, and social events
-- **Alumni**: Former member information
-
-## 🔐 Authentication & Authorization
-
-The application uses NextAuth.js with role-based access control:
+## 🛡️ Authentication & Roles
 
 - **Public**: Anyone can view public pages
-- **Member**: Authenticated users can access protected features
-- **Admin**: Administrators can manage content and users
+- **Member**: Authenticated users get access to protected features
+- **Admin**: Full access to dashboard and management tools
 
-## 🚀 Deployment
+---
+
+## 🏗️ Deployment
 
 ### Vercel (Recommended)
 
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Configure environment variables in Vercel dashboard
-4. Deploy automatically on push to main branch
+- Push to GitHub
+- Connect repo to Vercel
+- Set environment variables ([see template](docs/env.template))
+- Deploy!
 
-### Manual Deployment
+### Manual
 
 ```bash
 npm run build
-npm run start
+npm start
 ```
 
-## 🤝 Contributing
+---
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 🧑‍💻 Contributing
 
-## 📝 License
+We welcome contributions! To get started:
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+1. Fork this repo
+2. Create a feature branch (`git checkout -b feature/your-feature`)
+3. Commit and push your changes
+4. Open a Pull Request
 
-## 📞 Contact
+**Please read [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md) for workflow and code standards.**
 
-For questions about the club, visit our [Contact page](http://localhost:3000/contact) or reach out to the club leadership.
+---
 
-For technical issues with the website, please open an issue on GitHub.
+## 💬 Community & Support
+
+- [Contact page](http://localhost:3000/contact) for club questions
+- [GitHub Issues](https://github.com/your-username/melb-uni-ultimate/issues) for bugs/feature requests
+- [Vercel Discussion](https://vercel.com/support) for deployment help
+
+---
+
+## 📄 License
+
+MIT License. See [LICENSE](LICENSE).
+
+---
+
+## ⭐️ Star This Project!
+
+If you like this project, please **star it on GitHub** and share it with your club or team. Your support helps us grow the Ultimate community!
 
 ---
 
