@@ -2,6 +2,7 @@
 
 import { Link2Icon } from "lucide-react";
 import { FaInstagram, FaFacebook } from "react-icons/fa";
+import { SOCIAL_LINKS } from "@/data/social";
 
 export default function ContactPage() {
   return (
@@ -14,31 +15,32 @@ export default function ContactPage() {
           there!
         </p>
 
-        <div className="flex justify-center space-x-8">
+        {/* Responsive: flex-col on mobile, flex-row on sm+ */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:gap-8 justify-center items-center">
           <a
-            href="https://www.instagram.com/unimelb_ultimate/"
+            href={SOCIAL_LINKS.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center space-x-2 text-pink-500 hover:text-pink-600 text-lg font-medium"
+            className="flex items-center gap-2 text-pink-500 hover:text-pink-600 text-lg font-medium transition-colors"
           >
             <FaInstagram className="text-2xl" />
             <span>Instagram</span>
           </a>
 
           <a
-            href="https://www.facebook.com/melbuniultimate"
+            href={SOCIAL_LINKS.facebook}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 text-lg font-medium"
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 text-lg font-medium transition-colors"
           >
             <FaFacebook className="text-2xl" />
             <span>Facebook</span>
           </a>
           <a
-            href="https://linktr.ee/unimelb_ultimate?fbclid=PAZXh0bgNhZW0CMTEAAafnvGoHvEnzyVL5g3DcfJVL7PoNqMyqTIg2iD-ExKOzR_oOfaT6OFwMVdkxAA_aem_KhUx3bR8qc_7AMTvD9pO8Q"
+            href={SOCIAL_LINKS.linktree}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center space-x-2 text-green-600 hover:text-green-700 text-lg font-medium"
+            className="flex items-center gap-2 text-green-600 hover:text-green-700 text-lg font-medium transition-colors"
           >
             <Link2Icon className="text-2xl" />
             <span>Linktree</span>

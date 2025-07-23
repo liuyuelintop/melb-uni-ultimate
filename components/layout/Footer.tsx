@@ -5,7 +5,7 @@ import {
   FaEnvelope,
   FaMapMarkerAlt,
 } from "react-icons/fa";
-import { SOCIAL_LINKS } from "@/data/footer.js";
+import { SOCIAL_LINKS } from "@/data/social";
 
 export default function Footer() {
   const socialLinks = [

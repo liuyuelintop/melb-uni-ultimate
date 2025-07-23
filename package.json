@@ -20,6 +20,7 @@
     "bcryptjs": "^2.4.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.0",
     "lucide-react": "^0.525.0",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.4",
