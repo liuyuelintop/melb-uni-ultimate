@@ -6,9 +6,9 @@ import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
 import AdminPageLayout from "@/components/admin/AdminPageLayout";
 import Dashboard from "@/components/admin/Dashboard";
-import AnnouncementManager from "@/components/announcement/AnnouncementManager";
-import EventManager from "@/components/event/EventManager";
+import AdminAnnouncement from "@/components/admin/AdminAnnouncement";
 import { useDashboardStats } from "@/hooks/useDashboardStats";
+import AdminEvent from "@/components/admin/AdminEvent";
 
 export default function AdminPage() {
   const { data: session, status } = useSession();
@@ -106,8 +106,8 @@ export default function AdminPage() {
   return (
     <AdminPageLayout activeTab={activeTab} onTabChange={setActiveTab}>
       {activeTab === "dashboard" && <Dashboard stats={stats} />}
-      {activeTab === "announcements" && <AnnouncementManager />}
-      {activeTab === "events" && <EventManager />}
+      {activeTab === "announcements" && <AdminAnnouncement />}
+      {activeTab === "events" && <AdminEvent />}
       {activeTab === "players" && <AdminPlayers />}
       {activeTab === "alumni" && <AdminAlumni />}
       {activeTab === "tournaments" && <AdminTournaments />}

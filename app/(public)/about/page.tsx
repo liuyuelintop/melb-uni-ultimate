@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Container } from "@/components/ui";
+import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ValueCard } from "@/components/about/ValueCard";
 import { AchievementCard } from "@/components/about/AchievementCard";

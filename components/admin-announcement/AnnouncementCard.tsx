@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Badge } from "@/components/ui";
+import { Badge } from "@/components/ui/Badge";
 
 interface Announcement {
   _id: string;

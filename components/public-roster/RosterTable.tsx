@@ -1,8 +1,8 @@
 import { Users } from "lucide-react";
 import { memo, useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/Badge";
+import { Avatar, AvatarFallback } from "@/components/ui/Avatar";
+import { Card, CardContent } from "@/components/ui/Card";
 import {
   Table,
   TableBody,

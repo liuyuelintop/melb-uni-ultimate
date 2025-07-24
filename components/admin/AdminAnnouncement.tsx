@@ -1,89 +1,71 @@
-import { useEvents } from "@/hooks/useEvents";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import EventFormModal from "./EventFormModal";
-import EventTable from "./EventTable";
-import EventFilters from "./EventFilters";
-import { Event } from "@/types/admin";
+import AnnouncementFormModal from "../admin-announcement/AnnouncementFormModal";
+import AnnouncementTable from "../admin-announcement/AnnouncementTable";
+import AnnouncementFilters from "../admin-announcement/AnnouncementFilters";
+import { Announcement } from "@/types/admin";
 import { useNotification } from "@/context/NotificationContext";
 
-export default function EventManager() {
-  const { events, loading, addEvent, deleteEvent, updateEvent } = useEvents();
+export default function AdminAnnouncement() {
+  const {
+    announcements,
+    loading,
+    addAnnouncement,
+    deleteAnnouncement,
+    updateAnnouncement,
+    togglePublish,
+  } = useAnnouncements();
   const { notify } = useNotification();
   const [createOpen, setCreateOpen] = useState(false);
   const [newForm, setNewForm] = useState({
     title: "",
-    description: "",
-    type: "practice" as "practice" | "tournament" | "social" | "training",
-    startDate: "",
-    endDate: "",
-    location: "",
-    registrationDeadline: "",
-    isPublic: true,
+    content: "",
+    priority: "medium" as "low" | "medium" | "high",
+    isPublished: false,
   });
   const [editOpen, setEditOpen] = useState(false);
   const [editForm, setEditForm] = useState({
     title: "",
-    description: "",
-    type: "practice" as "practice" | "tournament" | "social" | "training",
-    startDate: "",
-    endDate: "",
-    location: "",
-    registrationDeadline: "",
-    isPublic: true,
+    content: "",
+    priority: "medium" as "low" | "medium" | "high",
+    isPublished: false,
   });
   const [editId, setEditId] = useState<string | null>(null);
 
   const handleAddSubmit = async (formData: typeof newForm) => {
-    const result = await addEvent({
-      ...formData,
-      currentParticipants: 0,
-    });
+    const result = await addAnnouncement(formData);
     if (result.success) {
-      notify("success", "Event created!");
+      notify("success", "Announcement created!");
       setCreateOpen(false);
       setNewForm({
         title: "",
-        description: "",
-        type: "practice",
-        startDate: "",
-        endDate: "",
-        location: "",
-        registrationDeadline: "",
-        isPublic: true,
+        content: "",
+        priority: "medium",
+        isPublished: false,
       });
     } else {
       notify("error", result.error || "Unknown error");
     }
   };
 
-  const handleEdit = (event: Event) => {
+  const handleEdit = (announcement: Announcement) => {
     setEditForm({
-      title: event.title,
-      description: event.description,
-      type: event.type,
-      startDate: event.startDate,
-      endDate: event.endDate,
-      location: event.location,
-      registrationDeadline: event.registrationDeadline || "",
-      isPublic: event.isPublic,
+      title: announcement.title,
+      content: announcement.content,
+      priority: announcement.priority,
+      isPublished: announcement.isPublished,
     });
-    setEditId(event._id);
+    setEditId(announcement._id);
     setEditOpen(true);
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editId) return;
-    const original = events.find((ev) => ev._id === editId);
-    if (!original) return;
-    const result = await updateEvent(editId, {
-      ...editForm,
-      currentParticipants: original.currentParticipants,
-      registrationDeadline: editForm.registrationDeadline || undefined,
-    });
+    const result = await updateAnnouncement(editId, editForm);
     if (result.success) {
-      notify("success", "Event updated!");
+      notify("success", "Announcement updated!");
       setEditOpen(false);
       setEditId(null);
     } else {
@@ -94,13 +76,13 @@ export default function EventManager() {
   const handleDelete = async (id: string) => {
     if (
       !window.confirm(
-        "Are you sure you want to delete this event? This action cannot be undone."
+        "Are you sure you want to delete this announcement? This action cannot be undone."
       )
     )
       return;
-    const result = await deleteEvent(id);
+    const result = await deleteAnnouncement(id);
     if (result.success) {
-      notify("success", "Event deleted!");
+      notify("success", "Announcement deleted!");
     } else {
       notify("error", result.error || "Unknown error");
     }
@@ -111,24 +93,28 @@ export default function EventManager() {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-2xl font-bold">Events</h2>
+        <h2 className="text-2xl font-bold">Announcements</h2>
         <button
           className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
           onClick={() => setCreateOpen(true)}
         >
-          New Event
+          New Announcement
         </button>
       </div>
-      <EventFilters
+      <AnnouncementFilters
         searchTerm={""}
         setSearchTerm={() => {}}
-        filterType={"all"}
-        setFilterType={() => {}}
+        filterPriority={"all"}
+        setFilterPriority={() => {}}
         filterStatus={"all"}
         setFilterStatus={() => {}}
       />
-      <EventTable events={events} onEdit={handleEdit} onDelete={handleDelete} />
-      <EventFormModal
+      <AnnouncementTable
+        announcements={announcements}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+      <AnnouncementFormModal
         open={createOpen}
         onOpenChange={setCreateOpen}
         form={newForm}
@@ -137,16 +123,16 @@ export default function EventManager() {
           e.preventDefault();
           handleAddSubmit(newForm);
         }}
-        modalTitle="Create Event"
+        modalTitle="Create Announcement"
         submitText="Create"
       />
-      <EventFormModal
+      <AnnouncementFormModal
         open={editOpen}
         onOpenChange={setEditOpen}
         form={editForm}
         setForm={setEditForm}
         handleSubmit={handleEditSubmit}
-        modalTitle="Edit Event"
+        modalTitle="Edit Announcement"
         submitText="Save"
       />
     </div>

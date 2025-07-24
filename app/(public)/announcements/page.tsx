@@ -1,6 +1,6 @@
 "use client";
 
-import { Container } from "@/components/ui";
+import { Container } from "@/components/ui/Container";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { usePublicAnnouncements } from "@/hooks/usePublicAnnouncements";
 import { AnnouncementList } from "@/components/public-announcements/AnnouncementList";

@@ -1,4 +1,4 @@
-import { Container } from "@/components/ui";
+import { Container } from "@/components/ui/Container";
 import { Hero } from "@/components/layout/Hero";
 import { FeatureCard } from "@/components/home/FeatureCard";
 import { QuickLinkCard } from "@/components/home/QuickLinkCard";
