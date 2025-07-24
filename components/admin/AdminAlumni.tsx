@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import AlumniStats from "@/components/alumni-manager/AlumniStats";
-import AlumniFilters from "@/components/alumni-manager/AlumniFilters";
-import AlumniList from "@/components/alumni-manager/AlumniList";
-import AlumniEditModal from "@/components/alumni-manager/AlumniEditModal";
-import AlumniCreateModal from "@/components/alumni-manager/AlumniCreateModal";
+import AlumniStats from "@/components/admin-alumni/AlumniStats";
+import AlumniFilters from "@/components/admin-alumni/AlumniFilters";
+import AlumniList from "@/components/admin-alumni/AlumniList";
+import AlumniEditModal from "@/components/admin-alumni/AlumniEditModal";
+import AlumniCreateModal from "@/components/admin-alumni/AlumniCreateModal";
 import AlumniFormModal, {
   AlumniForm,
-} from "@/components/alumni-manager/AlumniFormModal";
+} from "@/components/admin-alumni/AlumniFormModal";
 import { useNotification } from "@/context/NotificationContext";
 
 interface Alumni {

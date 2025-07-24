@@ -2,12 +2,12 @@
 
 import { Users } from "lucide-react";
 import { usePublicRoster } from "@/hooks/usePublicRoster";
-import { TournamentSelector } from "@/components/roster/TournamentSelector";
-import { TournamentInfoCard } from "@/components/roster/TournamentInfoCard";
-import { RosterSearchBar } from "@/components/roster/RosterSearchBar";
-import { RosterStatsBar } from "@/components/roster/RosterStatsBar";
-import { RosterTable } from "@/components/roster/RosterTable";
-import { RosterFooterStats } from "@/components/roster/RosterFooterStats";
+import { TournamentSelector } from "@/components/public-roster/TournamentSelector";
+import { TournamentInfoCard } from "@/components/public-roster/TournamentInfoCard";
+import { RosterSearchBar } from "@/components/public-roster/RosterSearchBar";
+import { RosterStatsBar } from "@/components/public-roster/RosterStatsBar";
+import { RosterTable } from "@/components/public-roster/RosterTable";
+import { RosterFooterStats } from "@/components/public-roster/RosterFooterStats";
 
 export default function PublicRosterPage() {
   const {

@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import PlayerStats from "@/components/player-manager/PlayerStats";
-import PlayerFilters from "@/components/player-manager/PlayerFilters";
-import PlayerTable from "@/components/player-manager/PlayerTable";
-import PlayerEditModal from "@/components/player-manager/PlayerEditModal";
-import PlayerCreateModal from "@/components/player-manager/PlayerCreateModal";
-import { PlayerForm } from "@/components/player-manager/PlayerFormModal";
+import PlayerStats from "@/components/admin-player/PlayerStats";
+import PlayerFilters from "@/components/admin-player/PlayerFilters";
+import PlayerTable from "@/components/admin-player/PlayerTable";
+import PlayerEditModal from "@/components/admin-player/PlayerEditModal";
+import PlayerCreateModal from "@/components/admin-player/PlayerCreateModal";
+import { PlayerForm } from "@/components/admin-player/PlayerFormModal";
 import { useNotification } from "@/context/NotificationContext";
 
 interface Player {
