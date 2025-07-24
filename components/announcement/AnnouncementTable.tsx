@@ -1,6 +1,6 @@
 import React from "react";
 import { Announcement } from "../../types/admin";
-import { Badge } from "../ui/Badge";
+import { Badge } from "../ui/badge";
 import { Button } from "../ui/Button";
 
 interface AnnouncementTableProps {

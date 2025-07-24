@@ -1,8 +1,8 @@
 import React from "react";
 import { Event } from "../../types/admin";
 import { Button } from "../ui/Button";
-import { Card } from "../ui/Card";
-import { Badge } from "../ui/Badge";
+import { Card } from "../ui/card";
+import { Badge } from "../ui/badge";
 
 interface EventListItemProps {
   event: Event;
