@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode} from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 import type { Notification, NotificationType } from "@/types/notification";
 
 interface NotificationContextType {
@@ -9,7 +9,9 @@ interface NotificationContextType {
   remove: (id: string) => void;
 }
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+const NotificationContext = createContext<NotificationContextType | undefined>(
+  undefined
+);
 
 export function NotificationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -33,6 +35,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 
 export function useNotification() {
   const ctx = useContext(NotificationContext);
-  if (!ctx) throw new Error("useNotification must be used within NotificationProvider");
+  if (!ctx)
+    throw new Error("useNotification must be used within NotificationProvider");
   return ctx;
 }

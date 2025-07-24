@@ -1,16 +1,15 @@
 import { useEvents } from "@/hooks/useEvents";
 import { useState } from "react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import NotificationComponent from "../ui/Notification";
 import EventFormModal from "./EventFormModal";
 import EventTable from "./EventTable";
 import EventFilters from "./EventFilters";
-import { Notification } from "@/types/admin";
 import { Event } from "@/types/admin";
+import { useNotification } from "@/context/NotificationContext";
 
 export default function EventManager() {
   const { events, loading, addEvent, deleteEvent, updateEvent } = useEvents();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { notify } = useNotification();
   const [createOpen, setCreateOpen] = useState(false);
   const [newForm, setNewForm] = useState({
     title: "",
@@ -41,14 +40,7 @@ export default function EventManager() {
       currentParticipants: 0,
     });
     if (result.success) {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          type: "success",
-          message: "Event created!",
-          id: Date.now().toString(),
-        },
-      ]);
+      notify("success", "Event created!");
       setCreateOpen(false);
       setNewForm({
         title: "",
@@ -61,14 +53,7 @@ export default function EventManager() {
         isPublic: true,
       });
     } else {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          type: "error",
-          message: result.error || "Unknown error",
-          id: Date.now().toString(),
-        },
-      ]);
+      notify("error", result.error || "Unknown error");
     }
   };
 
@@ -98,25 +83,11 @@ export default function EventManager() {
       registrationDeadline: editForm.registrationDeadline || undefined,
     });
     if (result.success) {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          type: "success",
-          message: "Event updated!",
-          id: Date.now().toString(),
-        },
-      ]);
+      notify("success", "Event updated!");
       setEditOpen(false);
       setEditId(null);
     } else {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          type: "error",
-          message: result.error || "Unknown error",
-          id: Date.now().toString(),
-        },
-      ]);
+      notify("error", result.error || "Unknown error");
     }
   };
 
@@ -129,45 +100,16 @@ export default function EventManager() {
       return;
     const result = await deleteEvent(id);
     if (result.success) {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          type: "success",
-          message: "Event deleted!",
-          id: Date.now().toString(),
-        },
-      ]);
+      notify("success", "Event deleted!");
     } else {
-      setNotifications((prev) => [
-        ...prev,
-        {
-          type: "error",
-          message: result.error || "Unknown error",
-          id: Date.now().toString(),
-        },
-      ]);
+      notify("error", result.error || "Unknown error");
     }
   };
-
-  const handleNotificationClose = (id: string) =>
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
 
   if (loading) return <LoadingSpinner />;
 
   return (
     <div className="space-y-8">
-      {notifications.length > 0 && (
-        <div className="fixed top-4 right-4 z-50 space-y-2">
-          {notifications.map((notification) => (
-            <NotificationComponent
-              key={notification.id}
-              type={notification.type}
-              message={notification.message}
-              onClose={() => handleNotificationClose(notification.id)}
-            />
-          ))}
-        </div>
-      )}
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-2xl font-bold">Events</h2>
         <button

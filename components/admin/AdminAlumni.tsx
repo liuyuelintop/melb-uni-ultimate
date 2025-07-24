@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import AlumniStats from "@/components/alumni-manager/AlumniStats";
-import AlumniNotifications from "@/components/alumni-manager/AlumniNotifications";
 import AlumniFilters from "@/components/alumni-manager/AlumniFilters";
 import AlumniList from "@/components/alumni-manager/AlumniList";
 import AlumniEditModal from "@/components/alumni-manager/AlumniEditModal";
@@ -8,6 +7,7 @@ import AlumniCreateModal from "@/components/alumni-manager/AlumniCreateModal";
 import AlumniFormModal, {
   AlumniForm,
 } from "@/components/alumni-manager/AlumniFormModal";
+import { useNotification } from "@/context/NotificationContext";
 
 interface Alumni {
   _id: string;
@@ -29,19 +29,13 @@ interface Alumni {
   affiliation?: string;
 }
 
-interface Notification {
-  type: "success" | "error" | "info";
-  message: string;
-  id: string;
-}
-
 export default function AdminAlumni() {
+  const { notify } = useNotification();
   const [alumni, setAlumni] = useState<Alumni[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterGraduationYear, setFilterGraduationYear] = useState("all");
   const [filterLocation, setFilterLocation] = useState("all");
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [editAlumni, setEditAlumni] = useState<Alumni | null>(null);
   const [editForm, setEditForm] = useState<AlumniForm | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -62,17 +56,6 @@ export default function AdminAlumni() {
     isActive: true,
   });
 
-  const addNotification = (
-    type: "success" | "error" | "info",
-    message: string
-  ) => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { type, message, id }]);
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 5000);
-  };
-
   const fetchAlumni = async () => {
     try {
       const response = await fetch("/api/alumni");
@@ -80,10 +63,10 @@ export default function AdminAlumni() {
         const data = await response.json();
         setAlumni(data);
       } else {
-        addNotification("error", "Failed to fetch alumni");
+        notify("error", "Failed to fetch alumni");
       }
     } catch (error) {
-      addNotification("error", "Network error while fetching alumni");
+      notify("error", "Network error while fetching alumni");
     } finally {
       setLoading(false);
     }
@@ -135,14 +118,14 @@ export default function AdminAlumni() {
     try {
       const response = await fetch(`/api/alumni/${id}`, { method: "DELETE" });
       if (response.ok) {
-        addNotification("success", "Alumni deleted successfully");
+        notify("success", "Alumni deleted successfully");
         setAlumni(alumni.filter((a) => a._id !== id));
       } else {
         const data = await response.json();
-        addNotification("error", data.error || "Failed to delete alumni");
+        notify("error", data.error || "Failed to delete alumni");
       }
     } catch (error) {
-      addNotification("error", "Network error while deleting alumni");
+      notify("error", "Network error while deleting alumni");
     }
   };
 
@@ -208,13 +191,13 @@ export default function AdminAlumni() {
         setAlumni(
           alumni.map((a) => (a._id === editAlumni._id ? data.alumni : a))
         );
-        addNotification("success", "Alumni updated successfully");
+        notify("success", "Alumni updated successfully");
         closeEditModal();
       } else {
-        addNotification("error", data.error || "Failed to update alumni");
+        notify("error", data.error || "Failed to update alumni");
       }
     } catch (error) {
-      addNotification("error", "Network error while updating alumni");
+      notify("error", "Network error while updating alumni");
     }
   };
 
@@ -234,7 +217,7 @@ export default function AdminAlumni() {
       const data = await response.json();
       if (response.ok) {
         setAlumni((prev) => [data, ...prev]);
-        addNotification("success", "Alumni added successfully");
+        notify("success", "Alumni added successfully");
         setIsAddModalOpen(false);
         setNewAlumni({
           name: "",
@@ -252,10 +235,10 @@ export default function AdminAlumni() {
           isActive: true,
         });
       } else {
-        addNotification("error", data.error || "Failed to add alumni");
+        notify("error", data.error || "Failed to add alumni");
       }
     } catch (error) {
-      addNotification("error", "Network error while adding alumni");
+      notify("error", "Network error while adding alumni");
     }
   };
 
@@ -271,10 +254,6 @@ export default function AdminAlumni() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <section className="mb-6">
-        <AlumniNotifications notifications={notifications} />
-      </section>
-
       <header className="mb-6">
         <h1 className="text-3xl font-bold">Alumni Network</h1>
         <p className="text-gray-600 mt-2">
