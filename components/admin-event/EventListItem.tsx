@@ -10,12 +10,6 @@ interface EventListItemProps {
   onDelete: (id: string) => void;
 }
 
-const statusColors = {
-  upcoming: "bg-green-100 text-green-800",
-  ongoing: "bg-blue-100 text-blue-800",
-  completed: "bg-gray-100 text-gray-800",
-};
-
 const EventListItem: React.FC<EventListItemProps> = ({
   event,
   onEdit,

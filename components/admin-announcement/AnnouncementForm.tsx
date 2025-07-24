@@ -31,9 +31,6 @@ export interface AnnouncementFormProps {
 const AnnouncementForm: React.FC<AnnouncementFormProps> = ({
   form,
   onChange,
-  onSubmit,
-  submitLabel = "Submit",
-  disabled,
 }) => (
   <div className="space-y-6">
     <div className="space-y-2">

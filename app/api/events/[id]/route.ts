@@ -71,18 +71,6 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const {
-      title,
-      description,
-      startDate,
-      endDate,
-      location,
-      type,
-      status,
-      registrationDeadline,
-      isPublic,
-    } = body;
-
     const event = await Event.findById(id);
 
     if (!event) {

@@ -32,13 +32,7 @@ export interface EventFormProps {
   disabled?: boolean;
 }
 
-const EventForm: React.FC<EventFormProps> = ({
-  form,
-  onChange,
-  onSubmit,
-  submitLabel = "Submit",
-  disabled,
-}) => (
+const EventForm: React.FC<EventFormProps> = ({ form, onChange }) => (
   <div className="space-y-6">
     <div className="space-y-2">
       <Label htmlFor="event-title">Event Title</Label>
