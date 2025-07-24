@@ -18,20 +18,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const {
-      name,
-      email,
-      studentId,
-      graduationYear,
-      currentLocation,
-      currentJob,
-      company,
-      achievements,
-      contactPreference,
-      phoneNumber,
-      linkedinUrl,
-      isActive,
-    } = body;
+    const { email, studentId } = body;
 
     await dbConnect();
 

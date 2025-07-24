@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import PlayerStats from "@/components/player-manager/PlayerStats";
-import PlayerNotifications from "@/components/player-manager/PlayerNotifications";
-import PlayerFilters from "@/components/player-manager/PlayerFilters";
-import PlayerTable from "@/components/player-manager/PlayerTable";
-import PlayerEditModal from "@/components/player-manager/PlayerEditModal";
-import PlayerCreateModal from "@/components/player-manager/PlayerCreateModal";
-import { PlayerForm } from "@/components/player-manager/PlayerFormModal";
+import PlayerStats from "@/components/admin-player/PlayerStats";
+import PlayerFilters from "@/components/admin-player/PlayerFilters";
+import PlayerTable from "@/components/admin-player/PlayerTable";
+import PlayerEditModal from "@/components/admin-player/PlayerEditModal";
+import PlayerCreateModal from "@/components/admin-player/PlayerCreateModal";
+import { PlayerForm } from "@/components/admin-player/PlayerFormModal";
+import { useNotification } from "@/context/NotificationContext";
 
 interface Player {
   _id: string;
@@ -25,19 +25,13 @@ interface Player {
   affiliation?: string;
 }
 
-interface Notification {
-  type: "success" | "error" | "info";
-  message: string;
-  id: string;
-}
-
 export default function PlayerManager() {
+  const { notify } = useNotification();
   const [players, setPlayers] = useState<Player[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterPosition, setFilterPosition] = useState("all");
   const [filterExperience, setFilterExperience] = useState("all");
-  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [editPlayer, setEditPlayer] = useState<Player | null>(null);
   const [editForm, setEditForm] = useState<PlayerForm | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -56,17 +50,6 @@ export default function PlayerManager() {
     isActive: true,
   });
 
-  const addNotification = (
-    type: "success" | "error" | "info",
-    message: string
-  ) => {
-    const id = Date.now().toString();
-    setNotifications((prev) => [...prev, { type, message, id }]);
-    setTimeout(() => {
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-    }, 5000);
-  };
-
   const fetchPlayers = async () => {
     try {
       const response = await fetch("/api/players");
@@ -74,10 +57,10 @@ export default function PlayerManager() {
         const data = await response.json();
         setPlayers(data);
       } else {
-        addNotification("error", "Failed to fetch players");
+        notify("error", "Failed to fetch players");
       }
     } catch (error) {
-      addNotification("error", "Network error while fetching players");
+      notify("error", "Network error while fetching players");
     } finally {
       setLoading(false);
     }
@@ -117,14 +100,14 @@ export default function PlayerManager() {
     try {
       const response = await fetch(`/api/players/${id}`, { method: "DELETE" });
       if (response.ok) {
-        addNotification("success", "Player deleted successfully");
+        notify("success", "Player deleted successfully");
         setPlayers(players.filter((p) => p._id !== id));
       } else {
         const data = await response.json();
-        addNotification("error", data.error || "Failed to delete player");
+        notify("error", data.error || "Failed to delete player");
       }
     } catch (error) {
-      addNotification("error", "Network error while deleting player");
+      notify("error", "Network error while deleting player");
     }
   };
 
@@ -194,13 +177,13 @@ export default function PlayerManager() {
         setPlayers(
           players.map((p) => (p._id === editPlayer._id ? data.player : p))
         );
-        addNotification("success", "Player updated successfully");
+        notify("success", "Player updated successfully");
         closeEditModal();
       } else {
-        addNotification("error", data.error || "Failed to update player");
+        notify("error", data.error || "Failed to update player");
       }
     } catch (error) {
-      addNotification("error", "Network error while updating player");
+      notify("error", "Network error while updating player");
     }
   };
 
@@ -223,7 +206,7 @@ export default function PlayerManager() {
       const data = await response.json();
       if (response.ok) {
         setPlayers((prev) => [data, ...prev]);
-        addNotification("success", "Player added successfully");
+        notify("success", "Player added successfully");
         setIsAddModalOpen(false);
         setNewPlayer({
           name: "",
@@ -239,10 +222,10 @@ export default function PlayerManager() {
           isActive: true,
         });
       } else {
-        addNotification("error", data.error || "Failed to add player");
+        notify("error", data.error || "Failed to add player");
       }
     } catch (error) {
-      addNotification("error", "Network error while adding player");
+      notify("error", "Network error while adding player");
     }
   };
 
@@ -258,10 +241,6 @@ export default function PlayerManager() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <section className="mb-6">
-        <PlayerNotifications notifications={notifications} />
-      </section>
-
       <header className="mb-6">
         <h1 className="text-3xl font-bold">Player Information</h1>
         <p className="text-gray-600 mt-2">

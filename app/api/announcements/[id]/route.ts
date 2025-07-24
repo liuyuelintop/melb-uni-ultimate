@@ -66,7 +66,7 @@ export async function PATCH(
     }
 
     const body = await request.json();
-    const { title, content, priority, isPublished } = body;
+    const { isPublished } = body;
 
     const announcement = await Announcement.findById(id);
 
