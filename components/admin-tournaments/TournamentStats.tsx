@@ -21,12 +21,10 @@ const TournamentStats: React.FC<TournamentStatsProps> = ({
   ).length;
   const otherPlayers = totalPlayers - malePlayers - femalePlayers;
 
-  const captains = roster.filter((entry) =>
-    entry.role?.toLowerCase().includes("captain")
-  ).length;
+  const captains = roster.filter((entry) => entry.role === "captain").length;
 
-  const coaches = roster.filter((entry) =>
-    entry.role?.toLowerCase().includes("coach")
+  const coaches = roster.filter(
+    (entry) => entry.role === "player-coach"
   ).length;
 
   const stats = [

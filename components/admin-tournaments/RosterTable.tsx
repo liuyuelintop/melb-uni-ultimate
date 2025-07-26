@@ -21,9 +21,8 @@ interface RosterTableProps {
 
 const getRoleIcon = (role?: string) => {
   if (!role) return <User className="h-4 w-4 text-gray-400" />;
-  if (role.toLowerCase().includes("captain"))
-    return <Crown className="h-4 w-4 text-yellow-500" />;
-  if (role.toLowerCase().includes("coach"))
+  if (role === "captain") return <Crown className="h-4 w-4 text-yellow-500" />;
+  if (role === "player-coach")
     return <Shield className="h-4 w-4 text-blue-500" />;
   return <User className="h-4 w-4 text-gray-400" />;
 };

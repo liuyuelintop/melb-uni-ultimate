@@ -20,16 +20,11 @@ interface AddPlayerToRosterFormProps {
 
 const roleOptions = [
   { value: "", label: "Player", icon: <User className="h-4 w-4" /> },
-  { value: "Captain", label: "Captain", icon: <Crown className="h-4 w-4" /> },
+  { value: "player", label: "Player", icon: <User className="h-4 w-4" /> },
+  { value: "captain", label: "Captain", icon: <Crown className="h-4 w-4" /> },
   {
-    value: "Co-Captain",
-    label: "Co-Captain",
-    icon: <Crown className="h-4 w-4" />,
-  },
-  { value: "Coach", label: "Coach", icon: <Shield className="h-4 w-4" /> },
-  {
-    value: "Assistant Coach",
-    label: "Assistant Coach",
+    value: "player-coach",
+    label: "Player-Coach",
     icon: <Shield className="h-4 w-4" />,
   },
 ];
@@ -103,13 +98,16 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
             <label className="text-sm font-medium text-gray-700">
               Position
             </label>
-            <input
-              type="text"
+            <select
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={addPosition}
               onChange={(e) => setAddPosition(e.target.value)}
-              placeholder="e.g. Handler, Cutter"
-            />
+            >
+              <option value="">-- Select position --</option>
+              <option value="handler">Handler</option>
+              <option value="cutter">Cutter</option>
+              <option value="utility">Utility</option>
+            </select>
           </div>
 
           {/* Notes */}
