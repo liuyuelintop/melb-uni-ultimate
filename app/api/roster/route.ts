@@ -30,6 +30,12 @@ export async function POST(req: NextRequest) {
   }
   await dbConnect();
   const data = await req.json();
+
+  // Clean up empty strings to undefined for optional fields
+  if (data.role === "") data.role = undefined;
+  if (data.position === "") data.position = undefined;
+  if (data.notes === "") data.notes = undefined;
+
   const entry = await RosterEntry.create(data);
   return NextResponse.json(entry);
 }
