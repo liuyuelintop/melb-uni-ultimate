@@ -1,48 +1,33 @@
 import { useState, useEffect } from "react";
-import type { Tournament, RosterEntry } from "@/types/roster";
+import type { RosterEntry } from "@/types/roster";
+import { useBaseRoster } from "./useBaseRoster";
 
 export function usePublicRoster() {
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [selectedTournamentId, setSelectedTournamentId] = useState<string>("");
-  const [roster, setRoster] = useState<RosterEntry[]>([]);
+  const baseRoster = useBaseRoster();
   const [teams, setTeams] = useState<string[]>([]);
   const [selectedTeam, setSelectedTeam] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const [loading, setLoading] = useState(false);
 
+  // Extract teams from roster when it changes
   useEffect(() => {
-    fetch("/api/tournaments")
-      .then((res) => res.json())
-      .then((data) => setTournaments(data));
-  }, []);
-
-  useEffect(() => {
-    if (selectedTournamentId) {
-      setLoading(true);
-      fetch(`/api/roster?tournamentId=${selectedTournamentId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setRoster(data);
-          setTeams(
-            Array.from(
-              new Set(
-                data
-                  .map((entry: RosterEntry) => entry.teamId?.name)
-                  .filter((name: string | undefined): name is string => !!name)
-              )
-            )
-          );
-          setSelectedTeam("");
-        })
-        .finally(() => setLoading(false));
+    if (baseRoster.roster.length > 0) {
+      setTeams(
+        Array.from(
+          new Set(
+            baseRoster.roster
+              .map((entry: RosterEntry) => entry.teamId?.name)
+              .filter((name: string | undefined): name is string => !!name)
+          )
+        )
+      );
+      setSelectedTeam("");
     } else {
-      setRoster([]);
       setTeams([]);
       setSelectedTeam("");
     }
-  }, [selectedTournamentId]);
+  }, [baseRoster.roster]);
 
-  const filteredRoster = roster
+  const filteredRoster = baseRoster.roster
     .filter((entry) => !selectedTeam || entry.teamId?.name === selectedTeam)
     .filter(
       (entry) =>
@@ -52,16 +37,18 @@ export function usePublicRoster() {
     );
 
   return {
-    tournaments,
-    selectedTournamentId,
-    setSelectedTournamentId,
-    roster,
+    // Base roster data
+    tournaments: baseRoster.tournaments,
+    selectedTournamentId: baseRoster.selectedTournamentId,
+    setSelectedTournamentId: baseRoster.setSelectedTournamentId,
+    roster: baseRoster.roster,
+    loading: baseRoster.loading,
+    // Public-specific data
     teams,
     selectedTeam,
     setSelectedTeam,
     searchTerm,
     setSearchTerm,
-    loading,
     filteredRoster,
   };
 }

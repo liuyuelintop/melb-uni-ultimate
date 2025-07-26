@@ -3,6 +3,7 @@ import { UserPlus, Crown, Shield, User } from "lucide-react";
 import { Player } from "@/types/roster";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import PlayerCombobox from "./PlayerCombobox";
 
 interface AddPlayerToRosterFormProps {
   availablePlayers: Player[];
@@ -19,7 +20,7 @@ interface AddPlayerToRosterFormProps {
 }
 
 const roleOptions = [
-  { value: "", label: "Player", icon: <User className="h-4 w-4" /> },
+  { value: "", label: "-- Select Role --", icon: <User className="h-4 w-4" /> },
   { value: "player", label: "Player", icon: <User className="h-4 w-4" /> },
   { value: "captain", label: "Captain", icon: <Crown className="h-4 w-4" /> },
   {
@@ -57,26 +58,18 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
             <label className="text-sm font-medium text-gray-700">
               Player *
             </label>
-            <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            <PlayerCombobox
+              players={availablePlayers}
               value={addPlayerId}
-              onChange={(e) => setAddPlayerId(e.target.value)}
-              required
-            >
-              <option value="">-- Select player --</option>
-              {availablePlayers.map((player) => (
-                <option key={player._id} value={player._id}>
-                  {player.name} ({player.gender})
-                </option>
-              ))}
-            </select>
+              onChange={setAddPlayerId}
+              disabled={addLoading}
+            />
             {availablePlayers.length === 0 && (
               <p className="text-sm text-gray-500">
                 No available players to add
               </p>
             )}
           </div>
-
           {/* Role Selection */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Role</label>
@@ -92,7 +85,6 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
               ))}
             </select>
           </div>
-
           {/* Position */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
@@ -109,7 +101,6 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
               <option value="utility">Utility</option>
             </select>
           </div>
-
           {/* Notes */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Notes</label>
@@ -122,7 +113,6 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
             />
           </div>
         </div>
-
         <div className="flex justify-end">
           <Button
             type="submit"

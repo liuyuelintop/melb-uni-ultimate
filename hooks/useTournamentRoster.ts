@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react";
-import { Tournament, Player, RosterEntry } from "@/types/roster";
+import { Player } from "@/types/roster";
+import { useBaseRoster } from "./useBaseRoster";
 
 interface UseTournamentRosterReturn {
-  tournaments: Tournament[];
-  selectedTournamentId: string;
-  setSelectedTournamentId: (id: string) => void;
-  roster: RosterEntry[];
+  // Base roster data
+  tournaments: ReturnType<typeof useBaseRoster>["tournaments"];
+  selectedTournamentId: ReturnType<
+    typeof useBaseRoster
+  >["selectedTournamentId"];
+  setSelectedTournamentId: ReturnType<
+    typeof useBaseRoster
+  >["setSelectedTournamentId"];
+  roster: ReturnType<typeof useBaseRoster>["roster"];
+  loading: ReturnType<typeof useBaseRoster>["loading"];
+  // Admin-specific data
   allPlayers: Player[];
   availablePlayers: Player[];
-  loading: boolean;
   addPlayerId: string;
   setAddPlayerId: (id: string) => void;
   addRole: string;
@@ -25,10 +32,7 @@ interface UseTournamentRosterReturn {
 }
 
 export const useTournamentRoster = (): UseTournamentRosterReturn => {
-  const [tournaments, setTournaments] = useState<Tournament[]>([]);
-  const [selectedTournamentId, setSelectedTournamentId] = useState<string>("");
-  const [roster, setRoster] = useState<RosterEntry[]>([]);
-  const [loading, setLoading] = useState(false);
+  const baseRoster = useBaseRoster();
   const [allPlayers, setAllPlayers] = useState<Player[]>([]);
   const [addPlayerId, setAddPlayerId] = useState<string>("");
   const [addRole, setAddRole] = useState<string>("");
@@ -37,42 +41,23 @@ export const useTournamentRoster = (): UseTournamentRosterReturn => {
   const [addLoading, setAddLoading] = useState(false);
   const [removeLoadingId, setRemoveLoadingId] = useState<string>("");
 
-  // Fetch tournaments on mount
+  // Fetch all players when tournament changes
   useEffect(() => {
-    fetch("/api/tournaments")
-      .then((res) => res.json())
-      .then((data) => setTournaments(data))
-      .catch((error) => console.error("Error fetching tournaments:", error));
-  }, []);
-
-  // Fetch roster and players when tournament changes
-  useEffect(() => {
-    if (selectedTournamentId) {
-      setLoading(true);
-
-      // Fetch roster for selected tournament
-      fetch(`/api/roster?tournamentId=${selectedTournamentId}`)
-        .then((res) => res.json())
-        .then((data) => setRoster(data))
-        .catch((error) => console.error("Error fetching roster:", error))
-        .finally(() => setLoading(false));
-
-      // Fetch all players
+    if (baseRoster.selectedTournamentId) {
       fetch("/api/players")
         .then((res) => res.json())
         .then((data) => setAllPlayers(data))
         .catch((error) => console.error("Error fetching players:", error));
     } else {
-      setRoster([]);
       setAllPlayers([]);
     }
-
     resetForm();
-  }, [selectedTournamentId]);
+  }, [baseRoster.selectedTournamentId]);
 
   // Calculate available players (players not in current roster)
   const availablePlayers = allPlayers.filter(
-    (player) => !roster.some((entry) => entry.playerId?._id === player._id)
+    (player) =>
+      !baseRoster.roster.some((entry) => entry.playerId?._id === player._id)
   );
 
   const resetForm = () => {
@@ -92,7 +77,7 @@ export const useTournamentRoster = (): UseTournamentRosterReturn => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tournamentId: selectedTournamentId,
+          tournamentId: baseRoster.selectedTournamentId,
           playerId: addPlayerId,
           role: addRole,
           position: addPosition,
@@ -100,13 +85,8 @@ export const useTournamentRoster = (): UseTournamentRosterReturn => {
         }),
       });
 
-      // Refresh roster
-      const rosterRes = await fetch(
-        `/api/roster?tournamentId=${selectedTournamentId}`
-      );
-      const rosterData = await rosterRes.json();
-      setRoster(rosterData);
-
+      // Refresh roster by triggering a re-fetch
+      baseRoster.setSelectedTournamentId(baseRoster.selectedTournamentId);
       resetForm();
     } catch (error) {
       console.error("Error adding player to roster:", error);
@@ -120,12 +100,8 @@ export const useTournamentRoster = (): UseTournamentRosterReturn => {
     try {
       await fetch(`/api/roster/${rosterEntryId}`, { method: "DELETE" });
 
-      // Refresh roster
-      const rosterRes = await fetch(
-        `/api/roster?tournamentId=${selectedTournamentId}`
-      );
-      const rosterData = await rosterRes.json();
-      setRoster(rosterData);
+      // Refresh roster by triggering a re-fetch
+      baseRoster.setSelectedTournamentId(baseRoster.selectedTournamentId);
     } catch (error) {
       console.error("Error removing player from roster:", error);
     } finally {
@@ -134,13 +110,15 @@ export const useTournamentRoster = (): UseTournamentRosterReturn => {
   };
 
   return {
-    tournaments,
-    selectedTournamentId,
-    setSelectedTournamentId,
-    roster,
+    // Base roster data
+    tournaments: baseRoster.tournaments,
+    selectedTournamentId: baseRoster.selectedTournamentId,
+    setSelectedTournamentId: baseRoster.setSelectedTournamentId,
+    roster: baseRoster.roster,
+    loading: baseRoster.loading,
+    // Admin-specific data
     allPlayers,
     availablePlayers,
-    loading,
     addPlayerId,
     setAddPlayerId,
     addRole,
