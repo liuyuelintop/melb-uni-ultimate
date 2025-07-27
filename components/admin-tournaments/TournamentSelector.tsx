@@ -1,5 +1,4 @@
 import React from "react";
-import { Trophy } from "lucide-react";
 import { Tournament } from "@/types/roster";
 import { Card, CardContent } from "@/components/ui/Card";
 import TournamentCombobox from "./TournamentCombobox";
@@ -19,7 +18,6 @@ const TournamentSelector: React.FC<TournamentSelectorProps> = ({
     <Card className="w-full">
       <CardContent className="p-4 sm:p-6">
         <div className="flex items-center gap-3 mb-4">
-          <Trophy className="h-5 w-5 text-blue-600" />
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
             Select Tournament
           </h2>
