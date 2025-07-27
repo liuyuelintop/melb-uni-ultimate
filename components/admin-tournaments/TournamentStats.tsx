@@ -1,5 +1,5 @@
 import React from "react";
-import { Users, UserCheck, UserX, Trophy } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { RosterEntry } from "@/types/roster";
 import StatCard from "@/components/ui/StatCard";
 
