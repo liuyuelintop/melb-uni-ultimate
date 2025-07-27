@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
 import { RosterEntry } from "@shared/lib/db/models";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "../../../auth/[...nextauth]/route";
 
 // DELETE /api/roster/[id]
 // Next.js App Router API route: context must be 'any' due to lack of exported type

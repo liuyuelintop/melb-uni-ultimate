@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
-import Announcement from "@shared/lib/db/models/announcement";
+import { Announcement } from "@shared/lib/db/models";
 
 export async function GET(request: NextRequest) {
   try {

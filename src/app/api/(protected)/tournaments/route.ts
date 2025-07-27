@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
 import Tournament from "@shared/lib/db/models/tournament";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 // GET /api/tournaments
 export async function GET(req: NextRequest) {

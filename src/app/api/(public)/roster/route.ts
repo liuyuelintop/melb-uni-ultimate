@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
 import { RosterEntry, Player, Tournament } from "@shared/lib/db/models";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "../../auth/[...nextauth]/route";
 
 // GET /api/roster?tournamentId=...
 export async function GET(req: NextRequest) {
