@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 interface ApiState<T> {
   data: T;
@@ -35,23 +35,28 @@ export function useApi<T>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Memoize the fetch options to prevent unnecessary re-renders
+  const fetchOptions = useMemo(() => {
+    const options: RequestInit = {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        ...headers,
+      },
+    };
+
+    if (body && method !== "GET") {
+      options.body = JSON.stringify(body);
+    }
+
+    return options;
+  }, [method, headers, body]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const fetchOptions: RequestInit = {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-          ...headers,
-        },
-      };
-
-      if (body && method !== "GET") {
-        fetchOptions.body = JSON.stringify(body);
-      }
-
       const response = await fetch(url, fetchOptions);
 
       if (!response.ok) {
@@ -65,7 +70,7 @@ export function useApi<T>(
     } finally {
       setLoading(false);
     }
-  }, [url, method, body, headers]);
+  }, [url, fetchOptions]);
 
   const refetch = useCallback(async () => {
     await fetchData();

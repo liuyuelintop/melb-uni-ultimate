@@ -56,7 +56,7 @@ export function useCrud<T extends { _id: string }>(
         return { success: false, error: "Network error" };
       }
     },
-    [baseUrl, authorField, authorValue, api]
+    [baseUrl, authorField, authorValue, api.data, api.setData]
   );
 
   const update = useCallback(
@@ -82,7 +82,7 @@ export function useCrud<T extends { _id: string }>(
         return { success: false, error: "Network error" };
       }
     },
-    [baseUrl, api]
+    [baseUrl, api.data, api.setData]
   );
 
   const deleteItem = useCallback(
@@ -102,7 +102,7 @@ export function useCrud<T extends { _id: string }>(
         return { success: false, error: "Network error" };
       }
     },
-    [baseUrl, api]
+    [baseUrl, api.data, api.setData]
   );
 
   const togglePublish = useCallback(
@@ -134,7 +134,7 @@ export function useCrud<T extends { _id: string }>(
         return { success: false, error: "Network error" };
       }
     },
-    [baseUrl, publishField, api]
+    [baseUrl, publishField, api.data, api.setData]
   );
 
   return {
