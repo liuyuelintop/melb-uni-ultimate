@@ -26,6 +26,7 @@ _(Or deploy your own in minutes!)_
 - **Beautiful, modern UI** with Tailwind, shadcn/ui, and Lucide icons
 - **All-in-one club management**: events, announcements, roster, alumni, tournaments, and more
 - **Admin dashboard** for easy content and user management
+- **Feature-based architecture** with clean, maintainable code organization
 - **Open source, MIT licensed** – ready for your club or team!
 - **Easy deploy to Vercel** (or your own server)
 - **Active development & welcoming to contributors**
@@ -102,15 +103,51 @@ npm run dev
 
 ```
 melb-uni-ultimate/
-├── app/                # Next.js App Router (public, protected, admin, api)
-├── components/         # UI and feature components (atomic design)
-├── lib/                # Auth, DB, and utility libraries
-├── data/               # Static data
-├── public/             # Static assets (images, icons)
-├── styles/             # Tailwind/global styles
-├── docs/               # Deployment, env, and screenshot docs
-└── types/              # Shared TypeScript types
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (admin)/           # Admin pages (dashboard, update-role)
+│   │   ├── (auth)/            # Authentication pages (login, signup, unauthorized)
+│   │   ├── (dev)/             # Development pages (debug-session)
+│   │   ├── (protected)/       # Protected member pages (profile)
+│   │   ├── (public)/          # Public pages (about, announcements, events, etc.)
+│   │   ├── api/               # API routes
+│   │   │   ├── (admin)/       # Admin API routes (dashboard, debug, seed)
+│   │   │   ├── (auth)/        # Auth API routes (refresh, signup, update-role)
+│   │   │   ├── (protected)/   # Protected API routes (players, tournaments, user)
+│   │   │   ├── (public)/      # Public API routes (alumni, announcements, events, roster)
+│   │   │   └── auth/          # NextAuth.js routes
+│   │   ├── layout.tsx         # Root layout
+│   │   ├── page.tsx           # Home page
+│   │   └── providers.tsx      # App providers
+│   ├── features/              # Feature-based components and logic
+│   │   ├── about/             # About page components
+│   │   ├── admin/             # Admin dashboard components
+│   │   ├── alumni/            # Alumni management components
+│   │   ├── announcements/     # Announcements components
+│   │   ├── events/            # Events components
+│   │   ├── roster/            # Roster management components
+│   │   └── tournaments/       # Tournament management components
+│   ├── shared/                # Shared utilities and components
+│   │   ├── components/        # Reusable UI components
+│   │   ├── context/           # React contexts
+│   │   ├── data/              # Static data
+│   │   ├── hooks/             # Custom React hooks
+│   │   ├── lib/               # Database, auth, and utility libraries
+│   │   └── types/             # TypeScript type definitions
+│   ├── styles/                # Global styles
+│   └── middleware.ts          # Next.js middleware
+├── public/                    # Static assets
+├── docs/                      # Documentation and deployment guides
+└── package.json               # Dependencies and scripts
 ```
+
+### 🏗️ Architecture Highlights
+
+- **Feature-based organization**: Each feature (alumni, events, etc.) has its own directory with components, hooks, and utilities
+- **Route groups**: Next.js route groups `()` organize pages by access level without affecting URLs
+- **API organization**: API routes grouped by access level for better security and organization
+- **Shared resources**: Common components, hooks, and utilities in `shared/` directory
+- **Type safety**: Comprehensive TypeScript types for all data models and components
 
 ---
 
@@ -157,6 +194,13 @@ We welcome contributions! To get started:
 
 **Please read [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md) for workflow and code standards.**
 
+### Development Workflow
+
+- **Feature branches**: All development happens on feature branches
+- **Merge to develop**: Features are merged into the develop branch first
+- **Merge to main**: After testing, develop is merged into main for production
+- **Backup strategy**: Main branch backups are created before major merges
+
 ---
 
 ## 💬 Community & Support
@@ -170,13 +214,16 @@ We welcome contributions! To get started:
 ## 🙋 FAQ
 
 **Q: Can I use this for my own club?**  
-A: Yes! It’s open source and easy to customize.
+A: Yes! It's open source and easy to customize.
 
 **Q: Is it free?**  
 A: 100% MIT licensed.
 
 **Q: How do I get admin access?**  
 A: See [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
+
+**Q: What's the new src/ directory structure?**  
+A: We've reorganized the codebase for better maintainability with feature-based architecture and clear separation of concerns.
 
 ---
 
