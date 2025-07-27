@@ -42,15 +42,15 @@ const AdminTournaments: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
-        <Trophy className="h-8 w-8 text-blue-600" />
+        <Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
             Tournament Management
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm sm:text-base">
             Manage tournament rosters and player assignments
           </p>
         </div>
@@ -65,7 +65,7 @@ const AdminTournaments: React.FC = () => {
 
       {/* Tournament Content */}
       {selectedTournamentId && selectedTournament && (
-        <div className="space-y-6">
+        <div className="space-y-6 sm:space-y-8">
           {/* Tournament Stats */}
           <TournamentStats
             roster={roster}
@@ -103,7 +103,7 @@ const AdminTournaments: React.FC = () => {
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             No Tournament Selected
           </h3>
-          <p className="text-gray-500">
+          <p className="text-gray-500 text-sm sm:text-base">
             Select a tournament from the dropdown above to manage its roster.
           </p>
         </div>

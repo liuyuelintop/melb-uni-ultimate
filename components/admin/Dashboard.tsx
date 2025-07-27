@@ -39,7 +39,7 @@ const defaultActivity = [
 
 const Dashboard: React.FC<DashboardProps> = ({ stats, recentActivity }) => (
   <>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
       <StatCard
         label="Total Players"
         value={stats.totalPlayers}
@@ -65,15 +65,21 @@ const Dashboard: React.FC<DashboardProps> = ({ stats, recentActivity }) => (
         description="Network size"
       />
     </div>
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-        <div className="space-y-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+      <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
+        <h2 className="text-lg sm:text-xl font-semibold mb-4">
+          Recent Activity
+        </h2>
+        <div className="space-y-3 sm:space-y-4">
           {(recentActivity || defaultActivity).map((activity, idx) => (
             <div className="flex items-center space-x-3" key={idx}>
-              <div className={`w-2 h-2 rounded-full ${activity.color}`}></div>
-              <div>
-                <p className="text-sm font-medium">{activity.message}</p>
+              <div
+                className={`w-2 h-2 rounded-full ${activity.color} flex-shrink-0`}
+              ></div>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-medium truncate">
+                  {activity.message}
+                </p>
                 <p className="text-xs text-gray-500">{activity.time}</p>
               </div>
             </div>
