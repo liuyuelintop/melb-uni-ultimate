@@ -91,14 +91,15 @@ export default function AdminAnnouncement() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="space-y-8">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-2xl font-bold">Announcements</h2>
+    <div className="space-y-6 sm:space-y-8">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 mb-2">
+        <h2 className="text-xl sm:text-2xl font-bold">Announcements</h2>
         <button
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+          className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 sm:px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm sm:text-base"
           onClick={() => setCreateOpen(true)}
         >
-          New Announcement
+          <span className="hidden sm:inline">New Announcement</span>
+          <span className="sm:hidden">+ Announcement</span>
         </button>
       </div>
       <AnnouncementFilters

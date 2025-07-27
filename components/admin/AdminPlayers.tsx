@@ -231,35 +231,34 @@ export default function PlayerManager() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg">Loading players...</div>
-        </div>
+      <div className="flex justify-center items-center h-64">
+        <div className="text-lg">Loading players...</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="space-y-6 sm:space-y-8">
       <header className="mb-6">
-        <h1 className="text-3xl font-bold">Player Information</h1>
-        <p className="text-gray-600 mt-2">
+        <h1 className="text-2xl sm:text-3xl font-bold">Player Information</h1>
+        <p className="text-gray-600 mt-2 text-sm sm:text-base">
           Manage players, view stats, and build your team.
         </p>
       </header>
 
-      <section className="mb-8">
+      <section className="mb-6 sm:mb-8">
         <PlayerStats {...stats} />
       </section>
 
       <section className="mb-6">
-        <div className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 gap-4 sm:gap-0">
           <h2 className="text-lg font-semibold">Player Management</h2>
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium"
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 sm:px-6 py-2.5 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg font-medium text-sm sm:text-base"
           >
-            Create Player
+            <span className="hidden sm:inline">Create Player</span>
+            <span className="sm:hidden">+ Player</span>
           </button>
         </div>
       </section>

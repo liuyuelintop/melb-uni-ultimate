@@ -16,7 +16,7 @@ interface AddPlayerToRosterFormProps {
   addNotes: string;
   setAddNotes: (notes: string) => void;
   addLoading: boolean;
-  handleAddPlayer: (e: React.FormEvent) => void;
+  handleAddPlayer: (e: React.FormEvent) => Promise<void>;
 }
 
 const roleOptions = [
@@ -28,6 +28,13 @@ const roleOptions = [
     label: "Player-Coach",
     icon: <Shield className="h-4 w-4" />,
   },
+];
+
+const positionOptions = [
+  { value: "", label: "-- Select Position --" },
+  { value: "handler", label: "Handler" },
+  { value: "cutter", label: "Cutter" },
+  { value: "utility", label: "Utility" },
 ];
 
 const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
@@ -42,21 +49,26 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
   setAddNotes,
   addLoading,
   handleAddPlayer,
-}) => (
-  <Card>
-    <CardHeader>
-      <CardTitle className="flex items-center gap-2">
-        <UserPlus className="h-5 w-5 text-blue-600" />
-        Add Player to Roster
-      </CardTitle>
-    </CardHeader>
-    <CardContent>
-      <form onSubmit={handleAddPlayer} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+}) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleAddPlayer(e);
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+          <UserPlus className="h-5 w-5" />
+          Add Player to Roster
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {/* Player Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Player *
+            <label className="block text-sm font-medium text-gray-700">
+              Player
             </label>
             <PlayerCombobox
               players={availablePlayers}
@@ -64,19 +76,17 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
               onChange={setAddPlayerId}
               disabled={addLoading}
             />
-            {availablePlayers.length === 0 && (
-              <p className="text-sm text-gray-500">
-                No available players to add
-              </p>
-            )}
           </div>
+
           {/* Role Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Role</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Role
+            </label>
             <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={addRole}
               onChange={(e) => setAddRole(e.target.value)}
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             >
               {roleOptions.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -85,58 +95,63 @@ const AddPlayerToRosterForm: React.FC<AddPlayerToRosterFormProps> = ({
               ))}
             </select>
           </div>
-          {/* Position */}
+
+          {/* Position Selection */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-gray-700">
               Position
             </label>
             <select
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={addPosition}
               onChange={(e) => setAddPosition(e.target.value)}
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             >
-              <option value="">-- Select position --</option>
-              <option value="handler">Handler</option>
-              <option value="cutter">Cutter</option>
-              <option value="utility">Utility</option>
+              {positionOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
+
           {/* Notes */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Notes</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Notes (Optional)
+            </label>
             <input
               type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               value={addNotes}
               onChange={(e) => setAddNotes(e.target.value)}
               placeholder="Additional notes..."
+              className="w-full px-3 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
             />
           </div>
-        </div>
-        <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={
-              addLoading || !addPlayerId || availablePlayers.length === 0
-            }
-            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {addLoading ? (
-              <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Adding...
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <UserPlus className="h-4 w-4" />
-                Add Player
-              </div>
-            )}
-          </Button>
-        </div>
-      </form>
-    </CardContent>
-  </Card>
-);
+
+          {/* Submit Button */}
+          <div className="pt-2">
+            <Button
+              type="submit"
+              disabled={!addPlayerId || addLoading}
+              className="w-full sm:w-auto"
+            >
+              {addLoading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Adding...
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4" />
+                  Add Player
+                </>
+              )}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
 
 export default AddPlayerToRosterForm;
