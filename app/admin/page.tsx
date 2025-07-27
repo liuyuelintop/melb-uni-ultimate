@@ -13,13 +13,7 @@ import AdminEvent from "@/components/admin/AdminEvent";
 export default function AdminPage() {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState("dashboard");
-  const {
-    totalPlayers,
-    totalAlumni,
-    totalUpcomingEvents,
-    totalPublishedAnnouncements,
-    loading,
-  } = useDashboardStats();
+  const { data: statsData, loading } = useDashboardStats();
 
   if (status === "loading") {
     return (
@@ -74,10 +68,10 @@ export default function AdminPage() {
     );
   }
   const stats = {
-    totalPlayers,
-    upcomingEvents: totalUpcomingEvents,
-    publishedAnnouncements: totalPublishedAnnouncements,
-    alumni: totalAlumni,
+    totalPlayers: statsData.totalPlayers,
+    upcomingEvents: statsData.totalUpcomingEvents,
+    publishedAnnouncements: statsData.totalPublishedAnnouncements,
+    alumni: statsData.totalAlumni,
   };
 
   // Lazy load admin management components

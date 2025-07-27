@@ -9,9 +9,11 @@ import { AnnouncementErrorState } from "@/components/public-announcements/Announ
 
 export default function AnnouncementDetailPage() {
   const params = useParams();
-  const { announcement, loading, error } = useAnnouncementDetail(
-    params.id as string
-  );
+  const {
+    data: announcement,
+    loading,
+    error,
+  } = useAnnouncementDetail(params.id as string);
 
   if (loading) {
     return <AnnouncementLoadingState />;

@@ -1,45 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useApi } from "./useApi";
 import type { Event } from "@/types/event";
 
 export function usePublicEvents() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<"all" | "active" | "completed">(
     "active"
   );
+  const api = useApi<Event[]>("/api/events?public=true");
 
-  useEffect(() => {
-    fetchEvents();
-  }, []);
+  const filteredEvents = useMemo(() => {
+    const activeEvents = api.data.filter(
+      (e) => e.status === "upcoming" || e.status === "ongoing"
+    );
+    const completedEvents = api.data.filter((e) => e.status === "completed");
 
-  const fetchEvents = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/events?public=true");
-      if (response.ok) {
-        const data = await response.json();
-        setEvents(data);
-      } else {
-        setError("Failed to fetch events");
-      }
-    } catch (error) {
-      setError("Network error while fetching events");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const activeEvents = events.filter(
-    (e) => e.status === "upcoming" || e.status === "ongoing"
-  );
-  const completedEvents = events.filter((e) => e.status === "completed");
-  const filteredEvents =
-    filter === "all"
-      ? events
+    return filter === "all"
+      ? api.data
       : filter === "active"
       ? activeEvents
       : completedEvents;
+  }, [api.data, filter]);
 
-  return { events, filteredEvents, loading, error, filter, setFilter };
+  return {
+    ...api,
+    filteredEvents,
+    filter,
+    setFilter,
+  };
 }

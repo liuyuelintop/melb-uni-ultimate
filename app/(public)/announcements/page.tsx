@@ -9,7 +9,7 @@ import { AnnouncementErrorState } from "@/components/public-announcements/Announ
 import { AnnouncementLoadingState } from "@/components/public-announcements/AnnouncementLoadingState";
 
 export default function AnnouncementsPage() {
-  const { announcements, loading, error } = usePublicAnnouncements();
+  const { data: announcements, loading, error } = usePublicAnnouncements();
 
   return (
     <Container>

@@ -9,11 +9,11 @@ import { useNotification } from "@/context/NotificationContext";
 
 export default function AdminAnnouncement() {
   const {
-    announcements,
+    data: announcements,
     loading,
-    addAnnouncement,
-    deleteAnnouncement,
-    updateAnnouncement,
+    create: addAnnouncement,
+    delete: deleteAnnouncement,
+    update: updateAnnouncement,
     togglePublish,
   } = useAnnouncements();
   const { notify } = useNotification();

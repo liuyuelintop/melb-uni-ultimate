@@ -8,7 +8,13 @@ import { Event } from "@/types/admin";
 import { useNotification } from "@/context/NotificationContext";
 
 export default function AdminEvent() {
-  const { events, loading, addEvent, deleteEvent, updateEvent } = useEvents();
+  const {
+    data: events,
+    loading,
+    create: addEvent,
+    delete: deleteEvent,
+    update: updateEvent,
+  } = useEvents();
   const { notify } = useNotification();
   const [createOpen, setCreateOpen] = useState(false);
   const [newForm, setNewForm] = useState({
