@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 
 interface ApiState<T> {
   data: T;
@@ -35,28 +35,28 @@ export function useApi<T>(
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Memoize the fetch options to prevent unnecessary re-renders
-  const fetchOptions = useMemo(() => {
-    const options: RequestInit = {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        ...headers,
-      },
-    };
-
-    if (body && method !== "GET") {
-      options.body = JSON.stringify(body);
-    }
-
-    return options;
-  }, [method, headers, body]);
+  // Use ref to store the latest options to avoid dependency issues
+  const optionsRef = useRef({ method, body, headers, url });
+  optionsRef.current = { method, body, headers, url };
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
+      const { method, body, headers, url } = optionsRef.current;
+      const fetchOptions: RequestInit = {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          ...headers,
+        },
+      };
+
+      if (body && method !== "GET") {
+        fetchOptions.body = JSON.stringify(body);
+      }
+
       const response = await fetch(url, fetchOptions);
 
       if (!response.ok) {
@@ -70,7 +70,7 @@ export function useApi<T>(
     } finally {
       setLoading(false);
     }
-  }, [url, fetchOptions]);
+  }, []);
 
   const refetch = useCallback(async () => {
     await fetchData();
