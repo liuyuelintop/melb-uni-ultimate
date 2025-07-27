@@ -122,7 +122,7 @@ export default function Header() {
                   </Link>
                   {session.user?.role === "admin" && (
                     <Link
-                      href="/admin"
+                      href="/dashboard"
                       className="px-3 py-2 text-sm font-medium text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded-lg transition-all duration-200"
                     >
                       Admin
@@ -200,7 +200,7 @@ export default function Header() {
                   </Link>
                   {session.user?.role === "admin" ? (
                     <Link
-                      href="/admin"
+                      href="/dashboard"
                       onClick={closeMenu}
                       className="px-4 py-3 text-sm font-medium text-amber-600 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-xl text-center transition-all duration-200"
                     >
