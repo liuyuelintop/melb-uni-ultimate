@@ -8,3 +8,4 @@ export { default as Announcement } from "./announcement";
 export { default as Event } from "./event";
 export { default as Alumni } from "./alumni";
 export { default as User } from "./user";
+export { default as Video } from "./video";
