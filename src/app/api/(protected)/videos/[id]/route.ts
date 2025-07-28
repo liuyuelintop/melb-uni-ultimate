@@ -6,32 +6,42 @@ import { isValidYoutubeId } from "@shared/utils/video";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await dbConnect();
 
-    // Get user to check their role
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const { id } = await params;
 
-    const video = await Video.findById(params.id);
+    const video = await Video.findById(id);
 
     if (!video) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
 
-    // Check if user has access to this video
-    if (user.role !== "admin" && !video.allowedRoles.includes(user.role)) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    // Check if video is published
+    if (!video.isPublished) {
+      return NextResponse.json({ error: "Video not found" }, { status: 404 });
+    }
+
+    // Handle public vs authenticated access
+    if (!session?.user?.email) {
+      // Public access - only allow if video has public access
+      if (!video.allowedRoles.includes("public")) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    } else {
+      // Authenticated access - get user to check their role
+      const user = await User.findOne({ email: session.user.email });
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      // Check if user has access to this video
+      if (user.role !== "admin" && !video.allowedRoles.includes(user.role)) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
     }
 
     return NextResponse.json(video);
@@ -46,7 +56,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession();
@@ -63,7 +73,9 @@ export async function PUT(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const video = await Video.findById(params.id);
+    const { id } = await params;
+
+    const video = await Video.findById(id);
 
     if (!video) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
@@ -108,7 +120,7 @@ export async function PUT(
 
     // Update video
     const updatedVideo = await Video.findByIdAndUpdate(
-      params.id,
+      id,
       {
         ...(title && { title }),
         ...(description !== undefined && { description }),
@@ -133,7 +145,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession();
@@ -150,7 +162,9 @@ export async function DELETE(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const video = await Video.findById(params.id);
+    const { id } = await params;
+
+    const video = await Video.findById(id);
 
     if (!video) {
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
@@ -164,7 +178,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    await Video.findByIdAndDelete(params.id);
+    await Video.findByIdAndDelete(id);
 
     return NextResponse.json({ message: "Video deleted successfully" });
   } catch (error) {

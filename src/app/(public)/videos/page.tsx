@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Container } from "@shared/components/ui/Container";
 import { PageHeader } from "@shared/components/layout/PageHeader";

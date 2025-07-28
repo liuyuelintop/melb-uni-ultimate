@@ -28,7 +28,6 @@ const VideoSchema: Schema = new Schema(
     youtubeId: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
     },
     thumbnailUrl: {

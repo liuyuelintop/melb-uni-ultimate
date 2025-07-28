@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import {
   Video,
@@ -10,7 +12,7 @@ export const useVideos = (isPublic = false) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const baseUrl = isPublic ? "/api/videos" : "/api/videos";
+  const baseUrl = "/api/videos";
 
   const apiCall = async <T>(
     url: string,
@@ -45,7 +47,17 @@ export const useVideos = (isPublic = false) => {
       setLoading(true);
       setError(null);
 
-      const queryString = params ? new URLSearchParams(params).toString() : "";
+      const queryParams = { ...params };
+
+      // Add public parameter for public access
+      if (isPublic) {
+        queryParams.public = "true";
+      }
+
+      const queryString =
+        Object.keys(queryParams).length > 0
+          ? new URLSearchParams(queryParams).toString()
+          : "";
       const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
 
       const response = await apiCall<Video[]>(url, "GET");

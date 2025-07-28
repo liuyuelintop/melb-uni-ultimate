@@ -7,24 +7,14 @@ import { extractYoutubeId, isValidYoutubeId } from "@shared/utils/video";
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await dbConnect();
-
-    // Get user to check their role
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
     const { searchParams } = new URL(request.url);
     const published = searchParams.get("published");
     const tags = searchParams.get("tags");
+    const publicOnly = searchParams.get("public") === "true";
 
-    // Build query based on user role
+    // Build query
     const query: Record<string, unknown> = {};
 
     // Filter by published status if specified
@@ -40,12 +30,25 @@ export async function GET(request: NextRequest) {
       query.tags = { $in: tagArray };
     }
 
-    // Filter by allowed roles based on user role
-    if (user.role === "admin") {
-      // Admins can see all videos
+    // Handle public vs authenticated access
+    if (publicOnly || !session?.user?.email) {
+      // Public access - only show videos with public access
+      query.isPublished = true;
+      query.allowedRoles = { $in: ["public"] };
     } else {
-      // Regular users can only see videos they have access to
-      query.allowedRoles = { $in: [user.role, "public"] };
+      // Authenticated access - get user to check their role
+      const user = await User.findOne({ email: session.user.email });
+      if (!user) {
+        return NextResponse.json({ error: "User not found" }, { status: 404 });
+      }
+
+      // Filter by allowed roles based on user role
+      if (user.role === "admin") {
+        // Admins can see all videos
+      } else {
+        // Regular users can only see videos they have access to
+        query.allowedRoles = { $in: [user.role, "public"] };
+      }
     }
 
     const videos = await Video.find(query).sort({ createdAt: -1 }).limit(50);
