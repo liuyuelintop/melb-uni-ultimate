@@ -7,7 +7,6 @@ export interface VideoListProps {
   videos: Video[];
   onEdit?: (video: Video) => void;
   onDelete?: (video: Video) => void;
-  onVideoClick?: (video: Video) => void;
   showActions?: boolean;
   loading?: boolean;
 }
@@ -16,7 +15,6 @@ const VideoList: React.FC<VideoListProps> = ({
   videos,
   onEdit,
   onDelete,
-  onVideoClick,
   showActions = false,
   loading = false,
 }) => {
@@ -50,7 +48,6 @@ const VideoList: React.FC<VideoListProps> = ({
           video={video}
           onEdit={onEdit}
           onDelete={onDelete}
-          onVideoClick={onVideoClick}
           showActions={showActions}
         />
       ))}

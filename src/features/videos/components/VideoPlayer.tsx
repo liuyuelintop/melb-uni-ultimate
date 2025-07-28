@@ -1,6 +1,9 @@
 import React from "react";
 import { useSession } from "next-auth/react";
+import dynamic from "next/dynamic";
 import { buildYoutubeUrl } from "@shared/utils/video";
+
+const ReactPlayer = dynamic(() => import("react-player"), { ssr: false });
 
 export interface VideoPlayerProps {
   youtubeId: string;
@@ -53,16 +56,15 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const videoUrl = buildYoutubeUrl(youtubeId, "embed");
 
   return (
-    <div className={`relative ${className}`}>
-      <iframe
-        src={videoUrl}
-        width={width}
-        height={height}
-        title={title || `YouTube video ${youtubeId}`}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="rounded-lg"
+    <div className={`relative ${className}`} style={{ width, height }}>
+      <ReactPlayer
+        src={buildYoutubeUrl(youtubeId, "watch")}
+        width="100%"
+        height="100%"
+        controls={true}
+        style={{ borderRadius: "8px" }}
+        playing={false}
+        muted={true}
       />
     </div>
   );
