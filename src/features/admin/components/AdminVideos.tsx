@@ -2,16 +2,12 @@
 
 import React, { useState } from "react";
 import { Container } from "@shared/components/ui/Container";
+import { Button } from "@shared/components/ui/Button";
 import VideoList from "@features/videos/components/VideoList";
 import VideoFormModal from "@features/videos/components/VideoFormModal";
 import { useVideos } from "@shared/hooks/useVideos";
 import { Video, CreateVideoRequest } from "@shared/types/video";
-import { 
-  Plus, 
-  Search, 
-  AlertCircle,
-  Video as VideoIcon
-} from "lucide-react";
+import { Plus, Search, AlertCircle, Video as VideoIcon } from "lucide-react";
 import { useNotification } from "@shared/context/NotificationContext";
 
 const AdminVideos: React.FC = () => {
@@ -106,14 +102,17 @@ const AdminVideos: React.FC = () => {
   };
 
   // Filter videos based on search query
-  const filteredVideos = videos.filter(video =>
-    video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    video.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredVideos = videos.filter(
+    (video) =>
+      video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.tags?.some((tag) =>
+        tag.toLowerCase().includes(searchQuery.toLowerCase())
+      )
   );
 
-  const publishedCount = videos.filter(v => v.isPublished).length;
-  const draftCount = videos.filter(v => !v.isPublished).length;
+  const publishedCount = videos.filter((v) => v.isPublished).length;
+  const draftCount = videos.filter((v) => !v.isPublished).length;
 
   return (
     <Container className="py-4 sm:py-6">
@@ -132,7 +131,7 @@ const AdminVideos: React.FC = () => {
               Manage your video library and training content
             </p>
           </div>
-          
+
           {/* Quick Stats */}
           <div className="flex gap-4 text-sm">
             <div className="text-center">
@@ -207,10 +206,9 @@ const AdminVideos: React.FC = () => {
             {searchQuery ? "No videos found" : "No videos yet"}
           </h3>
           <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-            {searchQuery 
+            {searchQuery
               ? `No videos match "${searchQuery}". Try adjusting your search.`
-              : "Get started by creating your first video."
-            }
+              : "Get started by creating your first video."}
           </p>
           {!searchQuery && (
             <Button onClick={() => setIsModalOpen(true)} size="lg">
