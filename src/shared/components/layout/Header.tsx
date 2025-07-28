@@ -10,10 +10,21 @@ export default function Header() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
-  const navigation = [
+  const desktopNavigation = [
+    { name: "Announcements", href: "/announcements" },
+    { name: "Events", href: "/events" },
+    { name: "Videos", href: "/videos" },
+    { name: "Roster", href: "/roster" },
+    { name: "Alumni", href: "/alumni" },
+    { name: "About", href: "/about" },
+    { name: "Contact", href: "/contact" },
+  ];
+
+  const mobileNavigation = [
     { name: "Home", href: "/" },
     { name: "Announcements", href: "/announcements" },
     { name: "Events", href: "/events" },
+    { name: "Videos", href: "/videos" },
     { name: "Roster", href: "/roster" },
     { name: "Alumni", href: "/alumni" },
     { name: "About", href: "/about" },
@@ -76,7 +87,7 @@ export default function Header() {
 
           {/* Desktop navigation */}
           <nav className="hidden md:flex md:items-center md:space-x-1 lg:space-x-2">
-            {navigation.map((item) => (
+            {desktopNavigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
@@ -165,7 +176,7 @@ export default function Header() {
         <div className="px-4 py-4 bg-white/95 backdrop-blur-sm border-t border-gray-100 shadow-lg">
           {/* Main navigation */}
           <div className="grid grid-cols-2 gap-2 mb-4">
-            {navigation.map((item) => (
+            {mobileNavigation.map((item) => (
               <Link
                 key={item.name}
                 href={item.href}
