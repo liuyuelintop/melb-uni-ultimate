@@ -16,7 +16,7 @@
 
 ## 🌍 Live Demo
 
-**Try it now:** [https://melb-uni-ultimate.vercel.app](https://melb-uni-ultimate.vercel.app)  
+**Try it now:** [https://melb-uni-ultimate.vercel.app](https://melb-uni-ultimate.vercel.app)
 _(Or deploy your own in minutes!)_
 
 ---
@@ -36,9 +36,9 @@ _(Or deploy your own in minutes!)_
 
 ## 🎬 Demo
 
-| Home Page                          | Admin Dashboard                      | Events Calendar                        |
-| ---------------------------------- | ------------------------------------ | -------------------------------------- |
-| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) |
+| Home Page                          | Admin Dashboard                      | Events Calendar                        | Video Management              |
+| ---------------------------------- | ------------------------------------ | -------------------------------------- | ----------------------------- |
+| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) | _Video features coming soon!_ |
 
 ---
 
@@ -57,6 +57,7 @@ _(Or deploy your own in minutes!)_
 - **About**: Club history, values, and leadership
 - **Announcements**: News, updates, and important info
 - **Events**: Practice, tournament, and social event calendar
+- **Videos**: Training videos, game highlights, and educational content
 - **Roster**: Public team roster with gender/role badges and filters
 - **Alumni**: Connect with past members
 - **Contact**: Easy contact form for inquiries
@@ -64,7 +65,8 @@ _(Or deploy your own in minutes!)_
 ### 🔒 Member & Admin Features
 
 - **Profile**: Secure member profiles
-- **Admin Dashboard**: Manage announcements, events, players, alumni, and tournaments in one place
+- **Admin Dashboard**: Manage announcements, events, videos, players, alumni, and tournaments in one place
+- **Video Management**: Upload, edit, and organize YouTube videos with role-based access control
 - **CRUD**: Create, edit, and delete content with confirmation dialogs and notifications
 - **Role-based access**: NextAuth.js with admin/member/public roles
 - **Modern UI/UX**: Responsive, accessible, and mobile-friendly
@@ -109,12 +111,12 @@ melb-uni-ultimate/
 │   │   ├── (auth)/            # Authentication pages (login, signup, unauthorized)
 │   │   ├── (dev)/             # Development pages (debug-session)
 │   │   ├── (protected)/       # Protected member pages (profile)
-│   │   ├── (public)/          # Public pages (about, announcements, events, etc.)
+│   │   ├── (public)/          # Public pages (about, announcements, events, videos, etc.)
 │   │   ├── api/               # API routes
 │   │   │   ├── (admin)/       # Admin API routes (dashboard, debug, seed)
 │   │   │   ├── (auth)/        # Auth API routes (refresh, signup, update-role)
 │   │   │   ├── (protected)/   # Protected API routes (players, tournaments, user)
-│   │   │   ├── (public)/      # Public API routes (alumni, announcements, events, roster)
+│   │   │   ├── (public)/      # Public API routes (alumni, announcements, events, roster, videos)
 │   │   │   └── auth/          # NextAuth.js routes
 │   │   ├── layout.tsx         # Root layout
 │   │   ├── page.tsx           # Home page
@@ -126,7 +128,8 @@ melb-uni-ultimate/
 │   │   ├── announcements/     # Announcements components
 │   │   ├── events/            # Events components
 │   │   ├── roster/            # Roster management components
-│   │   └── tournaments/       # Tournament management components
+│   │   ├── tournaments/       # Tournament management components
+│   │   └── videos/            # Video management components
 │   ├── shared/                # Shared utilities and components
 │   │   ├── components/        # Reusable UI components
 │   │   ├── context/           # React contexts
@@ -143,11 +146,21 @@ melb-uni-ultimate/
 
 ### 🏗️ Architecture Highlights
 
-- **Feature-based organization**: Each feature (alumni, events, etc.) has its own directory with components, hooks, and utilities
+- **Feature-based organization**: Each feature (alumni, events, videos, etc.) has its own directory with components, hooks, and utilities
 - **Route groups**: Next.js route groups `()` organize pages by access level without affecting URLs
 - **API organization**: API routes grouped by access level for better security and organization
 - **Shared resources**: Common components, hooks, and utilities in `shared/` directory
 - **Type safety**: Comprehensive TypeScript types for all data models and components
+
+### 🎥 Video Management System
+
+- **YouTube Integration**: Seamlessly embed and manage YouTube videos
+- **Role-based Access**: Control video visibility (public, user, admin)
+- **Smart URL Parsing**: Automatically extract YouTube IDs from URLs
+- **Preview System**: Instant video previews in admin interface
+- **Search & Filtering**: Find videos by title, description, or tags
+- **Mobile Responsive**: Optimized viewing experience on all devices
+- **Dashboard Integration**: Manage videos alongside other content in admin tabs
 
 ---
 
@@ -213,23 +226,23 @@ We welcome contributions! To get started:
 
 ## 🙋 FAQ
 
-**Q: Can I use this for my own club?**  
+**Q: Can I use this for my own club?**
 A: Yes! It's open source and easy to customize.
 
-**Q: Is it free?**  
+**Q: Is it free?**
 A: 100% MIT licensed.
 
-**Q: How do I get admin access?**  
+**Q: How do I get admin access?**
 A: See [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
 
-**Q: What's the new src/ directory structure?**  
+**Q: What's the new src/ directory structure?**
 A: We've reorganized the codebase for better maintainability with feature-based architecture and clear separation of concerns.
 
 ---
 
 ## 🙏 Sponsors & Backers
 
-_Sponsor this project and help us grow Ultimate!_  
+_Sponsor this project and help us grow Ultimate!_
 [Become a sponsor](https://github.com/sponsors/your-username)
 
 ---
