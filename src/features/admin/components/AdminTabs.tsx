@@ -10,6 +10,7 @@ const tabs = [
   { key: "dashboard", label: "Dashboard", icon: "📊" },
   { key: "announcements", label: "Announcements", icon: "📢" },
   { key: "events", label: "Events", icon: "📅" },
+  { key: "videos", label: "Videos", icon: "🎥" },
   { key: "players", label: "Players", icon: "👥" },
   { key: "alumni", label: "Alumni", icon: "🎓" },
   { key: "tournaments", label: "Tournaments", icon: "🏆" },
