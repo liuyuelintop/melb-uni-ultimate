@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Video,
   CreateVideoRequest,
@@ -42,32 +42,35 @@ export const useVideos = (isPublic = false) => {
     return response.json();
   };
 
-  const fetchVideos = async (params?: Record<string, string>) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const fetchVideos = useCallback(
+    async (params?: Record<string, string>) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const queryParams = { ...params };
+        const queryParams = { ...params };
 
-      // Add public parameter for public access
-      if (isPublic) {
-        queryParams.public = "true";
+        // Add public parameter for public access
+        if (isPublic) {
+          queryParams.public = "true";
+        }
+
+        const queryString =
+          Object.keys(queryParams).length > 0
+            ? new URLSearchParams(queryParams).toString()
+            : "";
+        const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+        const response = await apiCall<Video[]>(url, "GET");
+        setVideos(response);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch videos");
+      } finally {
+        setLoading(false);
       }
-
-      const queryString =
-        Object.keys(queryParams).length > 0
-          ? new URLSearchParams(queryParams).toString()
-          : "";
-      const url = queryString ? `${baseUrl}?${queryString}` : baseUrl;
-
-      const response = await apiCall<Video[]>(url, "GET");
-      setVideos(response);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch videos");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [isPublic]
+  );
 
   const createVideo = async (videoData: CreateVideoRequest): Promise<Video> => {
     const response = await apiCall<Video>(baseUrl, "POST", videoData);
@@ -91,13 +94,13 @@ export const useVideos = (isPublic = false) => {
     setVideos((prev) => prev.filter((video) => video._id !== id));
   };
 
-  const getVideo = async (id: string): Promise<Video> => {
+  const getVideo = useCallback(async (id: string): Promise<Video> => {
     return await apiCall<Video>(`${baseUrl}/${id}`, "GET");
-  };
+  }, []);
 
   useEffect(() => {
     fetchVideos();
-  }, [isPublic]);
+  }, [fetchVideos]);
 
   return {
     videos,
