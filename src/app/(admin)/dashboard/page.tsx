@@ -79,11 +79,18 @@ export default function AdminPage() {
     () => import("@features/admin/components/AdminPlayers"),
     { ssr: false }
   );
-  const AdminAlumni = dynamic(() => import("@features/admin/components/AdminAlumni"), {
-    ssr: false,
-  });
+  const AdminAlumni = dynamic(
+    () => import("@features/admin/components/AdminAlumni"),
+    {
+      ssr: false,
+    }
+  );
   const AdminTournaments = dynamic(
     () => import("@features/admin/components/AdminTournaments"),
+    { ssr: false }
+  );
+  const AdminVideos = dynamic(
+    () => import("@features/admin/components/AdminVideos"),
     { ssr: false }
   );
 
@@ -102,6 +109,7 @@ export default function AdminPage() {
       {activeTab === "dashboard" && <Dashboard stats={stats} />}
       {activeTab === "announcements" && <AdminAnnouncement />}
       {activeTab === "events" && <AdminEvent />}
+      {activeTab === "videos" && <AdminVideos />}
       {activeTab === "players" && <AdminPlayers />}
       {activeTab === "alumni" && <AdminAlumni />}
       {activeTab === "tournaments" && <AdminTournaments />}
