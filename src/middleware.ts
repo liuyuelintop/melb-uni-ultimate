@@ -19,8 +19,12 @@ export async function middleware(request: NextRequest) {
     path === "/signup" ||
     path === "/unauthorized";
 
-  // Define admin paths that require admin role
-  const isAdminPath = path.startsWith("/admin");
+  // Define admin paths that require admin role.
+  // Route groups like (admin) do not appear in the URL, so the admin dashboard
+  // is served at /dashboard — matching "/admin" here matched nothing and left
+  // the dashboard reachable by anyone. The authoritative check lives in
+  // src/app/(admin)/layout.tsx; this is defence in depth, not the only gate.
+  const isAdminPath = path.startsWith("/dashboard");
 
   // Define protected paths that require authentication
   const isProtectedPath = path.startsWith("/profile");

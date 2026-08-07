@@ -107,14 +107,13 @@ npm run dev
 melb-uni-ultimate/
 ├── src/
 │   ├── app/                    # Next.js App Router
-│   │   ├── (admin)/           # Admin pages (dashboard, update-role)
+│   │   ├── (admin)/           # Admin pages (dashboard), gated by layout.tsx
 │   │   ├── (auth)/            # Authentication pages (login, signup, unauthorized)
-│   │   ├── (dev)/             # Development pages (debug-session)
 │   │   ├── (protected)/       # Protected member pages (profile)
 │   │   ├── (public)/          # Public pages (about, announcements, events, videos, etc.)
 │   │   ├── api/               # API routes
-│   │   │   ├── (admin)/       # Admin API routes (dashboard, debug, seed)
-│   │   │   ├── (auth)/        # Auth API routes (refresh, signup, update-role)
+│   │   │   ├── (admin)/       # Admin API routes (dashboard stats)
+│   │   │   ├── (auth)/        # Auth API routes (refresh, signup)
 │   │   │   ├── (protected)/   # Protected API routes (players, tournaments, user)
 │   │   │   ├── (public)/      # Public API routes (alumni, announcements, events, roster, videos)
 │   │   │   └── auth/          # NextAuth.js routes

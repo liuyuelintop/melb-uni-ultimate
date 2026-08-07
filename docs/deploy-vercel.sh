@@ -35,9 +35,8 @@ if [ $? -eq 0 ]; then
     echo "2. Go to Vercel Dashboard → Settings → Environment Variables"
     echo "3. Add the environment variables from env.production"
     echo "4. Update NEXTAUTH_URL with your actual Vercel URL"
-    echo "5. Seed the database: curl -X POST https://your-url.vercel.app/api/seed"
-    echo ""
-    echo "🔑 Admin Login: admin@muultimate.com / admin123"
+    echo "5. Create the first admin user directly against the database"
+    echo "   (the unauthenticated /api/seed endpoint has been removed)"
     echo ""
     echo "📖 See VERCEL_DEPLOYMENT.md for detailed instructions"
 else
