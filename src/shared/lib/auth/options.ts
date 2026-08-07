@@ -4,7 +4,7 @@ import { DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
-import clientPromise from "@shared/lib/db/mongodb";
+import { getClientPromise } from "@shared/lib/db/mongodb";
 import dbConnect from "@shared/lib/db/mongoose";
 import UserModel from "@shared/lib/db/models/user";
 
@@ -58,7 +58,15 @@ export const authOptions = {
   // Retained for parity with the original configuration. Under the explicit
   // `jwt` session strategy below, and with only a credentials provider, this
   // adapter is not used to persist sessions.
-  adapter: MongoDBAdapter(clientPromise),
+  //
+  // Constructed only when a URI is actually configured. `next build` imports
+  // this module while collecting page data, and building should not require a
+  // database credential — see the comment in db/mongodb.ts. In a correctly
+  // configured deployment MONGODB_URI is always set, so this is identical to
+  // passing the adapter unconditionally.
+  adapter: process.env.MONGODB_URI
+    ? MongoDBAdapter(getClientPromise())
+    : undefined,
   providers: [
     CredentialsProvider({
       name: "credentials",

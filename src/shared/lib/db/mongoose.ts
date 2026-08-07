@@ -1,13 +1,5 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    "Please define the MONGODB_URI environment variable inside .env.local"
-  );
-}
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
@@ -33,12 +25,28 @@ async function dbConnect() {
     return cached.conn;
   }
 
+  // Read and validate the URI here rather than at module scope. `next build`
+  // imports every route module to collect page data, so a top-level throw made
+  // the build itself require a database credential — a missing MONGODB_URI
+  // failed the build with "Failed to collect page data" instead of failing the
+  // request that actually needs a database. Deferring it means the build only
+  // needs code, and a misconfigured deployment reports the problem on the first
+  // request that touches the database.
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    throw new Error(
+      "Missing MONGODB_URI. Set it in your deployment's environment variables, " +
+        "or in .env.local for local development."
+    );
+  }
+
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(uri, opts).then((mongoose) => {
       return mongoose;
     });
   }
