@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@shared/lib/db/mongoose";
+import {
+  requireAdmin,
+  viewerIsAdmin,
+  attributionOf,
+} from "@shared/lib/auth/guards";
 import Alumni from "@shared/lib/db/models/alumni";
 
 // GET - Fetch all alumni
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    const session = await getServerSession(authOptions);
 
     const { searchParams } = new URL(request.url);
     const graduationYear = searchParams.get("graduationYear");
@@ -34,8 +36,10 @@ export async function GET(request: NextRequest) {
       createdAt: -1,
     });
 
+    // Contact and employment details are withheld from non-admin callers
+    // server-side, so unauthorised clients never receive them.
     let filteredAlumni;
-    if (session?.user?.role === "admin") {
+    if (await viewerIsAdmin()) {
       filteredAlumni = alumni.map((alum) => alum.toObject());
     } else {
       filteredAlumni = alumni.map((alum) => {
@@ -66,11 +70,8 @@ export async function GET(request: NextRequest) {
 // POST - Create new alumni
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
 
     const body = await request.json();
     const {
@@ -121,8 +122,8 @@ export async function POST(request: NextRequest) {
       phoneNumber,
       linkedinUrl,
       isActive: true,
-      createdBy: session.user?.name || session.user?.email || "unknown",
-      updatedBy: session.user?.name || session.user?.email || "unknown",
+      createdBy: attributionOf(auth.viewer),
+      updatedBy: attributionOf(auth.viewer),
     });
 
     await alumni.save();

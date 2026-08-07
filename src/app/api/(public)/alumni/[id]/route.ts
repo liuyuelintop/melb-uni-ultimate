@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
 import Alumni from "@shared/lib/db/models/alumni";
-import User from "@shared/lib/db/models/user";
+import { requireAdmin, attributionOf } from "@shared/lib/auth/guards";
 
 // PUT - Update alumni
 export async function PUT(
@@ -10,13 +9,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { email, studentId } = body;
 
@@ -60,7 +56,7 @@ export async function PUT(
       id,
       {
         ...body,
-        updatedBy: session.user?.name || session.user?.email || "unknown",
+        updatedBy: attributionOf(auth.viewer),
       },
       { new: true, runValidators: true }
     );
@@ -84,31 +80,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
-
-    // Get user from database to check role
-    const user = await User.findOne({ email: session.user.email }).select(
-      "role"
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Only admins can delete alumni
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Only admins can delete alumni" },
-        { status: 403 }
-      );
-    }
 
     await dbConnect();
 
@@ -134,31 +109,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
-
-    // Get user from database to check role
-    const user = await User.findOne({ email: session.user.email }).select(
-      "role"
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Only admins can toggle alumni status
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Only admins can change alumni status" },
-        { status: 403 }
-      );
-    }
 
     await dbConnect();
 
@@ -169,7 +123,7 @@ export async function PATCH(
     }
 
     alumni.isActive = !alumni.isActive;
-    alumni.updatedBy = session.user?.name || session.user?.email || "unknown";
+    alumni.updatedBy = attributionOf(auth.viewer);
     await alumni.save();
 
     return NextResponse.json({

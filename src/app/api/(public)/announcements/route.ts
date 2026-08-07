@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
+import { requireAdmin, attributionOf } from "@shared/lib/auth/guards";
 import { Announcement } from "@shared/lib/db/models";
 
 export async function GET(request: NextRequest) {
@@ -31,11 +31,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
 
     await dbConnect();
 
@@ -53,7 +50,7 @@ export async function POST(request: NextRequest) {
     const announcement = new Announcement({
       title,
       content,
-      author: author || session.user?.name || session.user?.email || "Admin",
+      author: author || attributionOf(auth.viewer),
       priority: priority || "medium",
       isPublished: isPublished || false,
       publishedAt: isPublished ? new Date() : undefined,

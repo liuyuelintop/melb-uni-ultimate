@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
-import { Video, User } from "@shared/lib/db/models";
+import { Video } from "@shared/lib/db/models";
 import { isValidYoutubeId } from "@shared/utils/video";
+import { getViewer, requireAuth } from "@shared/lib/auth/guards";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const viewer = await getViewer();
     await dbConnect();
 
     const { id } = await params;
@@ -25,23 +25,16 @@ export async function GET(
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
 
-    // Handle public vs authenticated access
-    if (!session?.user?.email) {
-      // Public access - only allow if video has public access
+    if (!viewer) {
+      // Anonymous access - only allow if the video is marked public
       if (!video.allowedRoles.includes("public")) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
-    } else {
-      // Authenticated access - get user to check their role
-      const user = await User.findOne({ email: session.user.email });
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-
-      // Check if user has access to this video
-      if (user.role !== "admin" && !video.allowedRoles.includes(user.role)) {
-        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-      }
+    } else if (
+      viewer.role !== "admin" &&
+      !video.allowedRoles.includes(viewer.role)
+    ) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     return NextResponse.json(video);
@@ -59,19 +52,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (!auth.ok) return auth.response;
 
     await dbConnect();
-
-    // Get user to check their role
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
     const { id } = await params;
 
@@ -81,10 +65,10 @@ export async function PUT(
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
 
-    // Check if user can edit this video (admin or creator)
+    // Admins may edit any video; everyone else only their own
     if (
-      user.role !== "admin" &&
-      video.createdBy.toString() !== user._id.toString()
+      auth.viewer.role !== "admin" &&
+      video.createdBy.toString() !== auth.viewer.id
     ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -148,19 +132,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (!auth.ok) return auth.response;
 
     await dbConnect();
-
-    // Get user to check their role
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
 
     const { id } = await params;
 
@@ -170,10 +145,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Video not found" }, { status: 404 });
     }
 
-    // Check if user can delete this video (admin or creator)
+    // Admins may delete any video; everyone else only their own
     if (
-      user.role !== "admin" &&
-      video.createdBy.toString() !== user._id.toString()
+      auth.viewer.role !== "admin" &&
+      video.createdBy.toString() !== auth.viewer.id
     ) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

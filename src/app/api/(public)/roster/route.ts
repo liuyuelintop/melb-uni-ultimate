@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
-import { RosterEntry, Player, Tournament } from "@shared/lib/db/models";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { RosterEntry } from "@shared/lib/db/models";
+import { requireAdmin } from "@shared/lib/auth/guards";
 
 // GET /api/roster?tournamentId=...
 export async function GET(req: NextRequest) {
@@ -24,10 +23,9 @@ export async function GET(req: NextRequest) {
 
 // POST /api/roster
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user?.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  }
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   await dbConnect();
   const data = await req.json();
 
@@ -42,10 +40,9 @@ export async function POST(req: NextRequest) {
 
 // DELETE /api/roster (expects { _id })
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session || session.user?.role !== "admin") {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  }
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   await dbConnect();
   const { _id } = await req.json();
   if (!_id) {

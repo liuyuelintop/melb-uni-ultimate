@@ -1,33 +1,28 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@app/api/auth/[...nextauth]/route";
+import { getViewer } from "@shared/lib/auth/guards";
 
 /**
  * Authoritative server-side gate for every route in the (admin) group.
  *
- * Middleware alone is not sufficient here: it can only inspect the JWT cookie,
- * and its path matching silently drifted out of sync with the routes it was
- * meant to protect (it tested "/admin", but route groups are URL-invisible so
- * the dashboard is served at /dashboard). Checking on the server, inside the
- * segment being protected, cannot drift that way.
- *
- * `authOptions` MUST be passed. Calling getServerSession() without it makes
- * NextAuth fall back to its default session callback, which returns a valid
- * session with `role` undefined — so a role check would silently reject
- * everyone, including real admins.
+ * Route groups are a filesystem convention only — the parentheses do not appear
+ * in the URL and confer no protection, so the admin dashboard is served at
+ * /dashboard. `src/middleware.ts` also checks the JWT for that path, but this
+ * layout is the gate that decides: it runs on the server for every request in
+ * the group and reads the caller's role from the database rather than from the
+ * token, so revoking an admin takes effect immediately.
  */
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const viewer = await getViewer();
 
-  if (!session) {
+  if (!viewer) {
     redirect("/login");
   }
 
-  if (session.user?.role !== "admin") {
+  if (viewer.role !== "admin") {
     redirect("/unauthorized");
   }
 

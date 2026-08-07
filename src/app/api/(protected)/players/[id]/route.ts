@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
 import Player from "@shared/lib/db/models/player";
-import User from "@shared/lib/db/models/user";
+import { requireAdmin, attributionOf } from "@shared/lib/auth/guards";
 
 // PUT - Update player
 export async function PUT(
@@ -10,13 +9,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     const body = await request.json();
     const { email, studentId } = body;
 
@@ -60,7 +56,7 @@ export async function PUT(
       id,
       {
         ...body,
-        updatedBy: session.user?.name || session.user?.email || "unknown",
+        updatedBy: attributionOf(auth.viewer),
       },
       { new: true, runValidators: true }
     );
@@ -84,39 +80,10 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
-
-    console.log("DELETE /api/players/[id] - Session:", session);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
-
-    // Get user from database to check role
-    const user = await User.findOne({ email: session.user.email }).select(
-      "role"
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    console.log("DELETE /api/players/[id] - Database user role:", user.role);
-
-    // Only admins can delete players
-    if (user.role !== "admin") {
-      console.log(
-        "DELETE /api/players/[id] - Access denied. User role:",
-        user.role
-      );
-      return NextResponse.json(
-        { error: "Only admins can delete players" },
-        { status: 403 }
-      );
-    }
 
     await dbConnect();
 
@@ -142,40 +109,10 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
-
-    console.log("PATCH /api/players/[id] - Session:", session);
-    console.log("PATCH /api/players/[id] - Session user:", session?.user);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    await dbConnect();
-
-    // Get user from database to check role
-    const user = await User.findOne({ email: session.user.email }).select(
-      "role"
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    console.log("PATCH /api/players/[id] - Database user role:", user.role);
-
-    // Only admins can toggle player status
-    if (user.role !== "admin") {
-      console.log(
-        "PATCH /api/players/[id] - Access denied. User role:",
-        user.role
-      );
-      return NextResponse.json(
-        { error: "Only admins can change player status" },
-        { status: 403 }
-      );
-    }
 
     await dbConnect();
 
@@ -186,7 +123,7 @@ export async function PATCH(
     }
 
     player.isActive = !player.isActive;
-    player.updatedBy = session.user?.name || session.user?.email || "unknown";
+    player.updatedBy = attributionOf(auth.viewer);
     await player.save();
 
     return NextResponse.json({

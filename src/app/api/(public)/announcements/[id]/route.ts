@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
 import Announcement from "@shared/lib/db/models/announcement";
-import User from "@shared/lib/db/models/user";
+import { requireAdmin } from "@shared/lib/auth/guards";
 
 // GET - Get single announcement
 export async function GET(
@@ -39,31 +38,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await dbConnect();
-
-    // Get user from database to check role
-    const user = await User.findOne({ email: session.user.email }).select(
-      "role"
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Only admins can update announcements
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Only admins can update announcements" },
-        { status: 403 }
-      );
-    }
 
     const body = await request.json();
     const { isPublished } = body;
@@ -106,31 +86,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getServerSession();
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
+
     const { id } = await params;
 
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await dbConnect();
-
-    // Get user from database to check role
-    const user = await User.findOne({ email: session.user.email }).select(
-      "role"
-    );
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Only admins can delete announcements
-    if (user.role !== "admin") {
-      return NextResponse.json(
-        { error: "Only admins can delete announcements" },
-        { status: 403 }
-      );
-    }
 
     const announcement = await Announcement.findByIdAndDelete(id);
 

@@ -1,20 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
+import { requireAuth } from "@shared/lib/auth/guards";
 import User from "@shared/lib/db/models/user";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (!auth.ok) return auth.response;
 
     await dbConnect();
 
     // Get fresh user data from database
-    const user = await User.findOne({ email: session.user.email }).select(
+    const user = await User.findOne({ email: auth.viewer.email }).select(
       "-password"
     );
 

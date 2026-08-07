@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route";
 import dbConnect from "@shared/lib/db/mongoose";
+import {
+  requireAdmin,
+  viewerIsAdmin,
+  attributionOf,
+} from "@shared/lib/auth/guards";
 import Player from "@shared/lib/db/models/player";
 
 // GET - Fetch all players
@@ -30,23 +33,14 @@ export async function GET(request: NextRequest) {
 
     const players = await Player.find(query).sort({ createdAt: -1 });
 
-    // Check if user is admin to determine what data to return
-    const session = await getServerSession(authOptions);
-    console.log("Players API - Session:", session);
-    console.log("Players API - Session user:", session?.user);
-    console.log("Players API - Session user role:", session?.user?.role);
-    const isAdmin = session?.user?.role === "admin";
-    console.log("Players API - Is Admin:", isAdmin);
+    // Contact details are withheld from non-admin callers server-side, so
+    // unauthorised clients never receive them.
+    const isAdmin = await viewerIsAdmin();
 
-    // Use session-based admin check only
-    const forceAdmin = isAdmin;
-    console.log("Players API - Force Admin:", forceAdmin);
-
-    // Filter sensitive data for non-admin users
     const filteredPlayers = players.map((player) => {
       const playerObj = player.toObject();
 
-      if (!forceAdmin) {
+      if (!isAdmin) {
         // Remove sensitive information for non-admin users
         delete playerObj.email;
         delete playerObj.phoneNumber;
@@ -68,11 +62,8 @@ export async function GET(request: NextRequest) {
 // POST - Create new player
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-
-    if (!session) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    const auth = await requireAdmin();
+    if (!auth.ok) return auth.response;
 
     const body = await request.json();
     const {
@@ -120,8 +111,8 @@ export async function POST(request: NextRequest) {
       phoneNumber,
       graduationYear,
       isActive: true,
-      createdBy: session.user?.name || session.user?.email || "unknown",
-      updatedBy: session.user?.name || session.user?.email || "unknown",
+      createdBy: attributionOf(auth.viewer),
+      updatedBy: attributionOf(auth.viewer),
     });
 
     await player.save();
