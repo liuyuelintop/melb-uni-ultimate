@@ -1,33 +1,37 @@
 import { MongoClient } from "mongodb";
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
-}
+const globalWithMongo = global as typeof globalThis & {
+  _mongoClientPromise?: Promise<MongoClient>;
+};
 
-const uri = process.env.MONGODB_URI;
-const options = {};
-
-let client;
-let clientPromise: Promise<MongoClient>;
-
-if (process.env.NODE_ENV === "development") {
-  // In development mode, use a global variable so that the value
-  // is preserved across module reloads caused by HMR (Hot Module Replacement).
-  const globalWithMongo = global as typeof globalThis & {
-    _mongoClientPromise?: Promise<MongoClient>;
-  };
-
-  if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    globalWithMongo._mongoClientPromise = client.connect();
+/**
+ * Lazily create (and cache) the MongoClient connection promise.
+ *
+ * This used to run at module scope and threw on a missing MONGODB_URI. Because
+ * `src/shared/lib/auth/options.ts` imports this file, and every route handler
+ * imports the auth guards, that top-level throw sat in the dependency graph of
+ * the whole API — so `next build` could not collect page data without a
+ * database credential. Nothing here touches the environment until it is called.
+ *
+ * `new MongoClient()` does not open a socket; `connect()` does. The promise is
+ * cached on `global` so repeated calls in a serverless runtime reuse one client
+ * instead of exhausting the connection pool.
+ */
+export function getClientPromise(): Promise<MongoClient> {
+  if (globalWithMongo._mongoClientPromise) {
+    return globalWithMongo._mongoClientPromise;
   }
-  clientPromise = globalWithMongo._mongoClientPromise;
-} else {
-  // In production mode, it's best to not use a global variable.
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
-}
 
-// Export a module-scoped MongoClient promise. By doing this in a
-// separate module, the client can be shared across functions.
-export default clientPromise;
+  const uri = process.env.MONGODB_URI;
+
+  if (!uri) {
+    throw new Error(
+      'Invalid/Missing environment variable: "MONGODB_URI"'
+    );
+  }
+
+  const client = new MongoClient(uri, {});
+  globalWithMongo._mongoClientPromise = client.connect();
+
+  return globalWithMongo._mongoClientPromise;
+}
