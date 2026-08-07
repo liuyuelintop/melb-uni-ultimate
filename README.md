@@ -100,10 +100,23 @@ npm run dev
 
 - Visit [http://localhost:3000](http://localhost:3000)
 - Sign up as a new user at `/signup`. New accounts get the `user` role.
-- To create an admin, insert the user directly in the database and set
-  `role: "admin"` on that document — see
-  [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md). There is deliberately no
-  self-service route for granting admin.
+
+### Account maintenance
+
+There is deliberately **no HTTP route** that grants admin — an endpoint that did
+was the project's original privilege-escalation defect. Use the local CLI, which
+requires database credentials and a shell and so adds no remotely reachable
+privilege path:
+
+```bash
+node scripts/admin.js list                          # who exists, and their role
+node scripts/admin.js set-role <email> admin        # promote (or demote with: user)
+node scripts/admin.js reset-password <email>        # prompts, no echo
+```
+
+It reads `MONGODB_URI` from `.env.local` and needs no extra dependencies. After a
+role change, sign out and back in — the server reads the role from the database
+on every request, but the client's cached session still shows the old value.
 
 Required environment variables are listed in
 [`docs/env.template`](docs/env.template): `MONGODB_URI`, `NEXTAUTH_SECRET` and
@@ -139,11 +152,13 @@ melb-uni-ultimate/
 │   │   ├── context/           # React contexts (notifications)
 │   │   ├── data/              # Static page content
 │   │   ├── hooks/             # useApi, useCrud and resource hooks
+│   │   ├── lib/auth/          # NextAuth options + authorisation guards
 │   │   ├── lib/db/            # Mongoose connection and models
 │   │   └── types/             # Shared TypeScript types
 │   ├── styles/                # Global styles
 │   └── middleware.ts          # Next.js middleware
 ├── public/                    # Static assets
+├── scripts/                   # Local CLI (admin.js) - not part of the build
 ├── docs/                      # Deployment guides and env templates
 └── package.json
 ```
@@ -154,9 +169,20 @@ melb-uni-ultimate/
   `src/features/<feature>/`.
 - **Route groups**: Next.js route groups `()` organise files by intended access
   level. They are **naming only** — parentheses do not appear in the URL and
-  confer no protection. The admin dashboard is served at `/dashboard`, not
-  `/admin`. Authorisation is enforced in code, not by directory layout.
+  confer no protection. Authorisation is enforced in code, not by directory
+  layout. This has bitten this codebase three times, so be concrete about it:
+  - `src/app/(admin)/dashboard/page.tsx` → **`/dashboard`**, not `/admin`
+  - `src/app/api/(auth)/signup/route.ts` → **`/api/signup`**, not
+    `/api/auth/signup` — that path belongs to the NextAuth catch-all, which
+    answers `400 text/plain` for any action it does not recognise
+  - `src/app/api/(public)/...` is not public, and `(protected)/...` is not
+    protected, by virtue of the folder name alone
 - **Shared layer**: common UI primitives, hooks and types live in `src/shared/`.
+- **Authorisation**: `src/shared/lib/auth/guards.ts` is the single place that
+  reads a session. Route handlers call `requireAdmin()` / `requireAuth()` and
+  return the guard's response on failure, so a mutating endpoint cannot be
+  written without an explicit decision about who may call it. See the
+  "Authentication and authorisation" section below.
 - **Data fetching**: a generic `useApi<T>` hook owns fetch/loading/error state;
   `useCrud<T>` composes it and adds create/update/delete with optimistic local
   list updates. The thirteen resource hooks in `src/shared/hooks/` are built on
@@ -177,20 +203,51 @@ Two roles exist in the data model: `user` and `admin`
   member pages.
 - **`admin`**: can reach `/dashboard` and the admin management surfaces.
 
-**How `/dashboard` is protected.** `src/app/(admin)/layout.tsx` is a server
-component that calls `getServerSession(authOptions)` and redirects
-unauthenticated visitors to `/login` and non-admins to `/unauthorized`. This is
-the authoritative gate. `src/middleware.ts` additionally checks the JWT for
-`/dashboard` as defence in depth.
+**How authorisation works.** Every authorisation decision goes through
+`src/shared/lib/auth/guards.ts`, which is the only module in the codebase that
+calls `getServerSession`:
 
-> **Known limitation.** Role enforcement on write endpoints is **inconsistent**.
-> The roster and tournament endpoints check for `admin`. Several other mutating
-> endpoints (announcements, events, players, alumni) check only that a session
-> exists, which means any signed-in account can write to them. The root cause is
-> that `getServerSession()` must be passed `authOptions` for `session.user.role`
-> to be populated — call it without them and NextAuth falls back to its default
-> session callback, leaving `role` undefined. Not every call site does this.
-> If you deploy this, fix that before opening signup to the public.
+| Helper | Use |
+| ------ | --- |
+| `getViewer()` | Resolve the caller, or `null`. Returns `role` read from the database. |
+| `viewerIsAdmin()` | For read endpoints that vary their output by role. |
+| `requireAuth()` | Require any signed-in caller. |
+| `requireAdmin()` | Require an admin. |
+
+`requireAuth` and `requireAdmin` return a discriminated union, so a route reads:
+
+```ts
+const auth = await requireAdmin();
+if (!auth.ok) return auth.response; // 401 or 403
+// auth.viewer is typed as a Viewer from here on
+```
+
+Two deliberate properties:
+
+- **`authOptions` cannot be forgotten.** `getServerSession()` populates
+  `session.user.role` only when passed `authOptions`. Called without them it
+  still returns a valid session, but with `role` undefined — so a role check
+  silently rejects everyone, including real admins, and TypeScript cannot catch
+  it because the parameter is optional. Having exactly one call site is the only
+  reliable fix.
+- **Roles come from the database, not the JWT claim.** The claim is written at
+  sign-in and then fixed for the life of the token, so revoking an admin would
+  not take effect until it expired. Reading the current value costs one indexed
+  lookup and applies to the caller's next request. Anonymous callers skip the
+  query entirely.
+
+**How `/dashboard` is protected.** `src/app/(admin)/layout.tsx` is a server
+component that calls `getViewer()` and redirects unauthenticated visitors to
+`/login` and non-admins to `/unauthorized`. This is the authoritative gate.
+`src/middleware.ts` additionally checks the JWT for `/dashboard` as defence in
+depth.
+
+**What each role can write.** Announcements, events, players, alumni, roster
+entries and tournaments are admin-only for every mutating method. Members can
+edit their own profile, and can add videos — a member's video is visible to
+members only until an admin widens its audience, and members can edit or delete
+only videos they created. `/api/signup` is intentionally open; new accounts get
+the `user` role and there is no self-service route to `admin`.
 
 ---
 
@@ -247,8 +304,12 @@ A: The source is publicly readable, but it is not licensed for reuse. "Public"
 and "open source" are not the same thing.
 
 **Q: How do I get admin access?**
-A: Set `role: "admin"` on your user document directly in the database. See
-[docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
+A: `node scripts/admin.js set-role <your-email> admin`. There is no HTTP route
+that grants admin, by design.
+
+**Q: I forgot the admin password.**
+A: `node scripts/admin.js reset-password <email>`. Use `list` first if you are not
+sure which account is the admin.
 
 **Q: Are there tests?**
 A: No. There is no test suite and no CI pipeline.

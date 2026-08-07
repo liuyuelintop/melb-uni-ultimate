@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
-import { Video, User } from "@shared/lib/db/models";
-import { extractYoutubeId, isValidYoutubeId } from "@shared/utils/video";
+import { Video } from "@shared/lib/db/models";
+import { isValidYoutubeId } from "@shared/utils/video";
+import { getViewer, requireAuth } from "@shared/lib/auth/guards";
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    const viewer = await getViewer();
     await dbConnect();
 
     const { searchParams } = new URL(request.url);
@@ -30,25 +30,13 @@ export async function GET(request: NextRequest) {
       query.tags = { $in: tagArray };
     }
 
-    // Handle public vs authenticated access
-    if (publicOnly || !session?.user?.email) {
-      // Public access - only show videos with public access
+    // Restrict visibility server-side by the caller's role
+    if (publicOnly || !viewer) {
       query.isPublished = true;
       query.allowedRoles = { $in: ["public"] };
-    } else {
-      // Authenticated access - get user to check their role
-      const user = await User.findOne({ email: session.user.email });
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-
-      // Filter by allowed roles based on user role
-      if (user.role === "admin") {
-        // Admins can see all videos
-      } else {
-        // Regular users can only see videos they have access to
-        query.allowedRoles = { $in: [user.role, "public"] };
-      }
+    } else if (viewer.role !== "admin") {
+      // Admins see everything; everyone else only what their role allows
+      query.allowedRoles = { $in: [viewer.role, "public"] };
     }
 
     const videos = await Video.find(query).sort({ createdAt: -1 }).limit(50);
@@ -65,24 +53,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    // Any authenticated member may add a video. A non-admin's video defaults to
+    // member-only visibility below, and only an admin can widen that.
+    const auth = await requireAuth();
+    if (!auth.ok) return auth.response;
 
     await dbConnect();
-
-    // Get user to check their role
-    const user = await User.findOne({ email: session.user.email });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    // Only admins and users can create videos
-    if (user.role !== "admin" && user.role !== "user") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
 
     const body = await request.json();
     const {
@@ -122,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     // Set default values
     const defaultAllowedRoles =
-      user.role === "admin" ? ["public", "user", "admin"] : ["user"];
+      auth.viewer.role === "admin" ? ["public", "user", "admin"] : ["user"];
     const finalAllowedRoles = allowedRoles || defaultAllowedRoles;
 
     const video = new Video({
@@ -132,7 +108,7 @@ export async function POST(request: NextRequest) {
       thumbnailUrl:
         thumbnailUrl || `https://img.youtube.com/vi/${youtubeId}/medium.jpg`,
       tags: tags || [],
-      createdBy: user._id,
+      createdBy: auth.viewer.id,
       allowedRoles: finalAllowedRoles,
       isPublished: isPublished !== undefined ? isPublished : true,
     });

@@ -1,20 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import dbConnect from "@shared/lib/db/mongoose";
+import { requireAuth } from "@shared/lib/auth/guards";
 import User from "@shared/lib/db/models/user";
 
 // GET - Fetch user profile
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (!auth.ok) return auth.response;
 
     await dbConnect();
 
-    const user = await User.findOne({ email: session.user.email }).select(
+    const user = await User.findOne({ email: auth.viewer.email }).select(
       "-password"
     );
 
@@ -48,11 +45,8 @@ export async function GET(request: NextRequest) {
 // PUT - Update user profile
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession();
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-    }
+    const auth = await requireAuth();
+    if (!auth.ok) return auth.response;
 
     const body = await request.json();
     const { name, phoneNumber, position, experience, jerseyNumber } = body;
@@ -71,7 +65,7 @@ export async function PUT(request: NextRequest) {
     if (jerseyNumber) {
       const existingJersey = await User.findOne({
         jerseyNumber,
-        email: { $ne: session.user.email },
+        email: { $ne: auth.viewer.email },
       });
       if (existingJersey) {
         return NextResponse.json(
@@ -83,14 +77,14 @@ export async function PUT(request: NextRequest) {
 
     // Update user profile
     const updatedUser = await User.findOneAndUpdate(
-      { email: session.user.email },
+      { email: auth.viewer.email },
       {
         name,
         phoneNumber,
         position,
         experience,
         jerseyNumber,
-        updatedBy: session.user.id || "unknown",
+        updatedBy: auth.viewer.id,
       },
       { new: true, runValidators: true }
     ).select("-password");

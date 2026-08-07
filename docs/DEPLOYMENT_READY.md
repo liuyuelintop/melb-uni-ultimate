@@ -47,9 +47,15 @@ The `/api/seed` endpoint has been **removed**. It required no authentication and
 deleted every player, alumni, event and announcement record before recreating an
 admin account from hardcoded sample data.
 
-Create the first admin directly against the database instead: insert a user with a
-bcrypt-hashed password, then set `role: "admin"` on that document. Never commit the
-password.
+Create the first admin with the local CLI instead:
+
+```bash
+node scripts/admin.js list                       # find the account
+node scripts/admin.js set-role <email> admin     # promote it
+node scripts/admin.js reset-password <email>     # if the password is lost
+```
+
+Sign up at `/signup` first if no account exists yet. Never commit a password.
 
 ## 🎉 What's Included
 
@@ -91,7 +97,8 @@ vercel --prod
 
 # 3. Update NEXTAUTH_URL in Vercel dashboard
 
-# 4. Create the first admin user directly against the database
+# 4. Sign up at /signup, then promote that account:
+#    node scripts/admin.js set-role <email> admin
 #    (the unauthenticated /api/seed endpoint has been removed)
 
 # 5. Sign in at /login with that account
@@ -101,10 +108,13 @@ vercel --prod
 
 Not published. Create an admin account against your own database (see
 "Create the First Admin User" above) and keep the password out of version control.
+`node scripts/admin.js reset-password <email>` prompts without echoing, so the
+value stays out of your shell history.
 
 **Features to Showcase:**
 
-1. **Admin Dashboard** (`/admin`) - Complete management interface
+1. **Admin Dashboard** (`/dashboard`) - Complete management interface
+   (the `(admin)` route group is not part of the URL)
 2. **Player Roster** (`/roster`) - View and manage current players
 3. **Alumni Network** (`/alumni`) - Connect with former members
 4. **Events Calendar** (`/events`) - Public events page

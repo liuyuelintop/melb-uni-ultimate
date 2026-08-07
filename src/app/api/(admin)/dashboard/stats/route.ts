@@ -4,8 +4,12 @@ import Player from "@shared/lib/db/models/player";
 import Alumni from "@shared/lib/db/models/alumni";
 import Event from "@shared/lib/db/models/event";
 import Announcement from "@shared/lib/db/models/announcement";
+import { requireAdmin } from "@shared/lib/auth/guards";
 
 export async function GET() {
+  const auth = await requireAdmin();
+  if (!auth.ok) return auth.response;
+
   await dbConnect();
   try {
     const [
