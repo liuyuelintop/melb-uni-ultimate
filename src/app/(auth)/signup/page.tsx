@@ -35,7 +35,12 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await fetch("/api/auth/signup", {
+      // The signup handler is src/app/api/(auth)/signup/route.ts. Route groups
+      // in parentheses do not appear in the URL, so it is served at
+      // /api/signup — NOT /api/auth/signup, which belongs to the NextAuth
+      // catch-all and answers 400 with a plain-text body for any action it does
+      // not recognise.
+      const response = await fetch("/api/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +48,24 @@ export default function SignupPage() {
         body: JSON.stringify(formData),
       });
 
-      const data = await response.json();
+      // Read as text first. A non-JSON body means the request was answered by
+      // something other than this endpoint, and parsing it blindly would throw
+      // and get reported as a network failure — which is what it is not.
+      const raw = await response.text();
+      let data: { error?: string } = {};
+
+      if (raw) {
+        try {
+          data = JSON.parse(raw);
+        } catch {
+          setError(
+            `Unexpected non-JSON response from the server (HTTP ${response.status}): ` +
+              raw.slice(0, 160)
+          );
+          setIsLoading(false);
+          return;
+        }
+      }
 
       if (response.ok) {
         setSuccess(
@@ -57,10 +79,15 @@ export default function SignupPage() {
           gender: "other",
         });
       } else {
-        setError(data.error || "Failed to create account");
+        setError(data.error || `Failed to create account (HTTP ${response.status})`);
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      // Only a genuine transport failure reaches here now.
+      setError(
+        `Could not reach the server. ${
+          err instanceof Error ? err.message : "Check your connection."
+        }`
+      );
     }
 
     setIsLoading(false);

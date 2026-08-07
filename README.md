@@ -100,10 +100,23 @@ npm run dev
 
 - Visit [http://localhost:3000](http://localhost:3000)
 - Sign up as a new user at `/signup`. New accounts get the `user` role.
-- To create an admin, insert the user directly in the database and set
-  `role: "admin"` on that document — see
-  [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md). There is deliberately no
-  self-service route for granting admin.
+
+### Account maintenance
+
+There is deliberately **no HTTP route** that grants admin — an endpoint that did
+was the project's original privilege-escalation defect. Use the local CLI, which
+requires database credentials and a shell and so adds no remotely reachable
+privilege path:
+
+```bash
+node scripts/admin.js list                          # who exists, and their role
+node scripts/admin.js set-role <email> admin        # promote (or demote with: user)
+node scripts/admin.js reset-password <email>        # prompts, no echo
+```
+
+It reads `MONGODB_URI` from `.env.local` and needs no extra dependencies. After a
+role change, sign out and back in — the server reads the role from the database
+on every request, but the client's cached session still shows the old value.
 
 Required environment variables are listed in
 [`docs/env.template`](docs/env.template): `MONGODB_URI`, `NEXTAUTH_SECRET` and
@@ -145,6 +158,7 @@ melb-uni-ultimate/
 │   ├── styles/                # Global styles
 │   └── middleware.ts          # Next.js middleware
 ├── public/                    # Static assets
+├── scripts/                   # Local CLI (admin.js) - not part of the build
 ├── docs/                      # Deployment guides and env templates
 └── package.json
 ```
@@ -155,8 +169,14 @@ melb-uni-ultimate/
   `src/features/<feature>/`.
 - **Route groups**: Next.js route groups `()` organise files by intended access
   level. They are **naming only** — parentheses do not appear in the URL and
-  confer no protection. The admin dashboard is served at `/dashboard`, not
-  `/admin`. Authorisation is enforced in code, not by directory layout.
+  confer no protection. Authorisation is enforced in code, not by directory
+  layout. This has bitten this codebase three times, so be concrete about it:
+  - `src/app/(admin)/dashboard/page.tsx` → **`/dashboard`**, not `/admin`
+  - `src/app/api/(auth)/signup/route.ts` → **`/api/signup`**, not
+    `/api/auth/signup` — that path belongs to the NextAuth catch-all, which
+    answers `400 text/plain` for any action it does not recognise
+  - `src/app/api/(public)/...` is not public, and `(protected)/...` is not
+    protected, by virtue of the folder name alone
 - **Shared layer**: common UI primitives, hooks and types live in `src/shared/`.
 - **Authorisation**: `src/shared/lib/auth/guards.ts` is the single place that
   reads a session. Route handlers call `requireAdmin()` / `requireAuth()` and
@@ -284,8 +304,12 @@ A: The source is publicly readable, but it is not licensed for reuse. "Public"
 and "open source" are not the same thing.
 
 **Q: How do I get admin access?**
-A: Set `role: "admin"` on your user document directly in the database. See
-[docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
+A: `node scripts/admin.js set-role <your-email> admin`. There is no HTTP route
+that grants admin, by design.
+
+**Q: I forgot the admin password.**
+A: `node scripts/admin.js reset-password <email>`. Use `list` first if you are not
+sure which account is the admin.
 
 **Q: Are there tests?**
 A: No. There is no test suite and no CI pipeline.
