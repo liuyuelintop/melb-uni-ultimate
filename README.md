@@ -139,6 +139,7 @@ melb-uni-ultimate/
 │   │   ├── context/           # React contexts (notifications)
 │   │   ├── data/              # Static page content
 │   │   ├── hooks/             # useApi, useCrud and resource hooks
+│   │   ├── lib/auth/          # NextAuth options + authorisation guards
 │   │   ├── lib/db/            # Mongoose connection and models
 │   │   └── types/             # Shared TypeScript types
 │   ├── styles/                # Global styles
@@ -157,6 +158,11 @@ melb-uni-ultimate/
   confer no protection. The admin dashboard is served at `/dashboard`, not
   `/admin`. Authorisation is enforced in code, not by directory layout.
 - **Shared layer**: common UI primitives, hooks and types live in `src/shared/`.
+- **Authorisation**: `src/shared/lib/auth/guards.ts` is the single place that
+  reads a session. Route handlers call `requireAdmin()` / `requireAuth()` and
+  return the guard's response on failure, so a mutating endpoint cannot be
+  written without an explicit decision about who may call it. See the
+  "Authentication and authorisation" section below.
 - **Data fetching**: a generic `useApi<T>` hook owns fetch/loading/error state;
   `useCrud<T>` composes it and adds create/update/delete with optimistic local
   list updates. The thirteen resource hooks in `src/shared/hooks/` are built on
@@ -177,20 +183,51 @@ Two roles exist in the data model: `user` and `admin`
   member pages.
 - **`admin`**: can reach `/dashboard` and the admin management surfaces.
 
-**How `/dashboard` is protected.** `src/app/(admin)/layout.tsx` is a server
-component that calls `getServerSession(authOptions)` and redirects
-unauthenticated visitors to `/login` and non-admins to `/unauthorized`. This is
-the authoritative gate. `src/middleware.ts` additionally checks the JWT for
-`/dashboard` as defence in depth.
+**How authorisation works.** Every authorisation decision goes through
+`src/shared/lib/auth/guards.ts`, which is the only module in the codebase that
+calls `getServerSession`:
 
-> **Known limitation.** Role enforcement on write endpoints is **inconsistent**.
-> The roster and tournament endpoints check for `admin`. Several other mutating
-> endpoints (announcements, events, players, alumni) check only that a session
-> exists, which means any signed-in account can write to them. The root cause is
-> that `getServerSession()` must be passed `authOptions` for `session.user.role`
-> to be populated — call it without them and NextAuth falls back to its default
-> session callback, leaving `role` undefined. Not every call site does this.
-> If you deploy this, fix that before opening signup to the public.
+| Helper | Use |
+| ------ | --- |
+| `getViewer()` | Resolve the caller, or `null`. Returns `role` read from the database. |
+| `viewerIsAdmin()` | For read endpoints that vary their output by role. |
+| `requireAuth()` | Require any signed-in caller. |
+| `requireAdmin()` | Require an admin. |
+
+`requireAuth` and `requireAdmin` return a discriminated union, so a route reads:
+
+```ts
+const auth = await requireAdmin();
+if (!auth.ok) return auth.response; // 401 or 403
+// auth.viewer is typed as a Viewer from here on
+```
+
+Two deliberate properties:
+
+- **`authOptions` cannot be forgotten.** `getServerSession()` populates
+  `session.user.role` only when passed `authOptions`. Called without them it
+  still returns a valid session, but with `role` undefined — so a role check
+  silently rejects everyone, including real admins, and TypeScript cannot catch
+  it because the parameter is optional. Having exactly one call site is the only
+  reliable fix.
+- **Roles come from the database, not the JWT claim.** The claim is written at
+  sign-in and then fixed for the life of the token, so revoking an admin would
+  not take effect until it expired. Reading the current value costs one indexed
+  lookup and applies to the caller's next request. Anonymous callers skip the
+  query entirely.
+
+**How `/dashboard` is protected.** `src/app/(admin)/layout.tsx` is a server
+component that calls `getViewer()` and redirects unauthenticated visitors to
+`/login` and non-admins to `/unauthorized`. This is the authoritative gate.
+`src/middleware.ts` additionally checks the JWT for `/dashboard` as defence in
+depth.
+
+**What each role can write.** Announcements, events, players, alumni, roster
+entries and tournaments are admin-only for every mutating method. Members can
+edit their own profile, and can add videos — a member's video is visible to
+members only until an admin widens its audience, and members can edit or delete
+only videos they created. `/api/signup` is intentionally open; new accounts get
+the `user` role and there is no self-service route to `admin`.
 
 ---
 
