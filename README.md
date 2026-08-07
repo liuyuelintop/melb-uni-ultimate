@@ -1,185 +1,206 @@
 # 🥏 Melbourne University Ultimate Frisbee Club
 
-[![GitHub Stars](https://img.shields.io/github/stars/liuyuelintop/melb-uni-ultimate?style=social)](https://github.com/liuyuelintop/melb-uni-ultimate/stargazers)
-[![Forks](https://img.shields.io/github/forks/liuyuelintop/melb-uni-ultimate?style=social)](https://github.com/liuyuelintop/melb-uni-ultimate/network/members)
-[![Contributors](https://img.shields.io/github/contributors/liuyuelintop/melb-uni-ultimate)](https://github.com/liuyuelintop/melb-uni-ultimate/graphs/contributors)
-[![Next.js](https://img.shields.io/badge/Next.js-15-blue?logo=nextdotjs)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-4.9-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.3-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-6.0-47A248?logo=mongodb)](https://www.mongodb.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.4.2-blue?logo=nextdotjs)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.1.0-61dafb?logo=react)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.11-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
+[![Mongoose](https://img.shields.io/badge/Mongoose-8.16.4-47A248?logo=mongodb)](https://mongoosejs.com/)
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)](https://vercel.com/)
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **A modern, open-source web platform for ultimate frisbee clubs. Built for the Melbourne University Ultimate community—ready for your team!**
-
----
-
-## 🌍 Live Demo
-
-**Try it now:** [https://melb-uni-ultimate.vercel.app](https://melb-uni-ultimate.vercel.app)
-_(Or deploy your own in minutes!)_
+> A club website for Melbourne University Ultimate: roster and tournament
+> selection, events, announcements, alumni and video content, behind an admin
+> dashboard. Built with Next.js 15 and MongoDB.
 
 ---
 
-## ✨ Why Star This Project?
+## 📌 Project status
 
-- **Beautiful, modern UI** with Tailwind, shadcn/ui, and Lucide icons
-- **All-in-one club management**: events, announcements, roster, alumni, tournaments, and more
-- **Admin dashboard** for easy content and user management
-- **Feature-based architecture** with clean, maintainable code organization
-- **Open source, MIT licensed** – ready for your club or team!
-- **Easy deploy to Vercel** (or your own server)
-- **Active development & welcoming to contributors**
-- **Trusted by the Melbourne University Ultimate community**
+- **Built:** July 2025. **Not actively maintained** — treat it as a finished
+  project rather than a live one.
+- **Source is public, but there is no licence.** See [Licence](#-licence) below.
+  This is not an open-source project in the OSI sense.
+- Single-club application. Club name, branding and copy are hardcoded in a handful
+  of files; it is not a configurable multi-club template.
 
 ---
 
-## 🎬 Demo
+## 🌍 Deployment
 
-| Home Page                          | Admin Dashboard                      | Events Calendar                        | Video Management              |
-| ---------------------------------- | ------------------------------------ | -------------------------------------- | ----------------------------- |
-| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) | _Video features coming soon!_ |
+[https://melb-uni-ultimate.vercel.app](https://melb-uni-ultimate.vercel.app)
+
+The application needs a MongoDB connection to serve any data-driven page. If the
+database is unavailable or paused, pages will render with empty data regions.
 
 ---
 
-## 🏆 Who's Using This?
+## 🎬 Screenshots
 
-- **Melbourne University Ultimate Frisbee Club**
-- _Your club here! [Open a PR to add yours!]_
+| Home Page                          | Admin Dashboard                      | Events                                 |
+| ---------------------------------- | ------------------------------------ | -------------------------------------- |
+| ![Home](docs/screenshots/home.png) | ![Admin](docs/screenshots/admin.png) | ![Events](docs/screenshots/events.png) |
 
 ---
 
 ## 🚀 Features
 
-### 🏠 Public Pages
+### 🏠 Public pages
 
-- **Home**: Club intro, quick links, and highlights
-- **About**: Club history, values, and leadership
-- **Announcements**: News, updates, and important info
-- **Events**: Practice, tournament, and social event calendar
-- **Videos**: Training videos, game highlights, and educational content
-- **Roster**: Public team roster with gender/role badges and filters
-- **Alumni**: Connect with past members
-- **Contact**: Easy contact form for inquiries
+- **Home**: club intro, quick links and highlights
+- **About**: club history, values and leadership (static content)
+- **Announcements**: published club news, with a detail page per item
+- **Events**: practice, tournament and social events, with status derived from
+  start/end dates (upcoming / ongoing / completed)
+- **Videos**: YouTube embeds, filtered to published and publicly visible items
+- **Roster**: team roster with gender and position badges, search and filters
+- **Alumni**: alumni directory; contact and employment fields are withheld from
+  non-admin callers **server-side**, not merely hidden in the UI
+- **Contact**: club contact details and social links (no submission form)
 
-### 🔒 Member & Admin Features
+### 🔒 Member and admin features
 
-- **Profile**: Secure member profiles
-- **Admin Dashboard**: Manage announcements, events, videos, players, alumni, and tournaments in one place
-- **Video Management**: Upload, edit, and organize YouTube videos with role-based access control
-- **CRUD**: Create, edit, and delete content with confirmation dialogs and notifications
-- **Role-based access**: NextAuth.js with admin/member/public roles
-- **Modern UI/UX**: Responsive, accessible, and mobile-friendly
-
----
-
-## 🛠️ Tech Stack
-
-- **Next.js 15** (App Router, SSR, API routes)
-- **TypeScript** (strict types everywhere)
-- **Tailwind CSS** + **shadcn/ui** (customizable, beautiful components)
-- **MongoDB** + **Mongoose** (robust data models)
-- **NextAuth.js** (secure authentication)
-- **Lucide React** (iconography)
-- **Jest** (unit tests)
-- **ESLint, Prettier, Husky** (code quality)
+- **Profile**: authenticated member profile
+- **Admin dashboard** (`/dashboard`): a single tabbed surface for announcements,
+  events, videos, players, alumni and tournaments
+- **Tournament rosters**: players are attached to tournaments through a
+  normalised join collection with a compound unique index, so the same player
+  cannot be selected twice for the same tournament and team
+- **Video management**: add and edit YouTube videos, with URL/ID parsing, tag
+  filtering, a publish flag and visibility filtering by audience
+- **CRUD**: create, edit and delete with confirmation dialogs and toasts
+- **Authentication**: NextAuth credentials provider, bcrypt password hashing,
+  JWT sessions, and two roles — `user` and `admin`
 
 ---
 
-## ⚡ Quick Start
+## 🛠️ Tech stack
+
+- **Next.js 15.4.2** (App Router, route handlers)
+- **React 19.1.0**
+- **TypeScript 5.8.3** — `strict` mode enabled
+- **Tailwind CSS 4** + **shadcn/ui** (nine generated primitives, plus
+  hand-written shared components)
+- **MongoDB** + **Mongoose 8** (nine schemas with validators and indexes)
+- **NextAuth 4** (credentials provider, JWT strategy)
+- **Lucide React** and **react-icons** (iconography)
+- **ESLint** (`next/core-web-vitals`, `next/typescript`)
+
+There is **no automated test suite** and **no CI pipeline** in this repository.
+
+---
+
+## ⚡ Quick start
 
 ```bash
-git clone https://github.com/your-username/melb-uni-ultimate.git
+git clone https://github.com/liuyuelintop/melb-uni-ultimate.git
 cd melb-uni-ultimate
 npm install
-cp docs/env.template .env.local # or set up your own env vars
+cp docs/env.template .env.local   # then fill in your own values
 npm run dev
 ```
 
 - Visit [http://localhost:3000](http://localhost:3000)
-- Sign up as a new user, or log in as admin (see docs/DEPLOYMENT_READY.md for admin setup)
+- Sign up as a new user at `/signup`. New accounts get the `user` role.
+- To create an admin, insert the user directly in the database and set
+  `role: "admin"` on that document — see
+  [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md). There is deliberately no
+  self-service route for granting admin.
+
+Required environment variables are listed in
+[`docs/env.template`](docs/env.template): `MONGODB_URI`, `NEXTAUTH_SECRET` and
+`NEXTAUTH_URL`. Never commit their values.
 
 ---
 
-## 🗂️ Project Structure
+## 🗂️ Project structure
 
 ```
 melb-uni-ultimate/
 ├── src/
 │   ├── app/                    # Next.js App Router
-│   │   ├── (admin)/           # Admin pages (dashboard, update-role)
+│   │   ├── (admin)/           # Admin pages (dashboard)
+│   │   │   └── layout.tsx     # Server-side auth + admin role gate
 │   │   ├── (auth)/            # Authentication pages (login, signup, unauthorized)
-│   │   ├── (dev)/             # Development pages (debug-session)
 │   │   ├── (protected)/       # Protected member pages (profile)
 │   │   ├── (public)/          # Public pages (about, announcements, events, videos, etc.)
-│   │   ├── api/               # API routes
-│   │   │   ├── (admin)/       # Admin API routes (dashboard, debug, seed)
-│   │   │   ├── (auth)/        # Auth API routes (refresh, signup, update-role)
-│   │   │   ├── (protected)/   # Protected API routes (players, tournaments, user)
-│   │   │   ├── (public)/      # Public API routes (alumni, announcements, events, roster, videos)
+│   │   ├── api/               # Route handlers
+│   │   │   ├── (admin)/       # Dashboard stats
+│   │   │   ├── (auth)/        # refresh, signup
+│   │   │   ├── (protected)/   # players, tournaments, user, videos
+│   │   │   ├── (public)/      # alumni, announcements, events, roster
 │   │   │   └── auth/          # NextAuth.js routes
 │   │   ├── layout.tsx         # Root layout
 │   │   ├── page.tsx           # Home page
 │   │   └── providers.tsx      # App providers
 │   ├── features/              # Feature-based components and logic
-│   │   ├── about/             # About page components
-│   │   ├── admin/             # Admin dashboard components
-│   │   ├── alumni/            # Alumni management components
-│   │   ├── announcements/     # Announcements components
-│   │   ├── events/            # Events components
-│   │   ├── roster/            # Roster management components
-│   │   ├── tournaments/       # Tournament management components
-│   │   └── videos/            # Video management components
-│   ├── shared/                # Shared utilities and components
-│   │   ├── components/        # Reusable UI components
-│   │   ├── context/           # React contexts
-│   │   ├── data/              # Static data
-│   │   ├── hooks/             # Custom React hooks
-│   │   ├── lib/               # Database, auth, and utility libraries
-│   │   └── types/             # TypeScript type definitions
+│   │   ├── about/  admin/  alumni/  announcements/
+│   │   ├── events/  roster/  tournaments/  videos/
+│   ├── shared/                # Shared across features
+│   │   ├── components/        # UI primitives, layout, home
+│   │   ├── context/           # React contexts (notifications)
+│   │   ├── data/              # Static page content
+│   │   ├── hooks/             # useApi, useCrud and resource hooks
+│   │   ├── lib/db/            # Mongoose connection and models
+│   │   └── types/             # Shared TypeScript types
 │   ├── styles/                # Global styles
 │   └── middleware.ts          # Next.js middleware
 ├── public/                    # Static assets
-├── docs/                      # Documentation and deployment guides
-└── package.json               # Dependencies and scripts
+├── docs/                      # Deployment guides and env templates
+└── package.json
 ```
 
-### 🏗️ Architecture Highlights
+### 🏗️ Architecture notes
 
-- **Feature-based organization**: Each feature (alumni, events, videos, etc.) has its own directory with components, hooks, and utilities
-- **Route groups**: Next.js route groups `()` organize pages by access level without affecting URLs
-- **API organization**: API routes grouped by access level for better security and organization
-- **Shared resources**: Common components, hooks, and utilities in `shared/` directory
-- **Type safety**: Comprehensive TypeScript types for all data models and components
-
-### 🎥 Video Management System
-
-- **YouTube Integration**: Seamlessly embed and manage YouTube videos
-- **Role-based Access**: Control video visibility (public, user, admin)
-- **Smart URL Parsing**: Automatically extract YouTube IDs from URLs
-- **Preview System**: Instant video previews in admin interface
-- **Search & Filtering**: Find videos by title, description, or tags
-- **Mobile Responsive**: Optimized viewing experience on all devices
-- **Dashboard Integration**: Manage videos alongside other content in admin tabs
+- **Feature-based organisation**: each feature area owns its components under
+  `src/features/<feature>/`.
+- **Route groups**: Next.js route groups `()` organise files by intended access
+  level. They are **naming only** — parentheses do not appear in the URL and
+  confer no protection. The admin dashboard is served at `/dashboard`, not
+  `/admin`. Authorisation is enforced in code, not by directory layout.
+- **Shared layer**: common UI primitives, hooks and types live in `src/shared/`.
+- **Data fetching**: a generic `useApi<T>` hook owns fetch/loading/error state;
+  `useCrud<T>` composes it and adds create/update/delete with optimistic local
+  list updates. The thirteen resource hooks in `src/shared/hooks/` are built on
+  that pair.
+- **Database connection**: `src/shared/lib/db/mongoose.ts` caches the connection
+  promise on `global` and invalidates it on failure, so serverless invocations
+  reuse one connection instead of exhausting the pool.
 
 ---
 
-## 🛡️ Authentication & Roles
+## 🛡️ Authentication and authorisation
 
-- **Public**: Anyone can view public pages
-- **Member**: Authenticated users get access to protected features
-- **Admin**: Full access to dashboard and management tools
+Two roles exist in the data model: `user` and `admin`
+(`src/shared/lib/db/models/user.ts`).
+
+- **Public**: anyone can read public pages and the public read endpoints.
+- **`user`**: any account created through signup. Can sign in and view protected
+  member pages.
+- **`admin`**: can reach `/dashboard` and the admin management surfaces.
+
+**How `/dashboard` is protected.** `src/app/(admin)/layout.tsx` is a server
+component that calls `getServerSession(authOptions)` and redirects
+unauthenticated visitors to `/login` and non-admins to `/unauthorized`. This is
+the authoritative gate. `src/middleware.ts` additionally checks the JWT for
+`/dashboard` as defence in depth.
+
+> **Known limitation.** Role enforcement on write endpoints is **inconsistent**.
+> The roster and tournament endpoints check for `admin`. Several other mutating
+> endpoints (announcements, events, players, alumni) check only that a session
+> exists, which means any signed-in account can write to them. The root cause is
+> that `getServerSession()` must be passed `authOptions` for `session.user.role`
+> to be populated — call it without them and NextAuth falls back to its default
+> session callback, leaving `role` undefined. Not every call site does this.
+> If you deploy this, fix that before opening signup to the public.
 
 ---
 
 ## 🏗️ Deployment
 
-### Vercel (Recommended)
+### Vercel
 
-- Push to GitHub
-- Connect repo to Vercel
-- Set environment variables ([see template](docs/env.template))
-- Deploy!
+- Push to GitHub and connect the repository to Vercel
+- Set the environment variables from [`docs/env.template`](docs/env.template)
+- Deploy
 
 ### Manual
 
@@ -190,72 +211,56 @@ npm start
 
 ---
 
-## 🤔 Why Ultimate Frisbee?
-
-Ultimate Frisbee is a fast-growing, inclusive sport that builds teamwork, spirit, and fitness. This project aims to empower clubs and communities worldwide with modern tools—join us and help grow the sport!
-
----
-
 ## 🧑‍💻 Contributing
 
-We welcome contributions! To get started:
+This repository has **no licence**, which means external contributions cannot be
+accepted as things stand — a contributor has no grant to build on, and the
+project has no terms to accept contributions under. If you want to collaborate,
+open an issue first so licensing can be sorted out.
 
-1. Fork this repo
-2. Create a feature branch (`git checkout -b feature/your-feature`)
-3. Commit and push your changes
-4. Open a Pull Request
+If you are working on a fork for your own reference:
 
-**Please read [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md) for workflow and code standards.**
-
-### Development Workflow
-
-- **Feature branches**: All development happens on feature branches
-- **Merge to develop**: Features are merged into the develop branch first
-- **Merge to main**: After testing, develop is merged into main for production
-- **Backup strategy**: Main branch backups are created before major merges
+1. Create a feature branch (`git checkout -b feature/your-feature`)
+2. Keep commits scoped and descriptive
+3. Run `npx tsc --noEmit` and `npm run build` before pushing — there is no CI to
+   catch breakage for you
 
 ---
 
-## 💬 Community & Support
+## 💬 Contact
 
-- [Contact page](http://localhost:3000/contact) for club questions
-- [GitHub Issues](https://github.com/your-username/melb-uni-ultimate/issues) for bugs/feature requests
-- [Vercel Discussion](https://vercel.com/support) for deployment help
+- Club enquiries: see the [contact page](https://melb-uni-ultimate.vercel.app/contact)
+- Bugs and questions about the code:
+  [GitHub Issues](https://github.com/liuyuelintop/melb-uni-ultimate/issues)
 
 ---
 
 ## 🙋 FAQ
 
 **Q: Can I use this for my own club?**
-A: Yes! It's open source and easy to customize.
+A: Not as-is. There is no licence granting you the right to use, modify or
+redistribute the code, and the club's name and content are hardcoded throughout.
+Open an issue if you would like to discuss it.
 
 **Q: Is it free?**
-A: 100% MIT licensed.
+A: The source is publicly readable, but it is not licensed for reuse. "Public"
+and "open source" are not the same thing.
 
 **Q: How do I get admin access?**
-A: See [docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
+A: Set `role: "admin"` on your user document directly in the database. See
+[docs/DEPLOYMENT_READY.md](docs/DEPLOYMENT_READY.md).
 
-**Q: What's the new src/ directory structure?**
-A: We've reorganized the codebase for better maintainability with feature-based architecture and clear separation of concerns.
-
----
-
-## 🙏 Sponsors & Backers
-
-_Sponsor this project and help us grow Ultimate!_
-[Become a sponsor](https://github.com/sponsors/your-username)
+**Q: Are there tests?**
+A: No. There is no test suite and no CI pipeline.
 
 ---
 
-## 📄 License
+## 📄 Licence
 
-MIT License. See [LICENSE](LICENSE).
-
----
-
-## ⭐️ Star This Project!
-
-If you like this project, please **star it on GitHub** and share it with your club or team. Your support helps us grow the Ultimate community!
+**None.** No licence file has been added to this repository, so default copyright
+applies and all rights are reserved. The source is readable because the
+repository is public; that is not a grant of permission to use, copy, modify or
+redistribute it.
 
 ---
 

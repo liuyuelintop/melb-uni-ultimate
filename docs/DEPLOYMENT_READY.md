@@ -41,11 +41,15 @@ vercel --prod
 3. Settings → Environment Variables
 4. Add the same variables as in `.env.local`
 
-### 5. Seed Production Database
+### 5. Create the First Admin User
 
-```bash
-curl -X POST https://your-app-name.vercel.app/api/seed
-```
+The `/api/seed` endpoint has been **removed**. It required no authentication and
+deleted every player, alumni, event and announcement record before recreating an
+admin account from hardcoded sample data.
+
+Create the first admin directly against the database instead: insert a user with a
+bcrypt-hashed password, then set `role: "admin"` on that document. Never commit the
+password.
 
 ## 🎉 What's Included
 
@@ -61,7 +65,9 @@ curl -X POST https://your-app-name.vercel.app/api/seed
 
 ### ✅ Sample Data
 
-- **Admin User**: `admin@muultimate.com` / `admin123`
+> Removed along with the `/api/seed` endpoint. The records below were fabricated
+> fixtures, never real club members. Credentials are no longer published here.
+
 - **5 Sample Players**: Sarah Chen, Michael Rodriguez, Emma Thompson, James Wilson, Lisa Park
 - **5 Sample Alumni**: David Johnson, Maria Garcia, Alex Kim, Sophie Brown, Tom Anderson
 - **4 Sample Events**: Weekly Practice, State Championship, Social Mixer, Training Camp
@@ -85,20 +91,16 @@ vercel --prod
 
 # 3. Update NEXTAUTH_URL in Vercel dashboard
 
-# 4. Seed the database
-curl -X POST https://your-app.vercel.app/api/seed
+# 4. Create the first admin user directly against the database
+#    (the unauthenticated /api/seed endpoint has been removed)
 
-# 5. Test admin login
-# Email: admin@muultimate.com
-# Password: admin123
+# 5. Sign in at /login with that account
 ```
 
 ## 📱 Demo Credentials
 
-**Admin Access:**
-
-- Email: `admin@muultimate.com`
-- Password: `admin123`
+Not published. Create an admin account against your own database (see
+"Create the First Admin User" above) and keep the password out of version control.
 
 **Features to Showcase:**
 
