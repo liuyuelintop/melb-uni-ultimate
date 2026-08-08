@@ -6,6 +6,12 @@ import Event from "@shared/lib/db/models/event";
 import Announcement from "@shared/lib/db/models/announcement";
 import { requireAdmin } from "@shared/lib/auth/guards";
 
+// Authorisation and database access make this route inherently per-request.
+// Without this, `next build` may try to prerender it and execute the handler at
+// build time — which reaches for a session and a database connection that do not
+// exist during a build, and fails the build with "Failed to collect page data".
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const auth = await requireAdmin();
   if (!auth.ok) return auth.response;

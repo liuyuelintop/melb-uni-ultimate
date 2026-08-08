@@ -2,9 +2,7 @@ import type { Session, User } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import { DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
-import { getClientPromise } from "@shared/lib/db/mongodb";
 import dbConnect from "@shared/lib/db/mongoose";
 import UserModel from "@shared/lib/db/models/user";
 
@@ -55,18 +53,18 @@ declare module "next-auth/jwt" {
  * `getServerSession` directly, so the options cannot be forgotten.
  */
 export const authOptions = {
-  // Retained for parity with the original configuration. Under the explicit
-  // `jwt` session strategy below, and with only a credentials provider, this
-  // adapter is not used to persist sessions.
+  // No adapter. NextAuth v4 uses one to persist sessions, link OAuth accounts
+  // and store email verification tokens — none of which apply here: the session
+  // strategy below is explicitly `jwt`, the only provider is credentials, and
+  // `authorize` reads the user itself through Mongoose. The MongoDBAdapter that
+  // used to sit here was therefore never exercised.
   //
-  // Constructed only when a URI is actually configured. `next build` imports
-  // this module while collecting page data, and building should not require a
-  // database credential — see the comment in db/mongodb.ts. In a correctly
-  // configured deployment MONGODB_URI is always set, so this is identical to
-  // passing the adapter unconditionally.
-  adapter: process.env.MONGODB_URI
-    ? MongoDBAdapter(getClientPromise())
-    : undefined,
+  // It was also actively harmful. Constructing it called `client.connect()`
+  // while this module was being imported, so simply importing the auth options
+  // opened a database connection. `next build` imports every route module to
+  // collect page data, and this module is reachable from all of them through
+  // ./guards.ts — so a build would try to reach MongoDB, and a slow or
+  // unreachable cluster could fail the build rather than a request.
   providers: [
     CredentialsProvider({
       name: "credentials",
