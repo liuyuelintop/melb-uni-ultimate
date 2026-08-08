@@ -6,6 +6,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.11-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
 [![Mongoose](https://img.shields.io/badge/Mongoose-8.24.2-47A248?logo=mongodb)](https://mongoosejs.com/)
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)](https://vercel.com/)
+[![CI](https://github.com/liuyuelintop/melb-uni-ultimate/actions/workflows/ci.yml/badge.svg)](https://github.com/liuyuelintop/melb-uni-ultimate/actions/workflows/ci.yml)
 
 > A club website for Melbourne University Ultimate: roster and tournament
 > selection, events, announcements, alumni and video content, behind an admin
@@ -86,8 +87,9 @@ database is unavailable or paused, pages will render with empty data regions.
   below)
 - **Lucide React** and **react-icons** (iconography)
 - **ESLint** (`next/core-web-vitals`, `next/typescript`)
-
-There is **no automated test suite** and **no CI pipeline** in this repository.
+- **Vitest** — a narrow suite covering authorisation and the write helpers, run
+  in CI alongside typecheck, lint and a build. See [Tests](#-tests); it is
+  deliberately not broad coverage.
 
 ---
 
@@ -127,6 +129,47 @@ Required environment variables are listed in
 
 ---
 
+## 🧪 Tests
+
+```bash
+npm test          # once
+npm run test:watch
+npm run typecheck
+```
+
+**Be clear about the scope: this is not broad coverage.** It is two things worth
+locking down, and nothing else. There are no component tests, no end-to-end
+tests, and nothing that exercises a query against a real database.
+
+**1. Every mutating handler refuses an anonymous caller.**
+`tests/auth-guards.test.ts` finds the route files on disk, extracts each exported
+`POST`/`PUT`/`PATCH`/`DELETE`, calls it with no session and asserts a 401 or 403.
+Discovery is by filesystem scan rather than a hand-written list, so **a new route
+is picked up the moment it is added** and has to either pass or be added to an
+explicit allowlist. That allowlist holds exactly one entry, `POST /api/signup`,
+which has to be reachable or nobody could create an account.
+
+Two details make the test mean what it says. `getServerSession` is mocked to
+return no session, so an anonymous caller is genuinely simulated rather than
+approximated; the test then asserts it was *called*, which distinguishes
+"refused because anonymous" from "refused by accident". And `dbConnect` is mocked
+to **throw**, so a handler that reaches the database before authorising fails
+with a clear message rather than hanging for the driver's 30-second timeout.
+
+**2. `writes.ts` behaves as documented.** `tests/writes.test.ts` covers
+`optional()` — including that it keeps a legitimate `0` or `false` while dropping
+blanks, which a naive `if (!value)` would get wrong — and the duplicate-key and
+connection-error branches, against error objects shaped like the driver's real
+ones.
+
+CI runs typecheck, lint, tests and a build on every push and pull request
+([`.github/workflows/ci.yml`](.github/workflows/ci.yml)). The build step runs
+**with no `MONGODB_URI` on purpose**: needing a database credential to build is a
+regression this project has already had twice, and that step is what catches it
+before a deploy does.
+
+---
+
 ## 🗂️ Project structure
 
 ```
@@ -162,7 +205,9 @@ melb-uni-ultimate/
 │   └── middleware.ts          # Next.js middleware
 ├── public/                    # Static assets
 ├── scripts/                   # Local CLI (admin.js) - not part of the build
+├── tests/                     # Vitest: authorisation and write-helper tests
 ├── docs/                      # Deployment guides and env templates
+├── .github/workflows/ci.yml   # Typecheck, lint, test, build
 └── package.json
 ```
 
@@ -309,8 +354,8 @@ If you are working on a fork for your own reference:
 
 1. Create a feature branch (`git checkout -b feature/your-feature`)
 2. Keep commits scoped and descriptive
-3. Run `npx tsc --noEmit` and `npm run build` before pushing — there is no CI to
-   catch breakage for you
+3. Run `npm run typecheck`, `npm test` and `npm run build` before pushing. CI
+   runs the same four checks, but it is quicker to find out locally
 
 ---
 
@@ -342,7 +387,11 @@ A: `node scripts/admin.js reset-password <email>`. Use `list` first if you are n
 sure which account is the admin.
 
 **Q: Are there tests?**
-A: No. There is no test suite and no CI pipeline.
+A: A narrow suite, not broad coverage — see [Tests](#-tests). It asserts that
+every mutating endpoint refuses an anonymous caller, and that the shared write
+helpers behave as documented. There are no component or end-to-end tests, and
+nothing runs against a real database. CI runs typecheck, lint, tests and a build
+on every push and pull request.
 
 ---
 

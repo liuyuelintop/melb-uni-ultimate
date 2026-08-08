@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Cancel a superseded run rather than paying for both.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          # 22 is the active LTS. The v4 actions are avoided because they run on
+          # Node 20, which GitHub has deprecated on its runners.
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      # Deliberately runs with no MONGODB_URI. The build must not need a database
+      # credential: MONGODB_URI is validated inside dbConnect(), never at module
+      # scope, and every DB/session route handler declares force-dynamic so it is
+      # not executed at build time. Both regressions fail the build, and this step
+      # is what catches them before a deploy does.
+      - name: Build without database credentials
+        run: npm run build
+        env:
+          NEXTAUTH_SECRET: build-time-placeholder-not-a-real-secret
