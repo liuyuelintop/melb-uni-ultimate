@@ -15,11 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          # 22 is the active LTS. The v4 actions are avoided because they run on
+          # Node 20, which GitHub has deprecated on its runners.
+          node-version: 22
           cache: npm
 
       - run: npm ci
