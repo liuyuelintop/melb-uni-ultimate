@@ -74,7 +74,43 @@ function normalizeUri(raw: string | undefined): string {
     );
   }
 
+  requireDatabaseName(uri);
+
   return uri;
+}
+
+/**
+ * Refuse a connection string that names no database.
+ *
+ * Atlas's "Connect" dialog hands you a URI ending `/?appName=...` — an **empty**
+ * path. That URI is completely valid and connects fine, but the driver then falls
+ * back to a database literally called `test`, so the application silently reads
+ * and writes the wrong place. The symptom is maddening rather than obvious: sign
+ * up and log in work, because the user is created and read in `test`, while every
+ * content page is empty, because the real data is in the intended database. It
+ * cost hours to find once, so it is an error here rather than a default.
+ *
+ * The name goes between the host and the `?`:
+ *   mongodb+srv://user:pass@host/  →  mongodb+srv://user:pass@host/my-database
+ */
+function requireDatabaseName(uri: string): void {
+  const afterScheme = uri.slice(uri.indexOf("://") + 3);
+  const slash = afterScheme.indexOf("/");
+  const path =
+    slash === -1 ? "" : afterScheme.slice(slash + 1).split("?")[0].trim();
+
+  if (path) {
+    return;
+  }
+
+  throw new DatabaseConfigError(
+    "MONGODB_URI names no database. The path after the host is empty, and the " +
+      'MongoDB driver then defaults to a database called "test" — so the app ' +
+      "would read and write there instead of your real data. Add the database " +
+      'name between the host and the "?", for example ' +
+      '"mongodb+srv://user:pass@host/my-database?retryWrites=true". Atlas\'s ' +
+      "Connect dialog omits it."
+  );
 }
 
 async function dbConnect() {
