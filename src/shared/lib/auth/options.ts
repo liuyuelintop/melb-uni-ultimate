@@ -65,6 +65,11 @@ export const authOptions = {
   // collect page data, and this module is reachable from all of them through
   // ./guards.ts — so a build would try to reach MongoDB, and a slow or
   // unreachable cluster could fail the build rather than a request.
+  //
+  // The `@auth/mongodb-adapter` package has since been uninstalled as well, not
+  // just unwired. It was the only thing pulling `@auth/core` into the dependency
+  // tree as a real dependency, where it carried critical advisories that this
+  // app never had a code path to. Do not reinstall it to "restore" an adapter.
   providers: [
     CredentialsProvider({
       name: "credentials",
