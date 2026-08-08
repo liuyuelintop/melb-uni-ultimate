@@ -1,10 +1,10 @@
 # 🥏 Melbourne University Ultimate Frisbee Club
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.4.2-blue?logo=nextdotjs)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.23-blue?logo=nextdotjs)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19.1.0-61dafb?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1.11-38bdf8?logo=tailwindcss)](https://tailwindcss.com/)
-[![Mongoose](https://img.shields.io/badge/Mongoose-8.16.4-47A248?logo=mongodb)](https://mongoosejs.com/)
+[![Mongoose](https://img.shields.io/badge/Mongoose-8.24.2-47A248?logo=mongodb)](https://mongoosejs.com/)
 [![Vercel](https://img.shields.io/badge/Deployed_on-Vercel-black?logo=vercel)](https://vercel.com/)
 
 > A club website for Melbourne University Ultimate: roster and tournament
@@ -15,8 +15,10 @@
 
 ## 📌 Project status
 
-- **Built:** July 2025. **Not actively maintained** — treat it as a finished
-  project rather than a live one.
+- **Built:** July 2025. **Revisited August 2026** for a security and correctness
+  pass — authorisation, build reliability, dependency advisories. Between those
+  two dates nothing happened, and nothing is scheduled after them: treat it as a
+  finished project that was picked back up once, not a live one.
 - **Source is public, but there is no licence.** See [Licence](#-licence) below.
   This is not an open-source project in the OSI sense.
 - Single-club application. Club name, branding and copy are hardcoded in a handful
@@ -74,13 +76,14 @@ database is unavailable or paused, pages will render with empty data regions.
 
 ## 🛠️ Tech stack
 
-- **Next.js 15.4.2** (App Router, route handlers)
+- **Next.js 15.5.23** (App Router, route handlers)
 - **React 19.1.0**
 - **TypeScript 5.8.3** — `strict` mode enabled
 - **Tailwind CSS 4** + **shadcn/ui** (nine generated primitives, plus
   hand-written shared components)
-- **MongoDB** + **Mongoose 8** (nine schemas with validators and indexes)
-- **NextAuth 4** (credentials provider, JWT strategy)
+- **MongoDB** + **Mongoose 8.24.2** (nine schemas with validators and indexes)
+- **NextAuth 4.24.11** (credentials provider, JWT strategy, **no adapter** — see
+  below)
 - **Lucide React** and **react-icons** (iconography)
 - **ESLint** (`next/core-web-vitals`, `next/typescript`)
 
@@ -189,7 +192,34 @@ melb-uni-ultimate/
   that pair.
 - **Database connection**: `src/shared/lib/db/mongoose.ts` caches the connection
   promise on `global` and invalidates it on failure, so serverless invocations
-  reuse one connection instead of exhausting the pool.
+  reuse one connection instead of exhausting the pool. It is the **only**
+  connection module; an earlier second one was removed, because two modules
+  meant two pools and two places to keep the validation rules in step.
+- **`MONGODB_URI` is validated inside `dbConnect()`, never at module scope.**
+  Module-scope validation makes a database credential a *build* requirement:
+  `next build` imports every route module to collect page data, so the check runs
+  with no environment and fails the build. The validation rejects a missing
+  value, a wrong scheme (naming the scheme it found, never the credentials), and
+  a URI with an **empty database path** — that last one is silent otherwise, as
+  the driver quietly falls back to a database literally called `test`, which once
+  cost this project an afternoon.
+- **Every DB- or session-touching route handler declares
+  `export const dynamic = "force-dynamic"`.** Without it Next.js treats a handler
+  with no request-specific input as static and *executes it at build time*, which
+  fails the build with `Failed to collect page data`. All eighteen have it; keep
+  it on any new one.
+- **Writes go through `src/shared/lib/db/writes.ts`**: `optional()` omits blank
+  fields rather than storing `null` (storing `null` collides under a unique
+  index, so several documents with "no student ID" conflict with each other),
+  and `duplicateKey()` / `isConnectionError()` / `writeFailureResponse()` turn a
+  driver error into a 409 or a 503 that names the index instead of an opaque 500.
+- **No NextAuth adapter, deliberately.** An adapter persists sessions, links
+  OAuth accounts and stores email verification tokens; this app does none of
+  those — the session strategy is explicitly `jwt`, the only provider is
+  credentials, and `authorize` reads the user through Mongoose itself. The
+  adapter that used to sit there also opened a database connection *at import*,
+  so merely importing the auth options connected to MongoDB. `session.user.id`
+  still resolves, from `token.sub`.
 
 ---
 
