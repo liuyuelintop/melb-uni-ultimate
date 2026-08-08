@@ -61,18 +61,18 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Create user
+    // Create user. Optional text fields are omitted rather than stored as an
+    // empty string or null: a unique index counts every null as the same value,
+    // so writing null for an absent student ID makes the second such signup
+    // collide with the first.
     const user = new User({
       name,
       email,
       password: hashedPassword,
-      studentId,
       gender,
-      phoneNumber,
-      position,
-      experience,
       role: "user",
       isVerified: false,
+      ...optional({ studentId, phoneNumber, position, experience }),
     });
 
     await user.save();
@@ -98,6 +98,35 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 503 });
     }
 
+    const duplicate = duplicateKey(error);
+    if (duplicate) {
+      // A collision on a value the form actually submitted is the caller's
+      // problem. A collision on null means a unique index exists on a field this
+      // signup left empty — every empty value counts as the same one — which is
+      // a database configuration problem the caller cannot do anything about, so
+      // say which index is responsible rather than blaming their input.
+      if (duplicate.value === null || duplicate.value === undefined) {
+        return NextResponse.json(
+          {
+            error:
+              `A unique index on "${duplicate.field}" is rejecting this signup, ` +
+              `because that field was left empty and another account already has ` +
+              `it empty. A unique index treats every empty value as the same ` +
+              `value. The schema does not ask for "${duplicate.field}" to be ` +
+              `unique, so this index is likely left over from an earlier version ` +
+              `of it — drop it, or recreate it as a partial index that skips ` +
+              `documents where the field is absent.`,
+          },
+          { status: 503 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: `An account with this ${duplicate.field} already exists.` },
+        { status: 409 }
+      );
+    }
+
     if (isConnectionError(error)) {
       return NextResponse.json(
         {
@@ -115,6 +144,53 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/**
+ * Keep only the fields that were actually supplied, trimming strings.
+ *
+ * Mongoose stores an empty string as an empty string and an explicit null as
+ * null, and a unique index treats every null as one and the same value. Omitting
+ * the key entirely leaves the field absent, which is both truthful and the only
+ * form a sparse index will skip.
+ */
+function optional(fields: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined || value === null) continue;
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (!trimmed) continue;
+      out[key] = trimmed;
+      continue;
+    }
+    out[key] = value;
+  }
+
+  return out;
+}
+
+/**
+ * The field and value behind a duplicate-key rejection (MongoDB error 11000),
+ * or null if this is not one. `keyPattern` names the index's fields and
+ * `keyValue` holds the values that collided.
+ */
+function duplicateKey(error: unknown): { field: string; value: unknown } | null {
+  if (!(error instanceof Error)) return null;
+
+  const e = error as Error & {
+    code?: number;
+    keyPattern?: Record<string, unknown>;
+    keyValue?: Record<string, unknown>;
+  };
+
+  if (e.code !== 11000) return null;
+
+  const field = e.keyPattern ? Object.keys(e.keyPattern)[0] : undefined;
+  if (!field) return null;
+
+  return { field, value: e.keyValue ? e.keyValue[field] : undefined };
 }
 
 /**
