@@ -2,6 +2,31 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
 import Player from "@shared/lib/db/models/player";
 import { requireAdmin, attributionOf } from "@shared/lib/auth/guards";
+import { buildUpdate, writeFailureResponse } from "@shared/lib/db/writes";
+
+/**
+ * The fields a PUT may change, and which of them may be cleared.
+ *
+ * Spelled out rather than spread from the request body, so `createdBy`,
+ * `createdAt` and `_id` stay out of reach and the update's keys are always the
+ * route's own.
+ */
+const UPDATABLE = [
+  "name",
+  "email",
+  "studentId",
+  "gender",
+  "affiliation",
+  "position",
+  "experience",
+  "jerseyNumber",
+  "phoneNumber",
+  "graduationYear",
+  "isActive",
+] as const;
+
+/** Optional in the schema, so blanking them means "remove", not "store empty". */
+const CLEARABLE = ["studentId", "phoneNumber", "affiliation"] as const;
 
 // Authorisation and database access make this route inherently per-request.
 // Without this, `next build` may try to prerender it and execute the handler at
@@ -58,14 +83,19 @@ export async function PUT(
     }
 
     // Update player
-    const updatedPlayer = await Player.findByIdAndUpdate(
-      id,
-      {
-        ...body,
-        updatedBy: attributionOf(auth.viewer),
-      },
-      { new: true, runValidators: true }
+    const submitted = Object.fromEntries(
+      UPDATABLE.map((field) => [field, body[field]])
     );
+
+    const update = buildUpdate(
+      { ...submitted, updatedBy: attributionOf(auth.viewer) },
+      CLEARABLE
+    );
+
+    const updatedPlayer = await Player.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    });
 
     return NextResponse.json({
       message: "Player updated successfully",
@@ -73,6 +103,10 @@ export async function PUT(
     });
   } catch (error) {
     console.error("Error updating player:", error);
+
+    const failure = writeFailureResponse(error, "player");
+    if (failure) return failure;
+
     return NextResponse.json(
       { error: "Failed to update player" },
       { status: 500 }

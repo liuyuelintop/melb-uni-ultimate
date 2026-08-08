@@ -2,6 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
 import Event from "@shared/lib/db/models/event";
 import { requireAdmin } from "@shared/lib/auth/guards";
+import { buildUpdate, writeFailureResponse } from "@shared/lib/db/writes";
+
+/**
+ * The fields a PATCH may change, and which of them may be cleared.
+ *
+ * Spelled out rather than spread from the request body, so `createdBy`,
+ * `createdAt` and `_id` stay out of reach and the update's keys are always the
+ * route's own.
+ */
+const UPDATABLE = [
+  "title",
+  "description",
+  "startDate",
+  "endDate",
+  "location",
+  "type",
+  "status",
+  "currentParticipants",
+  "registrationDeadline",
+  "isPublic",
+] as const;
+
+/** Optional in the schema, so blanking it means "remove", not "store empty". */
+const CLEARABLE = ["registrationDeadline"] as const;
 
 // Authorisation and database access make this route inherently per-request.
 // Without this, `next build` may try to prerender it and execute the handler at
@@ -64,13 +88,15 @@ export async function PATCH(
     }
 
     // Update event
-    const updatedEvent = await Event.findByIdAndUpdate(
-      id,
-      {
-        ...body,
-      },
-      { new: true, runValidators: true }
+    const update = buildUpdate(
+      Object.fromEntries(UPDATABLE.map((field) => [field, body[field]])),
+      CLEARABLE
     );
+
+    const updatedEvent = await Event.findByIdAndUpdate(id, update, {
+      new: true,
+      runValidators: true,
+    });
 
     return NextResponse.json({
       message: "Event updated successfully",
@@ -78,6 +104,10 @@ export async function PATCH(
     });
   } catch (error) {
     console.error("Error updating event:", error);
+
+    const failure = writeFailureResponse(error, "event");
+    if (failure) return failure;
+
     return NextResponse.json(
       { error: "Failed to update event" },
       { status: 500 }

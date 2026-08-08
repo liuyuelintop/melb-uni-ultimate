@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@shared/lib/db/mongoose";
 import Announcement from "@shared/lib/db/models/announcement";
 import { requireAdmin } from "@shared/lib/auth/guards";
+import { buildUpdate, writeFailureResponse } from "@shared/lib/db/writes";
+
+/**
+ * The fields a PATCH may change.
+ *
+ * Spelled out rather than spread from the request body, so `author`,
+ * `createdAt`, `publishedAt` and `_id` stay out of reach — `publishedAt` in
+ * particular is the server's to stamp, not the caller's to set.
+ */
+const UPDATABLE = ["title", "content", "priority", "isPublished"] as const;
 
 // Authorisation and database access make this route inherently per-request.
 // Without this, `next build` may try to prerender it and execute the handler at
@@ -63,13 +73,17 @@ export async function PATCH(
       );
     }
 
-    // Update announcement
+    // Update announcement. publishedAt is stamped by the server on publish, and
+    // left alone otherwise — an undefined value is skipped, which preserves the
+    // existing behaviour of not clearing it on unpublish.
+    const update = buildUpdate({
+      ...Object.fromEntries(UPDATABLE.map((field) => [field, body[field]])),
+      publishedAt: isPublished ? new Date() : undefined,
+    });
+
     const updatedAnnouncement = await Announcement.findByIdAndUpdate(
       id,
-      {
-        ...body,
-        publishedAt: isPublished ? new Date() : undefined,
-      },
+      update,
       { new: true, runValidators: true }
     );
 
@@ -79,6 +93,10 @@ export async function PATCH(
     });
   } catch (error) {
     console.error("Error updating announcement:", error);
+
+    const failure = writeFailureResponse(error, "announcement");
+    if (failure) return failure;
+
     return NextResponse.json(
       { error: "Failed to update announcement" },
       { status: 500 }
