@@ -5,6 +5,7 @@ import {
   viewerIsAdmin,
   attributionOf,
 } from "@shared/lib/auth/guards";
+import { optional, writeFailureResponse } from "@shared/lib/db/writes";
 import Player from "@shared/lib/db/models/player";
 
 // Authorisation and database access make this route inherently per-request.
@@ -106,19 +107,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Optional text fields are omitted rather than written as null: a unique
+    // index counts every null as the same value, so the second player without a
+    // student ID would collide with the first.
     const player = new Player({
       name,
       email,
-      studentId,
       gender,
       position: position || "cutter",
       experience: experience || "beginner",
       jerseyNumber,
-      phoneNumber,
       graduationYear,
       isActive: true,
       createdBy: attributionOf(auth.viewer),
       updatedBy: attributionOf(auth.viewer),
+      ...optional({ studentId, phoneNumber }),
     });
 
     await player.save();
@@ -129,6 +132,10 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating player:", error);
+
+    const known = writeFailureResponse(error, "player");
+    if (known) return known;
+
     return NextResponse.json(
       { error: "Failed to create player" },
       { status: 500 }
