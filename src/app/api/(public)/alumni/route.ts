@@ -5,6 +5,7 @@ import {
   viewerIsAdmin,
   attributionOf,
 } from "@shared/lib/auth/guards";
+import { optional, writeFailureResponse } from "@shared/lib/db/writes";
 import Alumni from "@shared/lib/db/models/alumni";
 
 // Authorisation and database access make this route inherently per-request.
@@ -115,21 +116,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Optional text fields are omitted rather than written as null: a unique
+    // index counts every null as the same value, so the second alumni without a
+    // student ID would collide with the first.
     const alumni = new Alumni({
       name,
       email,
-      studentId,
       graduationYear,
-      currentLocation,
-      currentJob,
-      company,
       achievements: achievements || [],
       contactPreference: contactPreference || "email",
-      phoneNumber,
-      linkedinUrl,
       isActive: true,
       createdBy: attributionOf(auth.viewer),
       updatedBy: attributionOf(auth.viewer),
+      ...optional({
+        studentId,
+        currentLocation,
+        currentJob,
+        company,
+        phoneNumber,
+        linkedinUrl,
+      }),
     });
 
     await alumni.save();
@@ -140,6 +146,9 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("Error creating alumni:", error);
+
+    const known = writeFailureResponse(error, "alumni record");
+    if (known) return known;
     return NextResponse.json(
       { error: "Failed to create alumni" },
       { status: 500 }
