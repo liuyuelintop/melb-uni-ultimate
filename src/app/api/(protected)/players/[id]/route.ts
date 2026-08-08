@@ -3,6 +3,12 @@ import dbConnect from "@shared/lib/db/mongoose";
 import Player from "@shared/lib/db/models/player";
 import { requireAdmin, attributionOf } from "@shared/lib/auth/guards";
 
+// Authorisation and database access make this route inherently per-request.
+// Without this, `next build` may try to prerender it and execute the handler at
+// build time — which reaches for a session and a database connection that do not
+// exist during a build, and fails the build with "Failed to collect page data".
+export const dynamic = "force-dynamic";
+
 // PUT - Update player
 export async function PUT(
   request: NextRequest,
