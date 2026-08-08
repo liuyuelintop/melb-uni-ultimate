@@ -46,6 +46,13 @@ function urlPathOf(absoluteFile: string): string {
   );
 }
 
+/** Every route file under src/app/api, repo-relative and sorted. */
+export function discoverRouteFiles(): string[] {
+  return walk(apiRoot)
+    .sort()
+    .map((file) => relative(repoRoot, file));
+}
+
 /**
  * Every mutating handler exported by every route file, found by reading the
  * filesystem rather than from a hand-maintained list — so a newly added route

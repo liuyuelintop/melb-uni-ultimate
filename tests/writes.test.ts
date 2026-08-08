@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   optional,
+  buildUpdate,
   duplicateKey,
   isConnectionError,
   writeFailureResponse,
@@ -55,6 +56,69 @@ describe("optional()", () => {
     // collide. An absent key does not.
     const doc = { name: "A", ...optional({ studentId: "" }) };
     expect("studentId" in doc).toBe(false);
+  });
+});
+
+describe("buildUpdate()", () => {
+  it("leaves absent fields alone", () => {
+    // The difference from a create: not supplied must not mean "clear it".
+    expect(buildUpdate({ name: undefined, studentId: undefined })).toEqual({});
+  });
+
+  it("sets supplied values, trimming strings", () => {
+    expect(buildUpdate({ name: "  Ada  ", jerseyNumber: 7 })).toEqual({
+      $set: { name: "Ada", jerseyNumber: 7 },
+    });
+  });
+
+  it("unsets a clearable field that was deliberately blanked", () => {
+    // $unset, not null: a unique index treats every null as the same value, so
+    // two records whose studentId was cleared would collide with each other.
+    expect(buildUpdate({ studentId: "" }, ["studentId"])).toEqual({
+      $unset: { studentId: "" },
+    });
+    expect(buildUpdate({ studentId: null }, ["studentId"])).toEqual({
+      $unset: { studentId: "" },
+    });
+  });
+
+  it("ignores a blank on a field that is not clearable", () => {
+    // Required fields are the schema's business; blanking one should not turn
+    // into an $unset that strips it from the document.
+    expect(buildUpdate({ name: "" }, ["studentId"])).toEqual({});
+  });
+
+  it("combines sets and unsets in one update", () => {
+    expect(
+      buildUpdate(
+        { name: "Ada", studentId: "", phoneNumber: "0400" },
+        ["studentId", "phoneNumber"]
+      )
+    ).toEqual({
+      $set: { name: "Ada", phoneNumber: "0400" },
+      $unset: { studentId: "" },
+    });
+  });
+
+  it("keeps falsy values that are not blank", () => {
+    expect(buildUpdate({ jerseyNumber: 0, isActive: false })).toEqual({
+      $set: { jerseyNumber: 0, isActive: false },
+    });
+  });
+
+  it("emits no operators at all when nothing was supplied", () => {
+    // An empty object matters: findByIdAndUpdate with {} is a no-op update
+    // rather than a document-replacing one.
+    expect(buildUpdate({ a: undefined })).toEqual({});
+  });
+
+  it("only ever emits keys the caller named", () => {
+    // The structural point. Values come from the request; keys do not, so a
+    // __proto__-prefixed dotted path in a request body cannot reach the update.
+    const update = buildUpdate({ name: "Ada" }) as {
+      $set: Record<string, unknown>;
+    };
+    expect(Object.keys(update.$set)).toEqual(["name"]);
   });
 });
 

@@ -36,6 +36,65 @@ export function optional(
 }
 
 /**
+ * Build an update from named fields, distinguishing "not supplied" from
+ * "deliberately cleared".
+ *
+ * An update has a third case a create does not. On a create a field is either
+ * given or absent; on an update it can also be *blanked*, and the two look
+ * identical in JSON unless you decide what each means:
+ *
+ * - **absent** (`undefined`) — leave whatever is stored alone
+ * - **blank** (`""` or `null`) and listed in `clearable` — `$unset` it
+ * - **blank** and not clearable — ignored; the schema's own validators own it
+ * - **anything else** — `$set` it, trimming strings
+ *
+ * Clearing uses `$unset` rather than storing `null` for the same reason
+ * {@link optional} omits rather than nulls: **a unique index treats every null
+ * as the same value**, so two records whose studentId was cleared would collide
+ * with each other. `$unset` removes the field, which is the only state a sparse
+ * or partial index skips.
+ *
+ * Callers pass an explicit field list, never a spread request body. That is what
+ * keeps `createdBy`, `createdAt` and `_id` out of reach, and it is also why a
+ * `__proto__`-prefixed dotted path from a caller cannot reach the update: the
+ * keys are the route's, only the values come from the request.
+ *
+ * ```ts
+ * const update = buildUpdate(
+ *   { name, email, studentId, phoneNumber },
+ *   ["studentId", "phoneNumber"]
+ * );
+ * ```
+ */
+export function buildUpdate(
+  fields: Record<string, unknown>,
+  clearable: readonly string[] = []
+): Record<string, unknown> {
+  const set: Record<string, unknown> = {};
+  const unset: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === undefined) continue;
+
+    const blank =
+      value === null || (typeof value === "string" && value.trim() === "");
+
+    if (blank) {
+      if (clearable.includes(key)) unset[key] = "";
+      continue;
+    }
+
+    set[key] = typeof value === "string" ? value.trim() : value;
+  }
+
+  const update: Record<string, unknown> = {};
+  if (Object.keys(set).length > 0) update.$set = set;
+  if (Object.keys(unset).length > 0) update.$unset = unset;
+
+  return update;
+}
+
+/**
  * The field and value behind a duplicate-key rejection (MongoDB error 11000), or
  * null if this is not one. `keyPattern` names the index's fields and `keyValue`
  * holds the values that collided.
