@@ -12,6 +12,7 @@
  * and dotenv are already dependencies; nothing extra to install.
  *
  * Usage:
+ *   node scripts/admin.js doctor
  *   node scripts/admin.js list
  *   node scripts/admin.js set-role <email> <user|admin>
  *   node scripts/admin.js reset-password <email> [newPassword]
@@ -34,10 +35,46 @@ const ROLES = ["user", "admin"]; // the model's enum; see models/user.ts
 const CONNECT_TIMEOUT_MS = 8000;
 
 const USAGE = `
+  node scripts/admin.js doctor
   node scripts/admin.js list
   node scripts/admin.js set-role <email> <user|admin>
   node scripts/admin.js reset-password <email> [newPassword]
 `;
+
+/**
+ * Collections the pages read, with the filter each public page applies. A page
+ * can look empty either because the collection is empty or because everything in
+ * it fails the filter, and those need telling apart.
+ *
+ * Names are Mongoose's pluralisation of the model names, verified against
+ * `model.collection.name` — note `Alumni` becomes `alumnis`, not `alumni`.
+ */
+const COLLECTIONS = [
+  { name: "users", label: "users", filter: null },
+  {
+    name: "announcements",
+    label: "announcements",
+    filter: { isPublished: true },
+    filterLabel: "isPublished: true",
+  },
+  {
+    name: "events",
+    label: "events",
+    filter: { isPublic: true },
+    filterLabel: "isPublic: true",
+  },
+  {
+    name: "videos",
+    label: "videos",
+    filter: { isPublished: true, allowedRoles: { $in: ["public"] } },
+    filterLabel: 'isPublished + allowedRoles containing "public"',
+  },
+  { name: "players", label: "players", filter: null },
+  { name: "alumnis", label: "alumni", filter: null },
+  { name: "tournaments", label: "tournaments", filter: null },
+  { name: "teams", label: "teams", filter: null },
+  { name: "rosterentries", label: "roster entries", filter: null },
+];
 
 // Minimal schema: this script only touches these fields, and declaring them
 // here avoids importing the TypeScript model from plain node. `strict: false`
@@ -179,6 +216,71 @@ const COMMANDS = {
   },
 };
 
+/**
+ * Report which database the URI actually selected, and what is in it.
+ *
+ * Written for one specific confusion: a connection string can be perfectly valid
+ * and still point at the wrong database, in which case signup and login work —
+ * they create and read a user in whatever database was named — while every list
+ * page is empty, because the club's data lives somewhere else. The database name
+ * below is the single most useful thing on the screen.
+ */
+async function doctor() {
+  const conn = mongoose.connection;
+
+  console.log(`\n  host      ${conn.host}`);
+  console.log(`  database  ${conn.name}   <- is this the database you expect?`);
+
+  const existing = new Set(
+    (await conn.db.listCollections().toArray()).map((c) => c.name)
+  );
+
+  console.log("\n  collection        total   visible to public pages");
+  console.log("  ------------------------------------------------");
+
+  let grandTotal = 0;
+  for (const c of COLLECTIONS) {
+    if (!existing.has(c.name)) {
+      console.log(`  ${c.label.padEnd(16)}      -   (collection does not exist)`);
+      continue;
+    }
+
+    const coll = conn.db.collection(c.name);
+    const total = await coll.countDocuments({});
+    grandTotal += total;
+
+    let note = "";
+    if (c.filter) {
+      const visible = await coll.countDocuments(c.filter);
+      note =
+        visible === total
+          ? `${visible}`
+          : `${visible}   (${total - visible} hidden by ${c.filterLabel})`;
+    } else {
+      note = `${total}   (no filter)`;
+    }
+
+    console.log(`  ${c.label.padEnd(16)} ${String(total).padStart(6)}   ${note}`);
+  }
+
+  const others = [...existing].filter(
+    (n) => !COLLECTIONS.some((c) => c.name === n) && !n.startsWith("system.")
+  );
+  if (others.length) {
+    console.log(`\n  other collections present: ${others.join(", ")}`);
+  }
+
+  if (grandTotal === 0) {
+    console.log(
+      "\n  Every collection is empty. Either this is not the database holding the\n" +
+        "  club's data — check the database name in the path of MONGODB_URI, after\n" +
+        "  the host and before the '?' — or the data is genuinely gone.\n"
+    );
+  } else {
+    console.log("");
+  }
+}
+
 async function main() {
   const [command, ...args] = process.argv.slice(2);
 
@@ -187,7 +289,11 @@ async function main() {
     return;
   }
 
-  const spec = COMMANDS[command];
+  const spec =
+    command === "doctor"
+      ? { validate: () => null, run: doctor }
+      : COMMANDS[command];
+
   if (!spec) {
     throw new UsageError(`unknown command "${command}"${USAGE}`);
   }
